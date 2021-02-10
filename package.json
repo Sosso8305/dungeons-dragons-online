@@ -1,0 +1,27 @@
+{
+  "name": "dungeons-dragons-online",
+  "version": "1.0.0",
+  "description": "insa project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:build": "vuepress build docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sosso8305/dungeons-dragons-online.git"
+  },
+  "keywords": [
+    "dungeons",
+    "online"
+  ],
+  "author": "HITAIT Zineb  KHALIL Christine  LECA Agathe  LÉVESQUE Lucas  PORCHET Valentin  ZOUAOUI Sofiane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sosso8305/dungeons-dragons-online/issues"
+  },
+  "homepage": "https://github.com/Sosso8305/dungeons-dragons-online#readme",
+  "devDependencies": {
+    "vuepress": "^1.8.0"
+  }
+}
