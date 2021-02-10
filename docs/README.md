@@ -12,3 +12,5 @@ footer: Made by  with ❤️
 
 jeu basé sur le dungeonX fait par un groupe et on le rend online
 
+for doc local : `npm install -D vuepress`
+
