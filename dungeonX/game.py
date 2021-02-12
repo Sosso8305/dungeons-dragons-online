@@ -165,3 +165,5 @@ this method
 		if(self.log.messagecount<self.log.maxmessage):
 			self.log.messagecount+=1
 		self.log.newmessage=True
+
+	#essai
