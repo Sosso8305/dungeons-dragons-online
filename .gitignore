@@ -25,3 +25,8 @@ htmlcov/
 */assets/maps/*
 
 .DS_Store 
+
+#all files for doc local
+node_modules
+package-lock.json
+dist
