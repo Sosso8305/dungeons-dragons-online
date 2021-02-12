@@ -1,7 +1,7 @@
 from ..items import Item, ItemFactory
 from ..constants import ItemAttributes, ItemList
 # from dungeonX.objects.object import Object
-
+#testing out for new version
 class Bag():
     def __init__(self, maxWeight: int = 30, content : [Item] = []):
         contentWeight = sum([item.getWeight() for item in content])
