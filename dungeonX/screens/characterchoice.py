@@ -100,7 +100,7 @@ class CharacterChoice(Window):
         else: return
             
 
-    #  def _rotateImage(self, forButton: Button):
+    # def _rotateImage(self, forButton: Button):
     #     currentPlayer = None
     #     for player in PlayerImages:
     #         if player.value == forButton.imagePath: currentPlayer = player
