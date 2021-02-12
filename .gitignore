@@ -30,4 +30,7 @@ htmlcov/
 node_modules
 package-lock.json
 dist
-#test p
+
+
+# C files compiled
+*.out
