@@ -7,6 +7,7 @@ from .statuswindow import StatusWindow
 from .bottombarwindow import BottomBarWindow
 from .inventorywindow import InventoryWindow
 from .npctrading import NpcTradingWindow
+from .onlinescreen import OnlineScreen
 from .mainmenu import MainMenu
 from .characterchoice import CharacterChoice
 from .pausemenu import PauseMenu
