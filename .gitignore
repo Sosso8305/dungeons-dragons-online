@@ -1,8 +1,27 @@
-.vscode
-__pycache__
+# Save files from the game
+*.dngX
+
+# Byte-compiled / optimized / DLL files / Cache folders
+__pycache__/
+.pytest_cache/
+.cache*
+
+# Virtual environment
+.venv/
 .venv
 
-#all files for doc local
-node_modules
-package-lock.json
-dist
+.coverage
+
+# Test files
+temp*
+
+#Coverage files 
+htmlcov/
+.coverage
+
+#VSCode files
+.vscode/
+
+*/assets/maps/*
+
+.DS_Store 
