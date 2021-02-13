@@ -12,17 +12,47 @@
 #include <fcntl.h> 
 #include <pthread.h>
 
-#define SERVER "192.168.15.162"
+#define SERVER "192.168.15.165"
 #define PORT 5555
 #define BUFLEN 2048
 
 
+void read_pos(char * chaine,int *l){
+    int i = 0,k=0;
+
+    while(k < 2){
+        int j=0;
+        char *chaine2;
+        chaine2 = malloc(strlen(chaine)*sizeof(char));
+        
+        while(chaine[i]!=',' & i < strlen(chaine)){
+            chaine2[j] = chaine[i];
+            i++;
+            j++;
+        }
+        i++;
+        l[k] = atoi(chaine2);
+        k++;
+    }
+
+}
+
+void make_pos(int *l, char *pos){
+    sprintf(pos,"%d,%d",l[0],l[1]);
+}
+
 void *threaded_client(void *arg){
-    char reply[BUFLEN]="\0", message[BUFLEN]="Connected";
-    int *sockfd = (int *) arg;
+    char reply[BUFLEN]="\0", message[BUFLEN];
+    int *liste = (int *)arg;
+    int sockfd = liste[0];
+    int n = liste[1];
+    int position[2][2]={{liste[2],liste[3]},{liste[4],liste[5]}};
 
+    bzero(&message,sizeof(message));
+    make_pos(position[n],message);
+    printf("message %s\n",message);
 
-    if (send(*sockfd, message,BUFLEN,0) < 0){
+    if (send(sockfd, message,BUFLEN,0) < 0){
         perror("erreur send()\n");
         exit(EXIT_FAILURE);
     }
@@ -31,35 +61,45 @@ void *threaded_client(void *arg){
     while(1){
         bzero(&message,sizeof(message));
 
-        if(recv(*sockfd, message,BUFLEN,0) < 0){
+        if(recv(sockfd, message,BUFLEN,0) < 0){
             printf("Disconnected\n");
             break;
         }
+
+        bzero(&position[n],sizeof(position[n]));
+        read_pos(message,position[n]);
 
         // if(strcmp(message,"\0") == 0){
         //     printf("Disconnected\n");
         //     break;
         // }
 
-        bzero(&reply,sizeof(reply));
-        strcpy(reply,message);
+        if(n==1){
+            bzero(&reply,sizeof(reply));
+            make_pos(position[0],reply);
+        }
+        else{
+            bzero(&reply,sizeof(reply));
+            make_pos(position[1],reply);
+        }
 
-        printf("Received: %s\n",reply);
+        printf("Received: %s\n",message);
         printf("Sending: %s\n",reply);
 
-        if (send(*sockfd, reply,BUFLEN,0) < 0){
+        if (send(sockfd, reply,BUFLEN,0) < 0){
             perror("erreur send()\n");
             exit(EXIT_FAILURE);
         }
     }
     printf("Lost connection\n");
-    close(*sockfd);
+    close(sockfd);
 }
 
 
 int main(){
-    int master_socket;
+    int master_socket,player_n=0;
     struct sockaddr_in address;
+    int position0[2] = {0,0},position1[2] ={100,100};
 
     if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == -1) 
     {
@@ -92,7 +132,7 @@ int main(){
     while(1){
         struct sockaddr_in cliaddr;
         int newmaster_socket,clilen=sizeof(cliaddr),newsockfd;
-        char message[BUFLEN]="Welcome";
+        char message[BUFLEN];
 
         bzero((char *)&cliaddr, sizeof(cliaddr));
         if((newsockfd = accept(master_socket, (struct sockaddr *)&cliaddr, (socklen_t *) &clilen)) < 0){
@@ -100,11 +140,13 @@ int main(){
             exit(EXIT_FAILURE);
         }
         printf("Accept done!\n");
-        send(newsockfd,message,BUFLEN,0);
+        //send(newsockfd,message,BUFLEN,0);
 
         pthread_t newthread;
-        pthread_create(&newthread, NULL, threaded_client, &newsockfd);
+        int args[6]={newsockfd,player_n,position0[0],position0[1],position1[0],position1[1]};
+        pthread_create(&newthread, NULL, threaded_client, args);
         pthread_join(newthread,NULL);
+        player_n++;
     }
 
     return EXIT_SUCCESS;
