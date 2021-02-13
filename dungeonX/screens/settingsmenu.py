@@ -1,5 +1,5 @@
 import pygame, io
-from . import Window, MainMenu, PauseMenu, GameScreen, MapEditorScreen, CharacterChoice, LogWindow, MapSelectorScreen
+from . import Window, MainMenu, PauseMenu, GameScreen, MapEditorScreen, CharacterChoice, LogWindow, MapSelectorScreen, OnlineScreen
 from ..graphics import Button, TextInput
 from ..map import Map
 from ..constants import TILE_WIDTH
@@ -32,6 +32,7 @@ class SettingsMenu(Window):
         self.game.screens = {
             "main_menu" : MainMenu(self.game),
             "settings_menu": SettingsMenu(self.game),
+            "online_screen": OnlineScreen(self.game),
             "character_choice": CharacterChoice(self.game),
             "map_selector": MapSelectorScreen(self.game),
             "game" : GameScreen(self.game, dungeon=dungeon),

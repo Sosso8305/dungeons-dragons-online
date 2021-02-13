@@ -1,6 +1,6 @@
 import sys, pygame, math
 from .constants import DEFAULT_KEYMAP, INVENTORY_SCALE, INVENTORY_SLOT_SIZE, ITEMS_IMAGES
-from .screens import MainMenu, PauseMenu, GameScreen, MapEditorScreen,SettingsMenu,CharacterChoice,LogWindow, MapSelectorScreen
+from .screens import MainMenu, PauseMenu, GameScreen, MapEditorScreen,SettingsMenu,CharacterChoice,LogWindow, MapSelectorScreen,OnlineScreen
 from .graphics import TextDisplayer, ParticleSystem
 
 class Game:
@@ -85,6 +85,7 @@ class Game:
 		self.currentScreen = "main_menu"
 		self.screens = {
 			"main_menu" : MainMenu(self),
+			"online_screen": OnlineScreen(self),
 			"settings_menu": SettingsMenu(self),
 			"character_choice": CharacterChoice(self),
 			"map_selector": MapSelectorScreen(self),
@@ -165,3 +166,5 @@ this method
 		if(self.log.messagecount<self.log.maxmessage):
 			self.log.messagecount+=1
 		self.log.newmessage=True
+
+	#essai
