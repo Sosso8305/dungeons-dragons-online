@@ -1,6 +1,6 @@
-name = compile
+name : compile
 
-on : push : branches : feature/server-client
+on : push
 
 jobs :
   check-compile :
