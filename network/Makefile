@@ -3,7 +3,7 @@ CFLAGS	=  	-Wall
 CFLAGS  +=      -D_GNU_SOURCE
 CFLAGS  += 	-g
 
-CIBLES	=	interface
+CIBLES	=	interface rogue
 
 all: $(CIBLES)
 
