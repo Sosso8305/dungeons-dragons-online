@@ -11,4 +11,6 @@ jobs :
         uses: actions/checkout@v2.0.0
       - name : compilation
         shell : bash
-        run : make all
+        run : |
+        cd network 
+        make all
