@@ -1,1 +1,3 @@
-toutes est suprimmable 
+interface --> lucas  
+server.c --> sofiane ensemble des threads  
+client_dev.c --> client de test pour éviter de toucher au client.py 
