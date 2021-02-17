@@ -13,16 +13,16 @@
 
 #define PORT_INTERNE 1234
 #define IP_INTERNE "127.0.0.1"
-#define PORT_EXTERNE 5555
+#define PORT_EXTERNE 5555 
 #define BUF_SIZE 512
-#define NUM_THREADS 1  // #0 interface  Python    
+#define NUM_THREADS 2  // #0 interface  Python   #1 server Peer2Peer   
 #define DEBUG 1
 
 
 
 typedef struct   // struct for one player  
 {
-    int id;
+    int id;   //essential element 
     int x;
     int y;
     char name[5];
@@ -41,7 +41,8 @@ typedef struct
 typedef struct argument
 {
     all_data * data;
-    int pythonFD;
+    int sockfd;
+    char ip[16];
     
 }argument;
 
@@ -90,7 +91,7 @@ void * RecvPython(void * StructArg){
 
     while(1){
 
-        int n = recv((*arg).pythonFD,&((*arg).data->MyPlayer),sizeof(data_player),0);     ///modif pour prendre l'ensemble de la struct myPlayer
+        int n = recv((*arg).sockfd,&((*arg).data->MyPlayer),sizeof(data_player),0);     ///modif pour prendre l'ensemble de la struct myPlayer
 
         switch (n)
         {
@@ -115,14 +116,14 @@ void * RecvPython(void * StructArg){
 }
 
 
-void * SendPython(void * StrucArg){
+void * SendPython(void * StructArg){
 
-    argument * arg = (argument *) StrucArg;
+    argument * arg = (argument *) StructArg;
     
     while(1){
 
         for(int i = 0; i<(*arg).data->numberOtherPlayers; i++){
-            int n = send((*arg).pythonFD,&((*arg).data->OtherPlayers[i]),sizeof(data_player),0);
+            int n = send((*arg).sockfd,&((*arg).data->OtherPlayers[i]),sizeof(data_player),0);
 
             if(n==-1){
                 printf("problem with send python");
@@ -175,7 +176,7 @@ void * interfacePython(void * Structdata){
 
     argument arg;
     arg.data = data;
-    arg.pythonFD = pyhtonFD;
+    arg.sockfd = pyhtonFD;
 
     int numberOfThread =2;  
     pthread_t thread_interface[numberOfThread];  // #0 recv python and write MyPlayer     #1 read otherPlayers and send Python 
@@ -204,13 +205,153 @@ void * interfacePython(void * Structdata){
 
 
 
+void * RecevStuctOneOtherPlayer(void * StructArg){
+
+    argument * arg = (argument *) StructArg;
+    data_player new_player;
+    int First = 1;
+    int MyID; 
+
+    while(1){
+
+        int n = recv((*arg).sockfd,&new_player,sizeof(data_player),0);     
+
+        switch (n)
+        {
+        case -1:
+            pthread_exit(NULL);
+        
+        case 0:
+            printf("End connection by peer \n");
+            pthread_exit(NULL);
+        
+        default:
+            break;
+        }
+
+        if(First){
+            MyID = new_player.id;
+            First =0;
+
+            for (int i=0; i<(*arg).data->numberOtherPlayers; i++){
+                if((*arg).data->OtherPlayers[i].id == 0){
+                    memcpy(&((*arg).data->OtherPlayers[i]),&new_player,sizeof(data_player));
+                    break;
+                }
+            }
+
+        }
+        else
+        {
+            for (int i=0; i<(*arg).data->numberOtherPlayers; i++){
+                if((*arg).data->OtherPlayers[i].id == MyID){
+                    memcpy(&((*arg).data->OtherPlayers[i]),&new_player,sizeof(data_player));
+                    break;
+                }
+            }
+        }
+        
+
+    }
+    
+    pthread_exit(NULL);
+
+    
+
+}
+
+void * SendSructMyPlayer(void * StructArg){
+
+    argument * arg = (argument *) StructArg;
+
+    pthread_exit(NULL);
+
+}
+
+
+void * serverPeer(void * StrucData){
+
+    all_data * data = (all_data *) StrucData;
+    int enable =1;
+
+    int  main_sockfd;// file descriptor for listening socket
+
+    if( (main_sockfd=socket(AF_INET,SOCK_STREAM,0))== -1 ) stop("socket");
+
+    if( setsockopt(main_sockfd, SOL_SOCKET, SO_REUSEADDR, (char *)&enable, sizeof(enable)) < 0 ){
+        pthread_exit(NULL);
+    }
+    
+
+    struct sockaddr_in serv_addr;
+    bzero(&serv_addr, sizeof(serv_addr));
+    
+    inet_pton(AF_INET, INADDR_ANY, &serv_addr.sin_addr); //accept all ip with INADDR_ANY
+    serv_addr.sin_family = AF_INET;//set family
+    serv_addr.sin_port = htons(PORT_EXTERNE);//set port
+
+
+    if (bind(main_sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
+    {
+        close(main_sockfd);
+        stop("bind");
+    }
+
+    struct sockaddr_in OtherServer;
+    int len = sizeof(OtherServer);
+    char ip_OtherServer[16];
+   
+
+    if(listen(main_sockfd,5) == -1) stop("listen");
+
+    printf("Start network Server Peer2peer\n");
+
+
+    int new_playerFD = accept(main_sockfd, (struct sockaddr * ) &OtherServer, (socklen_t *) &len);
+    inet_ntop(AF_INET,&OtherServer.sin_addr,ip_OtherServer,sizeof(ip_OtherServer));
+
+    printf("New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
+ 
+    data->numberOtherPlayers++;
+
+    //init new size de Otherplayer 
+    (*data).OtherPlayers = malloc( (*data).numberOtherPlayers*sizeof(data_player) );
+    bzero(&((*data).OtherPlayers[(data->numberOtherPlayers)-1]),sizeof(data_player));
+
+    argument arg;
+    arg.data = data;
+    arg.sockfd = new_playerFD;
+    strcpy(arg.ip,ip_OtherServer);
+
+    int numberOfThread =2;  
+    pthread_t thread_server[numberOfThread];  // #0 recv struct data_player(Otherplayer) and add on data     #1  create new connection with other server ans send MyPlayer
+
+
+    if(pthread_create(&thread_server[0],NULL,RecevStuctOneOtherPlayer,&arg) != 0) stop("thread_recv_one_other_player");
+    if(pthread_create(&thread_server[1],NULL,SendSructMyPlayer,&arg) != 0) stop("thread_send_my_player");
+
+
+
+    //wait end of all thread
+    for(int t =0; t<numberOfThread;t++){
+        pthread_join(thread_server[t],NULL);
+    }
+
+    pthread_exit(NULL);
+
+}
+
+
+
+
+
 
 
 int main(int argc, char *argv[]){
 
     if(DEBUG) printf("Size of struct data_player is : %ld \n",sizeof(data_player)); 
 
-    pthread_t threads[NUM_THREADS];   // #0 interface  Python  
+    pthread_t threads[NUM_THREADS];   // #0 interface  Python  #1 server Peer2Peer 
 
     all_data data;
 
@@ -223,13 +364,9 @@ int main(int argc, char *argv[]){
     }
  */   
 
-
-
-    
-    
-    
     
     if(pthread_create(&threads[0],NULL,interfacePython,&data) != 0) stop("thread_interface_Python");
+    if(pthread_create(&threads[1],NULL,serverPeer,&data) != 0) stop("thread_Server_PeerToPeer");
 
 
 

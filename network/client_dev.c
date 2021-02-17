@@ -71,7 +71,7 @@ int main(int argc, char const *argv[])
 
  
 
-    data_player player ={1,50,70,"toto"};
+    //data_player player ={1,50,70,"toto"};
 
 
 
