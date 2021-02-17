@@ -39,15 +39,23 @@ typedef struct   // struct for one player
 
 }data_player;
 
+void display_data_player (data_player player){    // fct for help to debug
+    printf("=========================\n");
+    printf("ID = %i\n",player.id);
+    printf("X = %i\n",player.x);
+    printf("Y = %i\n",player.y);
+    player.name[5]='\0';
+    printf("name = %s\n",player.name);
+    printf("=========================\n\n");
+
+}
 
 
 
 
 int main(int argc, char const *argv[])
 {
-    char buff[BUFSIZ];
-    //char name[NAMESIZE];
-    int END = 0;
+    
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) stop("socket",sockfd);
     struct sockaddr_in serv_addr;
@@ -61,30 +69,30 @@ int main(int argc, char const *argv[])
    
     if (connect(sockfd,(const struct sockaddr *)&serv_addr,(socklen_t )len) < 0) stop("Connect",sockfd);
 
-    // printf("Name (max %d lettre):",NAMESIZE-1);
-    // fflush(stdout);
-    // scanf("%[^\n]",name);
-    // fgetc( stdin );
+ 
 
     data_player player ={1,50,70,"toto"};
 
 
 
 while(1){
-    printf("Msg a envoyé :");
+
+/*
     fflush(stdout);
     scanf("%[^\n]",buff);
     send(sockfd,&player,sizeof(data_player),0);
     fgetc( stdin );
 
+*/
 
-    // int n =recv(sockfd,buff,BUFSIZ,0);
-    // if (n == -1)  stop("recv",sockfd);
-    // buff[n]='\0';
-    // printf("Server : %s \n",buff);
-    isEnd(buff,&END);
 
-    if (END == 1) break;
+
+    data_player recvPlayer;
+    int n =recv(sockfd,&recvPlayer,sizeof(data_player),0);
+    if (n == -1)  stop("recv",sockfd);
+
+    display_data_player(recvPlayer);
+
 
 }
     close(sockfd);

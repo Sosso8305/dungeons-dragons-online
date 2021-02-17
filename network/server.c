@@ -115,6 +115,29 @@ void * RecvPython(void * StructArg){
 }
 
 
+void * SendPython(void * StrucArg){
+
+    argument * arg = (argument *) StrucArg;
+    
+    while(1){
+
+        for(int i = 0; i<(*arg).data->numberOtherPlayers; i++){
+            int n = send((*arg).pythonFD,&((*arg).data->OtherPlayers[i]),sizeof(data_player),0);
+
+            if(n==-1){
+                printf("problem with send python");
+                pthread_exit(NULL);
+            }
+        }
+
+    }
+
+    pthread_exit(NULL);
+
+}
+
+
+
 void * interfacePython(void * Structdata){
 
     all_data * data = (all_data *) Structdata; 
@@ -154,12 +177,13 @@ void * interfacePython(void * Structdata){
     arg.data = data;
     arg.pythonFD = pyhtonFD;
 
-    int numberOfThread =1;  
+    int numberOfThread =2;  
     pthread_t thread_interface[numberOfThread];  // #0 recv python and write MyPlayer     #1 read otherPlayers and send Python 
     
 
     
-    if(pthread_create(&thread_interface[0],NULL,RecvPython,&arg) != 0) stop("thread_send_Python");
+    if(pthread_create(&thread_interface[0],NULL,RecvPython,&arg) != 0) stop("thread_recv_Python");
+    if(pthread_create(&thread_interface[1],NULL,SendPython,&arg) != 0) stop("thread_send_Python");
 
 
 
@@ -193,6 +217,15 @@ int main(int argc, char *argv[]){
     data.numberOtherPlayers = 0;
     data.OtherPlayers = malloc( data.numberOtherPlayers*sizeof(data_player) );
 
+/* test for  fct sendPython
+    for (int i =0; i<data.numberOtherPlayers;i++){
+        data.OtherPlayers[i].id=i+1;
+    }
+ */   
+
+
+
+    
     
     
     
