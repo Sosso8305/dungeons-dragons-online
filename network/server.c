@@ -42,7 +42,7 @@ typedef struct argument
 {
     all_data * data;
     int sockfd;
-    char ip[16];
+    char * ip;
     
 }argument;
 
@@ -205,6 +205,7 @@ void * interfacePython(void * Structdata){
 
 
 
+
 void * RecevStuctOneOtherPlayer(void * StructArg){
 
     argument * arg = (argument *) StructArg;
@@ -263,6 +264,28 @@ void * RecevStuctOneOtherPlayer(void * StructArg){
 void * SendSructMyPlayer(void * StructArg){
 
     argument * arg = (argument *) StructArg;
+    char * IPserver;
+    IPserver = malloc(16 *sizeof(char));
+
+    strcpy(IPserver,(*arg).ip);
+
+    int sockfd = socket(AF_INET,SOCK_STREAM,0);
+    if (sockfd == -1) pthread_exit(NULL);
+
+    struct sockaddr_in serv_OtherPlayer;
+    int len=sizeof(serv_OtherPlayer);
+
+    bzero(&serv_OtherPlayer,sizeof(serv_OtherPlayer));
+    serv_OtherPlayer.sin_family =AF_INET;
+    inet_aton(IPserver,&serv_OtherPlayer.sin_addr);
+    serv_OtherPlayer.sin_port = htons(PORT_EXTERNE);
+
+    if (connect(sockfd, (const struct sockaddr *) &serv_OtherPlayer, (socklen_t )len) < 0 ) pthread_exit(NULL);
+
+    while(1){
+        send(sockfd,&((*arg).data->MyPlayer),sizeof(data_player),0 );
+    }
+
 
     pthread_exit(NULL);
 
@@ -307,11 +330,14 @@ void * serverPeer(void * StrucData){
     printf("Start network Server Peer2peer\n");
 
 
+///begin while
     int new_playerFD = accept(main_sockfd, (struct sockaddr * ) &OtherServer, (socklen_t *) &len);
     inet_ntop(AF_INET,&OtherServer.sin_addr,ip_OtherServer,sizeof(ip_OtherServer));
 
     printf("New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
- 
+
+    
+
     data->numberOtherPlayers++;
 
     //init new size de Otherplayer 
@@ -319,6 +345,7 @@ void * serverPeer(void * StrucData){
     bzero(&((*data).OtherPlayers[(data->numberOtherPlayers)-1]),sizeof(data_player));
 
     argument arg;
+    arg.ip = malloc(16*sizeof(char));
     arg.data = data;
     arg.sockfd = new_playerFD;
     strcpy(arg.ip,ip_OtherServer);
@@ -331,6 +358,9 @@ void * serverPeer(void * StrucData){
     if(pthread_create(&thread_server[1],NULL,SendSructMyPlayer,&arg) != 0) stop("thread_send_my_player");
 
 
+
+
+///endwhile
 
     //wait end of all thread
     for(int t =0; t<numberOfThread;t++){
