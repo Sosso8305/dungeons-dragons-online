@@ -282,6 +282,10 @@ void * SendSructMyPlayer(void * StructArg){
 
     if (connect(sockfd, (const struct sockaddr *) &serv_OtherPlayer, (socklen_t )len) < 0 ) pthread_exit(NULL);
 
+    int init = 0; // it's not init connection
+    send(sockfd,&init,sizeof(int),0);
+
+ 
     while(1){
         send(sockfd,&((*arg).data->MyPlayer),sizeof(data_player),0 );
     }
@@ -330,37 +334,67 @@ void * serverPeer(void * StrucData){
     printf("Start network Server Peer2peer\n");
 
 
-///begin while
-    int new_playerFD = accept(main_sockfd, (struct sockaddr * ) &OtherServer, (socklen_t *) &len);
-    inet_ntop(AF_INET,&OtherServer.sin_addr,ip_OtherServer,sizeof(ip_OtherServer));
+    int numberOfThread =0;
+    pthread_t * thread_server;  // #1 recv struct data_player(Otherplayer) and add on data     #0  create new connection with other server ans send MyPlayer
 
-    printf("New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
+    while(1){
+        int new_playerFD = accept(main_sockfd, (struct sockaddr * ) &OtherServer, (socklen_t *) &len);
+        inet_ntop(AF_INET,&OtherServer.sin_addr,ip_OtherServer,sizeof(ip_OtherServer));
 
-    
+        printf("New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
 
-    data->numberOtherPlayers++;
+        int init;
+        int n = recv(new_playerFD,&init,sizeof(int),0);     
 
-    //init new size de Otherplayer 
-    (*data).OtherPlayers = malloc( (*data).numberOtherPlayers*sizeof(data_player) );
-    bzero(&((*data).OtherPlayers[(data->numberOtherPlayers)-1]),sizeof(data_player));
+            switch (n)
+            {
+            case -1:
+                pthread_exit(NULL);
+            
+            case 0:
+                printf("End connection by peer \n");
+                pthread_exit(NULL);
+            
+            default:
+                break;
+            }
 
-    argument arg;
-    arg.ip = malloc(16*sizeof(char));
-    arg.data = data;
-    arg.sockfd = new_playerFD;
-    strcpy(arg.ip,ip_OtherServer);
+        
 
-    int numberOfThread =2;  
-    pthread_t thread_server[numberOfThread];  // #0 recv struct data_player(Otherplayer) and add on data     #1  create new connection with other server ans send MyPlayer
+        data->numberOtherPlayers++;
+
+        //init new size de Otherplayer 
+        (*data).OtherPlayers = malloc( (*data).numberOtherPlayers*sizeof(data_player) );
+        bzero(&((*data).OtherPlayers[(data->numberOtherPlayers)-1]),sizeof(data_player));
+
+        argument arg;
+        arg.ip = malloc(16*sizeof(char));
+        arg.data = data;
+        arg.sockfd = new_playerFD;
+        strcpy(arg.ip,ip_OtherServer);
+
+        
+        if(init){
+            numberOfThread =numberOfThread + 2;
+        }
+        else
+        {
+            numberOfThread++;
+        }
+        
 
 
-    if(pthread_create(&thread_server[0],NULL,RecevStuctOneOtherPlayer,&arg) != 0) stop("thread_recv_one_other_player");
-    if(pthread_create(&thread_server[1],NULL,SendSructMyPlayer,&arg) != 0) stop("thread_send_my_player");
+        thread_server =malloc(numberOfThread * sizeof(pthread_t));
+
+        if(pthread_create(&thread_server[numberOfThread-1],NULL,RecevStuctOneOtherPlayer,&arg) != 0) stop("thread_recv_one_other_player");
+        
+        if(init){
+            if(pthread_create(&thread_server[numberOfThread-2],NULL,SendSructMyPlayer,&arg) != 0) stop("thread_send_my_player");
+        }
 
 
 
-
-///endwhile
+    }
 
     //wait end of all thread
     for(int t =0; t<numberOfThread;t++){
