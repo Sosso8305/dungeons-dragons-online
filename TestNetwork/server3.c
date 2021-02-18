@@ -60,7 +60,7 @@ int main(){
     int sd, newsockfd;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
-    char welcome[BUFLEN]="Welcome!";
+    char position_ini[BUFLEN]="100,200";
 
     if ((sd = socket(AF_INET,SOCK_STREAM,0)) == -1){
         perror("socket failed");
@@ -96,10 +96,20 @@ int main(){
     } 
     printf("Connection established\n");
 
-    if(send(newsockfd,welcome,BUFLEN,0) < 0){
+    if(send(newsockfd,position_ini,BUFLEN,0) < 0){
         perror("Send error");
         exit(EXIT_FAILURE);
-    }   
+    }  
+    printf("First message sent!\n");
+
+    char position_ini2[BUFLEN]; 
+    if(recv(newsockfd,position_ini2,BUFLEN,0) < 0){
+        perror("Recv error");
+        exit(EXIT_FAILURE);
+    }else{
+        printf("position initiale:%s\n",position_ini2);
+        read_pos(position_ini2,positions[1]);
+    }
 
     int ok = 1;
 
@@ -109,6 +119,7 @@ int main(){
         make_pos(positions[0],message);
 
         if(ok < 3){
+        printf("p1:%d p2:%d\n",positions[1][0],positions[1][1]);
         if(send(newsockfd,message,BUFLEN,0) < 0){
             perror("Send error");
             exit(EXIT_FAILURE);
