@@ -1,3 +1,6 @@
+from dungeonX.characters.players.player import Player, PlayerEnum
+from dungeonX.game import Game
+
 def extract(packet_str,code):
     """ 
         if we have as an argument: codehicode this function returns hi 
@@ -75,44 +78,46 @@ def read_properties_list(list_str):
     return items_ids
 
 class Packet:
-    def __init__(self,player):
-        self.character1 = player
-        self.character2 = player.crewmate[0] #a changer voir zineb
-        self.character3 = player.crewmate[1] #a changer voir zineb
+    def __init__(self, PlayerList = [Player]):
+        PlayerList = []
+        self.Player1Type1 = PlayerList[0]
+        self.Player1Type2 = PlayerList[1] #a changer voir zineb #done Chris
+        self.Player1Type3 = PlayerList[2] #a changer voir zineb
 
-        self.type1 = self.character1.playerType
-        self.type2 = self.character2.playerType
-        self.type3 = self.character3.playerType
+        self.type1 = PlayerList[0].PlayerEnum
+        self.type2 = PlayerList[1].PlayerEnum
+        self.type3 = PlayerList[2].PlayerEnum
 
-        self.pos1 = player.pos              #on peut supprimer ces 3 et les mettre dans une seule liste c un choix a faire
-        self.pos2 = self.character2.pos
-        self.pos3 = self.character3.pos
-        self.positions = [player.pos,self.character2.pos,self.character3.pos]
+        self.pos1 = PlayerList[0].pos              #on peut supprimer ces 3 et les mettre dans une seule liste c un choix a faire
+        self.pos2 = PlayerList[1].pos
+        self.pos3 = PlayerList[2].pos
+        self.positions = [PlayerList[0].pos ,PlayerList[1].pos ,PlayerList[2].pos]
 
-        self.attributes1 = player.listStat
-        self.attributes2 = self.character2.listStat
-        self.attributes3 = self.character3.listStat
+        self.attributes1 = PlayerList[0].listStat
+        self.attributes2 = PlayerList[1].listStat
+        self.attributes3 = PlayerList[2].listStat
 
-        self.properties1 = self.extract_items_ids(player._bag._content) 
-        self.properties2 = self.extract_items_ids(self.character2._bag._content)
-        self.properties3 = self.extract_items_ids(self.character3._bag._content)
+        #self.propertyBag = self.extract_items_ids(player._bag._content) 
 
-        self.monsters_capacity1 = None #a changer une fois defini
+
+        self.enemiesHP = None #a changer une fois defini
+        # un dictionnaire vide 
         #on va ajouter cet attribut a la classe player et ce dictionnaire serait rempli a chaque attaque
-        self.monsters_capacity2 = None
-        self.monsters_capacity3 = None
+        #self.monsters_capacity2 = None
+        #self.monsters_capacity3 = None
 
-        self.list1 = [self.type1,self.pos1,self.attributes1,self.properties1,self.monsters_capacity1]
-        self.list2 = [self.type2,self.pos2,self.attributes2,self.properties2,self.monsters_capacity2]
-        self.list3 = [self.type3,self.pos3,self.attributes3,self.properties3,self.monsters_capacity3]
+        self.list1 = [self.type1,self.pos1,self.attributes1]
+        self.list2 = [self.type2,self.pos2,self.attributes2]
+        self.list3 = [self.type3,self.pos3,self.attributes3,self.enemiesHP]
+        #TODO : add bag to the last list and add equiment packet 
 
     def extract_items_ids(self,content):
-        ids_list = []
+        idItemList = []
 
         for item in content:
-            ids.list.append(item.id)
+            idItemList.append(item.id)
         
-        return ids_list
+        return idItemList
 
     def create_packet(self):
         """
@@ -130,7 +135,7 @@ class Packet:
 
 
 
-s="Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//lol//$$////perso//"
+s="PlayerEnum.Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//lol//$$////perso//"
 #print("".join(extract(s,"//perso//")))
 #( HP, armor, strength, dex, con, intell, wis, cha )
 l = read_packet(s)
