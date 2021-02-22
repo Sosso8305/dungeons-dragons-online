@@ -8,6 +8,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <pthread.h>
+//#include <server.h>
 
 
 
@@ -15,11 +16,11 @@
 #define IP_INTERNE "127.0.0.1"
 #define PORT_EXTERNE 5555 
 #define BUF_SIZE 512
-#define NUM_THREADS 2  // #0 interface  Python   #1 server Peer2Peer   
+#define NUM_THREADS 3  // #0 interface  Python   #1 server Peer2Peer   #3 init to other server
 #define DEBUG 1
 
 
-
+/// debut du future fichier server.h//////
 typedef struct   // struct for one player  
 {
     int id;   //essential element 
@@ -43,8 +44,26 @@ typedef struct argument
     all_data * data;
     int sockfd;
     char * ip;
+    int init;  
     
 }argument;
+
+
+void display_data_player (data_player player);
+void stop(char *msg);
+
+void * RecvPython(void * StructArg);
+void * SendPython(void * StructArg);
+void * interfacePython(void * Structdata);
+
+void * SendStructMyPlayerInit(void * StructArg);
+void * RecevStuctOneOtherPlayer(void * StructArg);
+void * SendSructMyPlayer(void * StructArg);
+void * serverPeer(void * StrucData);
+
+
+//// end fichier server.h/////
+
 
 void display_data_player (data_player player){    // fct for help to debug
     printf("=========================\n");
@@ -99,7 +118,7 @@ void * RecvPython(void * StructArg){
             pthread_exit(NULL);
         
         case 0:
-            printf("End connection by peer \n");
+            printf("End connection by python Interface \n");
             pthread_exit(NULL);
         
         default:
@@ -201,6 +220,44 @@ void * interfacePython(void * Structdata){
 }
 
 
+void * SendStructMyPlayerInit(void * StructArg){
+
+    sleep(1);
+
+    argument * arg = (argument *) StructArg;
+
+    
+    printf("enter IP of other player :");
+    
+    char IP_for_new_connection[16];
+
+    fflush(stdout);
+    scanf("%[^\n]",IP_for_new_connection);
+    fgetc( stdin );
+
+    //printf("IP: %s \n",IP_for_new_connection);
+
+    int number_thread =1;
+    pthread_t  ID_threads[number_thread];
+
+    argument arg1;
+    arg1.data= (* arg).data;
+    arg1.ip=IP_for_new_connection;
+    arg1.init=1;
+
+    if(pthread_create(&ID_threads[0],NULL,SendSructMyPlayer,&arg1) != 0 ) stop("thread struc player in init");
+
+
+    for(int t =0; t<number_thread;t++){
+        pthread_join(ID_threads[t],NULL);
+
+    }
+
+    pthread_exit(NULL);
+
+}
+
+
 
 
 
@@ -268,6 +325,7 @@ void * SendSructMyPlayer(void * StructArg){
     IPserver = malloc(16 *sizeof(char));
 
     strcpy(IPserver,(*arg).ip);
+    printf("Testing connection with %s \n",IPserver);
 
     int sockfd = socket(AF_INET,SOCK_STREAM,0);
     if (sockfd == -1) pthread_exit(NULL);
@@ -282,7 +340,8 @@ void * SendSructMyPlayer(void * StructArg){
 
     if (connect(sockfd, (const struct sockaddr *) &serv_OtherPlayer, (socklen_t )len) < 0 ) pthread_exit(NULL);
 
-    int init = 0; // it's not init connection
+    int init = (*arg).init;
+    //int init = 0; // it's not init connection
     send(sockfd,&init,sizeof(int),0);
 
  
@@ -313,10 +372,9 @@ void * serverPeer(void * StrucData){
     struct sockaddr_in serv_addr;
     bzero(&serv_addr, sizeof(serv_addr));
     
-    inet_pton(AF_INET, INADDR_ANY, &serv_addr.sin_addr); //accept all ip with INADDR_ANY
+    inet_pton(AF_INET, "0.0.0.0", &serv_addr.sin_addr); //accept all ip 
     serv_addr.sin_family = AF_INET;//set family
     serv_addr.sin_port = htons(PORT_EXTERNE);//set port
-
 
     if (bind(main_sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
     {
@@ -371,6 +429,7 @@ void * serverPeer(void * StrucData){
         arg.ip = malloc(16*sizeof(char));
         arg.data = data;
         arg.sockfd = new_playerFD;
+        arg.init=0;
         strcpy(arg.ip,ip_OtherServer);
 
         
@@ -415,7 +474,7 @@ int main(int argc, char *argv[]){
 
     if(DEBUG) printf("Size of struct data_player is : %ld \n",sizeof(data_player)); 
 
-    pthread_t threads[NUM_THREADS];   // #0 interface  Python  #1 server Peer2Peer 
+    pthread_t threads[NUM_THREADS];   // #0 interface  Python  #1 server Peer2Peer  #3 init to other server 
 
     all_data data;
 
@@ -431,6 +490,8 @@ int main(int argc, char *argv[]){
     
     if(pthread_create(&threads[0],NULL,interfacePython,&data) != 0) stop("thread_interface_Python");
     if(pthread_create(&threads[1],NULL,serverPeer,&data) != 0) stop("thread_Server_PeerToPeer");
+    if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&data) != 0) stop("thread_init_Send");
+
 
 
 
