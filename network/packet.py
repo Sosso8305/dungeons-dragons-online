@@ -47,20 +47,42 @@ def read_attributes(att_str):
     return int(attributes_list[0][1:]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
         ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7][:len(attributes_list[7])-1])  
 
-s="(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//ok essai//$$////perso//lol//$$////perso//"
-#print("".join(extract(s,"//perso//")))
-#( HP, armor, strength, dex, con, intell, wis, cha )
-l = read_packet(s)
-print(l)
-l[0][0] = read_position(l[0][0])
-l[0][1] = read_attributes(l[0][1])
-print(l[0][0],l[0][1])
+def read_monsters_dict(dict_str):
+    """
+        this function is used to extract the dictionnary of monsters (affected by the player) from the received string packet
+    """
+    dict_list = dict_str.split(",")
+    d = {}
+    dict_list[0] = dict_list[0][1:]
+    dict_list[len(dict_list)-1] = dict_list[len(dict_list)-1][:len(dict_list[len(dict_list)-1])-1]
+
+    for i in range(len(dict_list)):
+        l = dict_list[i].split(":")
+        d[int(l[0])] = int(l[1])
+    return d
+
+def read_properties_list(list_str):
+    """
+        this function is used to extract the list of properties' ids (the player's properties)
+    """
+
+    items_list_str = list_str.split(",")
+    items_list_str[0] = items_list_str[0][1:]
+    items_list_str[len(items_list_str) - 1] = items_list_str[len(items_list_str) - 1][:len(items_list_str[len(items_list_str) - 1]) - 1]
+    items_ids = []
+    for i in range(len(items_list_str)):
+        items_ids.append(int(items_list_str[i]))
+    return items_ids
 
 class Packet:
     def __init__(self,player):
         self.character1 = player
         self.character2 = player.crewmate[0] #a changer voir zineb
         self.character3 = player.crewmate[1] #a changer voir zineb
+
+        self.type1 = self.character1.playerType
+        self.type2 = self.character2.playerType
+        self.type3 = self.character3.playerType
 
         self.pos1 = player.pos              #on peut supprimer ces 3 et les mettre dans une seule liste c un choix a faire
         self.pos2 = self.character2.pos
@@ -71,17 +93,26 @@ class Packet:
         self.attributes2 = self.character2.listStat
         self.attributes3 = self.character3.listStat
 
-        self.properties1 = player._bag #s'assurer de zineb
-        self.properties2 = self.character2._bag
-        self.properties3 = self.character3._bag
+        self.properties1 = self.extract_items_ids(player._bag._content) 
+        self.properties2 = self.extract_items_ids(self.character2._bag._content)
+        self.properties3 = self.extract_items_ids(self.character3._bag._content)
 
-        self.monsters_capacity1 = None #a definir
+        self.monsters_capacity1 = None #a changer une fois defini
+        #on va ajouter cet attribut a la classe player et ce dictionnaire serait rempli a chaque attaque
         self.monsters_capacity2 = None
         self.monsters_capacity3 = None
 
-        self.list1 = [self.pos1,self.attributes1,self.properties1,self.monsters_capacity1]
-        self.list2 = [self.pos2,self.attributes2,self.properties2,self.monsters_capacity2]
-        self.list3 = [self.pos3,self.attributes3,self.properties3,self.monsters_capacity3]
+        self.list1 = [self.type1,self.pos1,self.attributes1,self.properties1,self.monsters_capacity1]
+        self.list2 = [self.type2,self.pos2,self.attributes2,self.properties2,self.monsters_capacity2]
+        self.list3 = [self.type3,self.pos3,self.attributes3,self.properties3,self.monsters_capacity3]
+
+    def extract_items_ids(self,content):
+        ids_list = []
+
+        for item in content:
+            ids.list.append(item.id)
+        
+        return ids_list
 
     def create_packet(self):
         """
@@ -98,4 +129,14 @@ class Packet:
         return packet_str
 
 
-    
+
+s="Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//lol//$$////perso//"
+#print("".join(extract(s,"//perso//")))
+#( HP, armor, strength, dex, con, intell, wis, cha )
+l = read_packet(s)
+print(l)
+l[0][1] = read_position(l[0][1])
+l[0][2] = read_attributes(l[0][2])
+l[0][3] = read_monsters_dict(l[0][3])
+l[0][4] = read_properties_list(l[0][4])
+print(l[0][0],l[0][1],l[0][2],l[0][3],l[0][4]) 
