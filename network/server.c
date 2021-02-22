@@ -340,6 +340,8 @@ void * SendSructMyPlayer(void * StructArg){
 
     if (connect(sockfd, (const struct sockaddr *) &serv_OtherPlayer, (socklen_t )len) < 0 ) pthread_exit(NULL);
 
+    printf("This connection is success \n");
+
     int init = (*arg).init;
     //int init = 0; // it's not init connection
     send(sockfd,&init,sizeof(int),0);
@@ -399,7 +401,7 @@ void * serverPeer(void * StrucData){
         int new_playerFD = accept(main_sockfd, (struct sockaddr * ) &OtherServer, (socklen_t *) &len);
         inet_ntop(AF_INET,&OtherServer.sin_addr,ip_OtherServer,sizeof(ip_OtherServer));
 
-        printf("New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
+        printf("\n New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
 
         int init;
         int n = recv(new_playerFD,&init,sizeof(int),0);     
