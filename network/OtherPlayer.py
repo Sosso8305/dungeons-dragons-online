@@ -56,20 +56,17 @@ class OtherPlayer:
         self.type1 = liste_str[0][0]
         self.pos1 = read_position(liste_str[0][1])
         self.att1 = read_attributes(liste_str[0][2])
-        self.monsters1 = read_monsters_dict(liste_str[0][3])
-        self.items1 = read_properties_list(liste_str[0][4])
 
         self.type2 = liste_str[1][0]
         self.pos2 = read_position(liste_str[1][1])
         self.att2 = read_attributes(liste_str[1][2])
-        self.monsters2 = read_monsters_dict(liste_str[1][3])
-        self.items2 = read_properties_list(liste_str[1][4])
 
         self.type3 = liste_str[2][0]
         self.pos3 = read_position(liste_str[2][1])
         self.att3 = read_attributes(liste_str[2][2])
-        self.monsters3 = read_monsters_dict(liste_str[2][3])
-        self.items3 = read_properties_list(liste_str[2][4])
+
+        self.monsters = read_monsters_dict(liste_str[2][3])
+        self.items = read_properties_list(liste_str[2][4])
 
     
     def setPosition(self, pos : tuple):
@@ -85,11 +82,10 @@ class OtherPlayer:
         """
         pass
 
-s="PlayerEnum.Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//PlayerEnum.Mage//$$//(22,3)//$$//\
-(18,28,37,44,56,55,45,25)//$$//{15:9,25:60,77:18}//$$//[11,46,65]//$$//\
-    //perso//PlayerEnum.Rogue//$$//(122,22)//$$//(1,22,35,45,45,33,42,20)//$$//{100:99,20:88,90:8}//$$//[100,43,63]//$$////perso//"
+s="PlayerEnum.Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$////perso//PlayerEnum.Mage//$$//(22,3)//$$//\
+(18,28,37,44,56,55,45,25)//$$////perso//PlayerEnum.Rogue//$$//(122,22)//$$//(1,22,35,45,45,33,42,20)//$$//{100:99,20:88,90:8}//$$//[100,43,63]//$$////perso//"
 
 o = OtherPlayer(s)
-print(o.type1,o.pos1,o.att1,o.monsters1,o.items1)
-print(o.type2,o.pos2,o.att2,o.monsters2,o.items2)
-print(o.type3,o.pos3,o.att3,o.monsters3,o.items3)
+print(o.type1,o.pos1,o.att1)
+print(o.type2,o.pos2,o.att2)
+print(o.type3,o.pos3,o.att3,o.monsters,o.items)
