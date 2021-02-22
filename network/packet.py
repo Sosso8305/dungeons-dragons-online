@@ -47,8 +47,14 @@ def read_attributes(att_str):
         the same functionality of the previous function but for attributes
     """
     attributes_list = att_str.split(",")
-    return int(attributes_list[0][1:]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
-        ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7][:len(attributes_list[7])-1])  
+    attributes_list[0] = attributes_list[0][1:]
+    attributes_list[len(attributes_list)-1] = attributes_list[len(attributes_list)-1][:len(attributes_list[len(attributes_list)-1])-1]
+    l = []
+    for i in range(len(attributes_list)):
+        l1 = attributes_list[i].split(":")
+        l.append(int(l1[1]))
+    return int(l[0]),int(l[1]),int(l[2]),int(l[3]),int(l[4]) \
+        ,int(l[5]) ,int(l[6]) ,int(l[7])  
 
 def read_monsters_dict(dict_str):
     """
@@ -135,13 +141,12 @@ class Packet:
 
 
 
-s="PlayerEnum.Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//lol//$$////perso//"
+s="PlayerEnum.Rogue//$$//(1,2)//$$//{1:11,2:2,3:3,4:44,5:55,6:65,7:4,8:2}//$$////perso//PlayerEnum.Mage//$$//(22,3)//$$//\
+{1:12,2:22,3:23,4:34,5:5,6:6,7:43,8:21}//$$////perso//PlayerEnum.Rogue//$$//(122,22)//$$//{1:22,2:2,3:3,4:14,5:25,6:75,7:5,8:3}//$$//{100:99,20:88,90:8}//$$//[100,43,63]//$$////perso//"
 #print("".join(extract(s,"//perso//")))
 #( HP, armor, strength, dex, con, intell, wis, cha )
 l = read_packet(s)
 print(l)
 l[0][1] = read_position(l[0][1])
 l[0][2] = read_attributes(l[0][2])
-l[0][3] = read_monsters_dict(l[0][3])
-l[0][4] = read_properties_list(l[0][4])
-print(l[0][0],l[0][1],l[0][2],l[0][3],l[0][4]) 
+print(l[0][0],l[0][1],l[0][2]) 
