@@ -72,7 +72,7 @@ class OtherPlayer:
         self.items3 = read_properties_list(liste_str[2][4])
 
     
-    def updatePosition(self, pos : tuple):
+    def setPosition(self, pos : tuple):
         """Will be used to refresh the position field.
         This method could be used right after receiving a position information packet.
         """
@@ -85,9 +85,9 @@ class OtherPlayer:
         """
         pass
 
-s="Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//Sorcerer//$$//(22,3)//$$//\
+s="PlayerEnum.Rogue//$$//(1,2)//$$//(11,2,3,44,55,65,4,2)//$$//{1:99,2:80,3:18}//$$//[1,4,66]//$$////perso//PlayerEnum.Mage//$$//(22,3)//$$//\
 (18,28,37,44,56,55,45,25)//$$//{15:9,25:60,77:18}//$$//[11,46,65]//$$//\
-    //perso//Rogue//$$//(122,22)//$$//(1,22,35,45,45,33,42,20)//$$//{100:99,20:88,90:8}//$$//[100,43,63]//$$////perso//"
+    //perso//PlayerEnum.Rogue//$$//(122,22)//$$//(1,22,35,45,45,33,42,20)//$$//{100:99,20:88,90:8}//$$//[100,43,63]//$$////perso//"
 
 o = OtherPlayer(s)
 print(o.type1,o.pos1,o.att1,o.monsters1,o.items1)
