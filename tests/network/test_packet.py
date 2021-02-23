@@ -23,9 +23,8 @@ player2 = Player(game, (1,2), PlayerEnum.Mage,10, stats=defaultStats,lineOfSight
 player3 = Player(game, (3,4), PlayerEnum.Fighter,10, stats=defaultStats,lineOfSightRadius=5)
 players = [player1,player2,player3]
 
-# def testPacketCreation():
-#     packet = Packet(players)
-#     print(packet.create_packet())
-#     assert packet.create_packet() == "PlayerEnum.Rogue//$$//(0, 0)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//\
-#         PlayerEnum.Mage//$$//(1, 2)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//\
-#         PlayerEnum.Fighter//$$//(3, 4)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$//None//$$////perso//"                      
+def testPacketCreation():
+    packet = Packet(players)
+    print(packet.create_packet())
+    assert packet.create_packet() == "PlayerEnum.Rogue//$$//(0, 0)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//PlayerEnum.Mage//$$//(1, 2)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//PlayerEnum.Fighter//$$//(3, 4)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$//None//$$////perso//" 
+                     
