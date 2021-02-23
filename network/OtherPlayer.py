@@ -3,8 +3,6 @@ from packet import *
 
 class OtherPlayer:
     """
-    /!\ This is a test, we've not talked about it yet with zineb & christine
-
     For every other player, an object "OtherPlayer" will be created.
     I don't know yet how every OtherPlayer will be distinguished from each other yet.
     At the moment, i think there will be a OtherPlayer list in the GameScreen file.
@@ -21,30 +19,46 @@ class OtherPlayer:
 	
 	Attributes
 	----------
-	pos : tuple
+	pos1, pos2, pos3 : tuple (x,y)
         position of every 3 characters of the otherPlaye
     
+    type1, type2, type3 : PlayerEnum.[Type]
+        Type of every otherPlayer's characters (Mage, Rogue, Knight)
+    
+    att1, att2, att3 : list
+        Attributes of every character (strength, wize etc)
+
+    ennemies : dictionnary (ennemy_id,hp)
+        to synchronize ennemies hp for all IRL players
+        is filled with informations when the OtherPlayer deals damages
+    
+    items : list ?
+        All items in the OtherPlayer's bag
+    
     **may be added :
-    HP : tuple
-        HP of every 3 otherPlayer's characters
-    equipments : ???
-        the otherPlayer's equipment 
+    hp1, hp2, hp3 : int
+        hp of every 3 otherPlayer's character
 
 	Methods
 	-------
-	__init__(self, pos : tuple)
+	__init__(self, packet)
         Initialize the new OtherPlayer object (HP/equipment etc... may be added)
-    updatePosition(self, pos : tuple)
-        refresh the position field
+    setPosition(self, pos : tuple)
+        refresh the pos fields
+    setAttributes(self, packet)
+        refresh the att fields
+    setEnnemies(self, packet)
+        refresh the ennemies dictionnary
     printOtherPlayer(self)
         the blitting routine of every 3 otherPlayer's characters on the gameScreen
 
     **may be added :
     An update method for every field we decide to add (HP, equipment)
     A "routine" method that use the other methods of the class in a specific order
+    A printing of otherPlayer informations when its characters are clicked
     """
 
-    def __init__(self, packet : str):
+    def __init__(self, packet):
         """Initialize the new OtherPlayer object :
         * fill every field for the first time (only position atm) --> it would be interesting to add team's composition (classes)
         * add this new object to the list (which will be added to the attributes) --> not necessary for 1 otherplayer
@@ -66,21 +80,52 @@ class OtherPlayer:
         self.att3 = read_attributes(liste_str[2][2])
 
         self.enemies = read_enemies_dict(liste_str[2][3])
-        self.items = read_properties_list(liste_str[2][4]) # à voir pour le bag et equipement
+        self.items = read_properties_list(liste_str[2][4]) # a voir pour le bag et equipement
 
+    #----------Refresh otherPlayer's informations methods----------#
 
-    def setPosition(self, pos : tuple):
+    def setPosition(self, packet):
         """Will be used to refresh the position field.
         This method could be used right after receiving a position information packet.
         """
-        self.pos= pos
+        self.pos1 = read_position(liste_str[0][1])
+        self.pos2 = read_position(liste_str[1][1])
+        self.pos3 = read_position(liste_str[2][1])
+
+    def setAttributes(self, packet):
+        self.att1 = read_attributes(liste_str[0][2])
+        self.att2 = read_attributes(liste_str[1][2])
+        self.att3 = read_attributes(liste_str[2][2])
     
+    def setEnnemies(self, packet):
+        self.enemies = read_enemies_dict(liste_str[2][3])
+    
+    #----------All blitting on the game screen methods----------#
+
     def printOtherPlayer(self):
         """To print OtherPlayer's 3 characters on the map.
         As i've not understood how it's done for the main player, i'm not able to do it yet.
         It could be used right after the init, then right after every updatePosition.
         """
         pass
+    
+    #----------Routine method----------#
+
+    def otherPlayRoutine(self):
+        """The only method that will be used in GameScreen.
+        Contain all methods (reading message, extracting informations,refreshing otherPlayer's infos,blitting)
+        in the right order :
+        [from packet.py]
+        * read_packet
+        * extract 
+        [from OtherPlayer.py]
+        * All set methods (refreshing informations)
+        * Blitting methods
+        """
+        pass
+
+
+    #----------Tests----------#
 
 s="PlayerEnum.Rogue//$$//(1,2)//$$//{1:11,2:2,3:3,4:44,5:55,6:65,7:4,8:2}//$$////perso//PlayerEnum.Mage//$$//(22,3)//$$//\
 {1:12,2:22,3:23,4:34,5:5,6:6,7:43,8:21}//$$////perso//PlayerEnum.Rogue//$$//(122,22)//$$//{1:22,2:2,3:3,4:14,5:25,6:75,7:5,8:3}//$$//{100:99,20:88,90:8}//$$//[100,43,63]//$$////perso//"
