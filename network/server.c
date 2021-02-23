@@ -17,7 +17,7 @@
 #define PORT_EXTERNE 5555 
 #define BUF_SIZE 512
 #define NUM_THREADS 3  // #0 interface  Python   #1 server Peer2Peer   #3 init to other server
-#define DEBUG 1
+#define DEBUG 0
 
 
 /// debut du future fichier server.h//////
@@ -142,10 +142,11 @@ void * SendPython(void * StructArg){
     while(1){
 
         for(int i = 0; i<(*arg).data->numberOtherPlayers; i++){
+            sleep(1);
             int n = send((*arg).sockfd,&((*arg).data->OtherPlayers[i]),sizeof(data_player),0);
 
             if(n==-1){
-                printf("problem with send python");
+                printf("problem with send python\n");
                 pthread_exit(NULL);
             }
         }
@@ -205,8 +206,6 @@ void * interfacePython(void * Structdata){
     if(pthread_create(&thread_interface[0],NULL,RecvPython,&arg) != 0) stop("thread_recv_Python");
     if(pthread_create(&thread_interface[1],NULL,SendPython,&arg) != 0) stop("thread_send_Python");
 
-
-
     //wait end of all thread
     for(int t =0; t<numberOfThread;t++){
         pthread_join(thread_interface[t],NULL);
@@ -222,17 +221,17 @@ void * interfacePython(void * Structdata){
 
 void * SendStructMyPlayerInit(void * StructArg){
 
-    sleep(1);
+    sleep(5);
 
     argument * arg = (argument *) StructArg;
 
     
     printf("enter IP of other player :");
     
-    char IP_for_new_connection[16];
+    char IP_for_new_connection[16] = "192.168.1.15";
 
     fflush(stdout);
-    scanf("%[^\n]",IP_for_new_connection);
+    //scanf("%[^\n]",IP_for_new_connection);
     fgetc( stdin );
 
     //printf("IP: %s \n",IP_for_new_connection);
@@ -348,6 +347,8 @@ void * SendSructMyPlayer(void * StructArg){
 
  
     while(1){
+        sleep(1);
+        display_data_player((*arg).data->MyPlayer);
         send(sockfd,&((*arg).data->MyPlayer),sizeof(data_player),0 );
     }
 
@@ -404,7 +405,8 @@ void * serverPeer(void * StrucData){
         printf("\n New player is connected -->  ip : %s & port : %d\n\n",ip_OtherServer,ntohs(OtherServer.sin_port));
 
         int init;
-        int n = recv(new_playerFD,&init,sizeof(int),0);     
+        int n = recv(new_playerFD,&init,sizeof(int),0); 
+        printf("the value init is %i \n",init);    
 
             switch (n)
             {
@@ -488,11 +490,17 @@ int main(int argc, char *argv[]){
         data.OtherPlayers[i].id=i+1;
     }
  */   
-
+ 
     
     if(pthread_create(&threads[0],NULL,interfacePython,&data) != 0) stop("thread_interface_Python");
+
+
     if(pthread_create(&threads[1],NULL,serverPeer,&data) != 0) stop("thread_Server_PeerToPeer");
-    if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&data) != 0) stop("thread_init_Send");
+
+    argument arg;
+    arg.data=&data;
+
+    if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&arg) != 0) stop("thread_init_Send");
 
 
 

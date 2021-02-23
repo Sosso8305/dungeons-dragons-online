@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 
+
 #define SERVER "127.0.0.1"
 #define PORT 1234
 #define BUFSIZE  512
@@ -71,30 +72,34 @@ int main(int argc, char const *argv[])
 
  
 
-    //data_player player ={1,50,70,"toto"};
+    data_player player ={1,50,70,"sosso"};
 
 
+    if(fork() == 0){
 
-while(1){
+        while (1)
+        {   
+            sleep(1);
+            send(sockfd,&player,sizeof(data_player),0);
+        }
+        
 
-/*
-    fflush(stdout);
-    scanf("%[^\n]",buff);
-    send(sockfd,&player,sizeof(data_player),0);
-    fgetc( stdin );
+    }
+    else
+    {
+        while (1)
+        {
+            data_player recvPlayer;
+        int n =recv(sockfd,&recvPlayer,sizeof(data_player),0);
+        if (n == -1)  stop("recv",sockfd);
 
-*/
+        display_data_player(recvPlayer);
+        }
+        
+        
+    }
+    
 
-
-
-    data_player recvPlayer;
-    int n =recv(sockfd,&recvPlayer,sizeof(data_player),0);
-    if (n == -1)  stop("recv",sockfd);
-
-    display_data_player(recvPlayer);
-
-
-}
     close(sockfd);
 
     return 0;
