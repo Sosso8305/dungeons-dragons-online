@@ -103,7 +103,7 @@ class Packet:
         self.equipment2 = self.extract_items_ids(PlayerList[1].equipment)
         self.equipment3 = self.extract_items_ids(PlayerList[2].equipment)
 
-        #self.items = self.extract_items_ids(self.Player1Type1.packetBag.content)
+        self.items = self.extract_items_ids(self.Player1Type1.packetBag.content)
 
 
         self.enemiesHP = None #a changer une fois defini
