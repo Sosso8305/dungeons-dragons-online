@@ -65,10 +65,10 @@ class OtherPlayer:
         self.pos3 = read_position(liste_str[2][1])
         self.att3 = read_attributes(liste_str[2][2])
 
-        self.monsters = read_monsters_dict(liste_str[2][3])
-        self.items = read_properties_list(liste_str[2][4])
+        self.enemies = read_enemies_dict(liste_str[2][3])
+        self.items = read_properties_list(liste_str[2][4]) # à voir pour le bag et equipement
 
-    
+
     def setPosition(self, pos : tuple):
         """Will be used to refresh the position field.
         This method could be used right after receiving a position information packet.
@@ -88,4 +88,4 @@ s="PlayerEnum.Rogue//$$//(1,2)//$$//{1:11,2:2,3:3,4:44,5:55,6:65,7:4,8:2}//$$///
 o = OtherPlayer(s)
 print(o.type1,o.pos1,o.att1)
 print(o.type2,o.pos2,o.att2)
-print(o.type3,o.pos3,o.att3,o.monsters,o.items)
+print(o.type3,o.pos3,o.att3,o.enemies,o.items)

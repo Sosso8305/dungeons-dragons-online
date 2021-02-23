@@ -56,7 +56,7 @@ def read_attributes(att_str):
     return int(l[0]),int(l[1]),int(l[2]),int(l[3]),int(l[4]) \
         ,int(l[5]) ,int(l[6]) ,int(l[7])  
 
-def read_monsters_dict(dict_str):
+def read_enemies_dict(dict_str):
     """
         this function is used to extract the dictionnary of monsters (affected by the player) from the received string packet
     """
@@ -74,7 +74,7 @@ def read_properties_list(list_str):
     """
         this function is used to extract the list of properties' ids (the player's properties)
     """
-
+    #it should read items in bag and see those equiped and not in the bag 
     items_list_str = list_str.split(",")
     items_list_str[0] = items_list_str[0][1:]
     items_list_str[len(items_list_str) - 1] = items_list_str[len(items_list_str) - 1][:len(items_list_str[len(items_list_str) - 1]) - 1]
@@ -85,7 +85,7 @@ def read_properties_list(list_str):
 
 class Packet:
     def __init__(self, PlayerList = [Player]):
-        PlayerList = []
+        PlayerList = [None,None,None]
         self.Player1Type1 = PlayerList[0]
         self.Player1Type2 = PlayerList[1] #a changer voir zineb #done Chris
         self.Player1Type3 = PlayerList[2] #a changer voir zineb
