@@ -36,6 +36,7 @@ typedef struct
     data_player MyPlayer;       //struct data myplayer
     int numberOtherPlayers;     //number other Player for tab dynamique
     data_player * OtherPlayers; //tab data of all player
+    int InterfaceConnected; 
 
 }all_data;
 
@@ -44,7 +45,7 @@ typedef struct argument
     all_data * data;
     int sockfd;
     char * ip;
-    int init;  
+    int init;
     
 }argument;
 
@@ -193,6 +194,8 @@ void * interfacePython(void * Structdata){
     inet_ntop(AF_INET,&client_python.sin_addr,ip_python,sizeof(ip_python));
 
     printf("Interface Python Connected  -->  ip : %s & port : %d\n\n", ip_python, ntohs(client_python.sin_port));
+    data->InterfaceConnected=1;
+
 
     argument arg;
     arg.data = data;
@@ -221,17 +224,16 @@ void * interfacePython(void * Structdata){
 
 void * SendStructMyPlayerInit(void * StructArg){
 
-    sleep(5);
-
+    sleep(0.5);
     argument * arg = (argument *) StructArg;
 
     
     printf("enter IP of other player :");
     
-    char IP_for_new_connection[16] = "192.168.1.15";
+    char IP_for_new_connection[16];
 
     fflush(stdout);
-    //scanf("%[^\n]",IP_for_new_connection);
+    scanf("%[^\n]",IP_for_new_connection);
     fgetc( stdin );
 
     //printf("IP: %s \n",IP_for_new_connection);
@@ -348,7 +350,6 @@ void * SendSructMyPlayer(void * StructArg){
  
     while(1){
         sleep(1);
-        display_data_player((*arg).data->MyPlayer);
         send(sockfd,&((*arg).data->MyPlayer),sizeof(data_player),0 );
     }
 
@@ -491,15 +492,18 @@ int main(int argc, char *argv[]){
     }
  */   
  
-    
+    data.InterfaceConnected = 0;
     if(pthread_create(&threads[0],NULL,interfacePython,&data) != 0) stop("thread_interface_Python");
+
+    while(1){
+        if(data.InterfaceConnected) break;   // wait until one Interface Python is connected 
+    }
 
 
     if(pthread_create(&threads[1],NULL,serverPeer,&data) != 0) stop("thread_Server_PeerToPeer");
 
     argument arg;
     arg.data=&data;
-
     if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&arg) != 0) stop("thread_init_Send");
 
 
