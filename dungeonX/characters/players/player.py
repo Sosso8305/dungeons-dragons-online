@@ -32,9 +32,10 @@ class Player(Character) :
         self.level = 1
         self.exp = 0
         self._bag = self.game.inventorywindow.bag
+        self.packetBag=self._bag
         self.name = PLAYERNAME
         self._playerType = playerType
-        self.PlayerType= playerType
+        self.PlayerType= self._playerType
         self.lineOfSightRadius = lineOfSightRadius
         self.normalLoSRadius = lineOfSightRadius
         self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring

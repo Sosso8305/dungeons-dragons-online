@@ -97,20 +97,18 @@ class Packet:
 
         self.attributes1 = PlayerList[0].stats
         self.attributes2 = PlayerList[1].stats
-        self.attributes3 = PlayerList[2].stats
-
-        #self.propertyBag = self.extract_items_ids(player._bag._content) 
+        self.attributes3 = PlayerList[2].stats 
 
         self.equipment1 = self.extract_items_ids(PlayerList[0].equipment)
         self.equipment2 = self.extract_items_ids(PlayerList[1].equipment)
         self.equipment3 = self.extract_items_ids(PlayerList[2].equipment)
 
+        #self.items = self.extract_items_ids(self.Player1Type1.packetBag.content)
+
 
         self.enemiesHP = None #a changer une fois defini
         # un dictionnaire vide 
         #on va ajouter cet attribut a la classe player et ce dictionnaire serait rempli a chaque attaque
-        #self.monsters_capacity2 = None
-        #self.monsters_capacity3 = None
 
         self.list1 = [self.type1,self.pos1,self.attributes1,self.equipment1]
         self.list2 = [self.type2,self.pos2,self.attributes2,self.equipment2]
