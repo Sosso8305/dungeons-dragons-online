@@ -27,6 +27,7 @@ class Character :
             Attributes.Wisdom: wis, 
             Attributes.Cha: cha
         }
+        self.stats=(HP,armor, strength, dex, con, intell, wis, cha)
         self.ID = Character.ID
         Character.ID += 1
         self.maxHP = HP
