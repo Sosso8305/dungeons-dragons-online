@@ -58,7 +58,7 @@ class OtherPlayer:
     A printing of otherPlayer informations when its characters are clicked
     """
 
-    def __init__(self, packet):
+    def __init__(self, packet, game):
         """Initialize the new OtherPlayer object :
         * fill every field for the first time (only position atm) --> it would be interesting to add team's composition (classes)
         * add this new object to the list (which will be added to the attributes) --> not necessary for 1 otherplayer
@@ -81,6 +81,19 @@ class OtherPlayer:
 
         self.enemies = read_enemies_dict(liste_str[2][3])
         self.items = read_properties_list(liste_str[2][4]) # a voir pour le bag et equipement
+
+        #Initialisation des variables pour l'affichage des personnages
+        """self.animationSpeed = {'idle': 120, 'run': 100} # in milliseconds
+        self.game=game
+        self.rect = pygame.Rect((0,0), (TILE_WIDTH, math.floor(TILE_WIDTH*24/16)))
+        self.rect.midbottom = posToVect(pos) + (TILE_WIDTH/2, TILE_WIDTH)
+        self.state = 'idle'
+        self.direction = 0
+        self._type = type"""
+        #On load les images qui vont ztre utilisees 
+        #et on affiche une premiere fois les personnages sur la map
+
+
 
     #----------Refresh otherPlayer's informations methods----------#
 
@@ -113,7 +126,7 @@ class OtherPlayer:
 
     def otherPlayRoutine(self):
         """The only method that will be used in GameScreen.
-        Contain all methods (reading message, extracting informations,refreshing otherPlayer's infos,blitting)
+        Contains all methods (reading message, extracting informations,refreshing otherPlayer's infos,blitting)
         in the right order :
         [from packet.py]
         * read_packet
