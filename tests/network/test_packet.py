@@ -1,6 +1,6 @@
 from dungeonX.characters.players import Player, Fighter, Mage, Rogue, PlayerEnum
 from dungeonX.characters.skills import Skill, SkillFactory, SkillEnum
-from network.packet import Packet,extract
+from network.packet import Packet,read_packet,read_position,read_attributes,read_enemies_dict,read_list
 from dungeonX import Game
 
 
@@ -28,3 +28,11 @@ def testPacketCreation():
     print(packet.create_packet())
     assert packet.create_packet() == "PlayerEnum.Rogue//$$//(0, 0)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//PlayerEnum.Mage//$$//(1, 2)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//PlayerEnum.Fighter//$$//(3, 4)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$//None//$$////perso//" 
                      
+def testPacketReadAndExtract():
+    packet =Packet(players)
+    liste = read_packet(packet.create_packet())
+    assert liste == [["PlayerEnum.Rogue","(0, 0)","(100, 7, 2, 3, 4, 5, 6, 7)","[]"],["PlayerEnum.Mage","(1, 2)","(100, 7, 2, 3, 4, 5, 6, 7)","[]"],["PlayerEnum.Fighter","(3, 4)","(100, 7, 2, 3, 4, 5, 6, 7)","[]","None"]]
+    assert read_position(liste[0][1]) == (0,0)
+    assert type(read_position(liste[0][1])) == tuple
+    assert read_attributes(liste[0][2]) == (100,7,2,3,4,5,6,7)
+    #TODO: test read_ennemies_dict and read_list
