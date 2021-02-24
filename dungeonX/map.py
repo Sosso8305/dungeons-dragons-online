@@ -227,6 +227,9 @@ class Map:
 		7. Spawn some objects on the dead ends.
 		"""
 
+		SEED = random.randint(0,10000) # bougera plus tard dans la partie de création de game multijoueur
+		random.seed(SEED)
+
 		# Fill the map with void (' ')
 		self._data = [[' ' for _ in range(self.width)] for _ in range(self.height)]
 		centers = []
