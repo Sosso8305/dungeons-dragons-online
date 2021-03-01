@@ -175,7 +175,6 @@ void * SendStructMyPlayerInit(void * StructArg){
     scanf("%[^\n]",IP_for_new_connection);
     fgetc( stdin );
 
-    //printf("IP: %s \n",IP_for_new_connection);
 
     int number_thread =1;
     pthread_t  ID_threads[number_thread];
@@ -283,7 +282,6 @@ void * SendSructMyPlayer(void * StructArg){
     printf("This connection is success \n");
 
     int init = (*arg).init;
-    //int init = 0; // it's not init connection
     send(sockfd,&init,sizeof(int),0);
 
  
@@ -425,11 +423,6 @@ int main(int argc, char *argv[]){
     data.numberOtherPlayers = 0;
     data.OtherPlayers = malloc( data.numberOtherPlayers*sizeof(data_player) );
 
-/* test for  fct sendPython
-    for (int i =0; i<data.numberOtherPlayers;i++){
-        data.OtherPlayers[i].id=i+1;
-    }
- */   
  
     data.InterfaceConnected = 0;
     if(pthread_create(&threads[0],NULL,interfacePython,&data) != 0) stop("thread_interface_Python");
