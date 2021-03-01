@@ -8,7 +8,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <pthread.h>
-//#include <server.h>
+#include "server.h"
 
 
 
@@ -20,50 +20,6 @@
 #define DEBUG 0
 
 
-/// debut du future fichier server.h//////
-typedef struct   // struct for one player  
-{
-    int id;   //essential element 
-    int x;
-    int y;
-    char name[5];
-
-}data_player;
-
-
-typedef struct 
-{
-    data_player MyPlayer;       //struct data myplayer
-    int numberOtherPlayers;     //number other Player for tab dynamique
-    data_player * OtherPlayers; //tab data of all player
-    int InterfaceConnected; 
-
-}all_data;
-
-typedef struct argument
-{
-    all_data * data;
-    int sockfd;
-    char * ip;
-    int init;
-    
-}argument;
-
-
-void display_data_player (data_player player);
-void stop(char *msg);
-
-void * RecvPython(void * StructArg);
-void * SendPython(void * StructArg);
-void * interfacePython(void * Structdata);
-
-void * SendStructMyPlayerInit(void * StructArg);
-void * RecevStuctOneOtherPlayer(void * StructArg);
-void * SendSructMyPlayer(void * StructArg);
-void * serverPeer(void * StrucData);
-
-
-//// end fichier server.h/////
 
 
 void display_data_player (data_player player){    // fct for help to debug
@@ -85,23 +41,6 @@ void stop(char *msg)
 }
 
 
-
-/*    // fct de reallocation  
-void alloc_OtherPlayer(all_data * data){
-    data_player * tmp = realloc(data->OtherPlayers,data->numberOtherPlayers * sizeof(data_player));
-    
-    if(!tmp){
-        free(data->OtherPlayers);
-        stop("realloc is null\n");
-    }
-    else
-    {
-        data->OtherPlayers=tmp;
-    }
-    
-    
-}
-*/
 
 
 void * RecvPython(void * StructArg){
