@@ -1,0 +1,165 @@
+import pygame,math,os,random
+from dungeonX.network.packet import read_position, read_attributes,read_type, read_mod
+from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT
+from dungeonX.characters.character import Character
+from ..map import Map
+
+
+def vectToPos(vect):
+    if type(vect) in (tuple, list):
+        if len(vect)!=2:
+            raise ValueError("invalid vector : "+str(vect))
+        return (math.floor(vect[0]/TILE_WIDTH), math.floor(vect[1]/TILE_WIDTH))
+    return (math.floor(vect.x/TILE_WIDTH), math.floor(vect.y/TILE_WIDTH))
+
+def posToVect(pos):
+    return pygame.Vector2(pos)*TILE_WIDTH
+
+class OtherPlayer2(Character):
+
+    def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
+        print("Player created")
+        self.type = read_type(liste_str[0])
+        self.mod = read_mod(liste_str[0])
+        self.pos = read_position(liste_str[1])
+        self.att = read_attributes(liste_str[2])
+
+        self.timeToMove = 300
+        self.animationSpeed = {'idle': 120, 'run': 100}
+        self.rect = pygame.Rect((0,0), (TILE_WIDTH, math.floor(TILE_WIDTH*24/16)))
+        self.rect.midbottom = posToVect(self.pos) + (TILE_WIDTH/2, TILE_WIDTH)
+        self.state = 'idle'
+        self.direction = 0
+        self.currentTarget = None
+        self.finalTarget    = None
+        self.stepsToTarget  = None
+
+         # Load all frames
+        self.images = dict()
+        for state in ('idle', 'run'):
+            self.images[state] = [[], []]
+            for i in range(4):
+                if os.path.isfile("dungeonX/assets/characters/" + '_'.join([self.mod, state, 'f'+str(i)]) + ".png"):
+                    img = pygame.image.load("dungeonX/assets/characters/" + '_'.join([self.mod, state, 'f'+str(i)]) + ".png").convert()
+                else:
+                    print("Warning: Missing texture \"dungeonX/assets/characters/" + '_'.join([self.mod, state, 'f'+str(i)]) + ".png\"")
+                    img = pygame.image.load("dungeonX/assets/missing.png").convert()
+                img.set_colorkey((0,0,0))
+                self.images[state][0].append(img)
+                self.images[state][1].append(pygame.transform.flip(img, True, False))
+
+        self.positions = None
+        self.frames = self.frameIter()
+        self._dt = 0
+        self.image = next(self.frames)
+        self.game = game
+        self.actionPoint = actionPointMax
+
+    def __getstate__(self):
+        d = dict(serializeSurf(self.__dict__))
+        del d["positions"]
+        del d["frames"]
+        return d
+
+    def __setstate__(self, state):
+        state["positions"] = None
+        state["frames"] = self.frameIter()
+        self.__dict__ = unserializeSurf(state)
+
+    def nextTarget(self):
+        """ This method handles iteration through stepsToTarget
+
+        It also computes the direction based on the next movement
+        along X.
+        """
+        if self.stepsToTarget:
+            t = self.stepsToTarget.pop(0)
+            self.currentTarget = pygame.Vector2(t[0]+0.5, t[1]+1)*TILE_WIDTH
+            movementX = self.currentTarget.x - posToVect(self.pos).x
+            self.direction = 0 if movementX > 0 else 1 if movementX < 0 else self.direction
+            self.pos = t
+        else:
+            print("ELSE")
+            self.stepsToTarget = None
+            self.currentTarget = None
+            self.finalTarget = None
+
+    def positionsIter(self):
+        """ This iterator go through every absolute positions that may be
+        taken by the player.
+        """
+        elapsedTime = 0
+        while (elapsedTime < self.timeToMove):
+            print("Elapsed time\n",elapsedTime,self._dt)
+            yield pygame.Vector2(self.rect.midbottom).lerp(self.currentTarget, elapsedTime / self.timeToMove)
+            elapsedTime += self._dt
+            print("Elapsed time 1\n",elapsedTime)
+        yield self.currentTarget
+
+
+    def frameIter(self):
+        """ This iterator go througn every frames that may be rendered,
+        based on current state and animationSpeed.
+        """
+        print("frameIter")
+        elapsedTime = 0
+        frame = random.randint(0, len(self.images[self.state][self.direction])-1)
+        while True:
+            elapsedTime += self._dt
+
+            if elapsedTime > self.animationSpeed[self.state]:
+                elapsedTime = 0
+                frame += 1
+
+            if frame>len(self.images[self.state]):
+                frame=0
+            yield self.images[self.state][self.direction][frame]
+
+    def setTarget(self, target:tuple):
+        """ Setter for finalTarget """
+        self.stepsToTarget = self.pathfind(target)
+        print("self.steps\n",self.stepsToTarget)
+        if self.stepsToTarget:
+            self.finalTarget = target            
+            if not self.currentTarget:
+                self.nextTarget()
+
+
+    def updateAnim(self, dt:int):
+        """ Updates the frame that may be rendered.
+
+        This method must be
+        called at every loop turn if the player is within the camera
+        scope.
+        """
+        self._dt = dt # Stored for future use (in positionsIter and frameIter)
+        self.image = next(self.frames)
+
+    def playAction(self,dt:int,tup):
+        # a = self.pos[0]
+        # b = self.pos[1]
+        # self.pos = (a+2,b-2)
+        # self.rect.midbottom = posToVect(self.pos) + (TILE_WIDTH/2, TILE_WIDTH)
+
+        # self.setTarget(Map.vectToPos((tup[0], tup[1])))
+        self.setTarget(tup)
+        if self.currentTarget:
+            self.state = 'run'
+
+            print("SELF.POSITIONS\n",self.positions)
+            if not self.positions:
+                print("IFFFFFFFFFFFFFFFFFFFFFFF")
+                self.positions = self.positionsIter()
+
+            try:
+                self.rect.midbottom = next(self.positions)
+
+            except StopIteration:
+                print('erreur playaction')
+                self.state = 'idle'
+                self.positions = None
+                self.nextTarget()
+        else:
+            print("IDLE")
+            self.state = 'idle'
+        return self.state
