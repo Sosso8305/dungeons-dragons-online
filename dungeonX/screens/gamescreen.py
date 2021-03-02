@@ -482,7 +482,7 @@ class GameScreen(Window):
 				l1 = self.oplayers[1]._move_zone()
 				if len(l):
 					self.oplayers[0].playAction(self.game.dt,l[0])
-				if len(l1):
+				if len(l1) > 1:
 					self.oplayers[1].playAction(self.game.dt,l1[1])
 		except TypeError as e:
 			print(str(e))
