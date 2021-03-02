@@ -1,5 +1,5 @@
 from dungeonX.characters.players.player import Player, PlayerEnum
-from dungeonX.game import Game
+#from dungeonX.game import Game
 
 def extract(packet_str,code):
     """ 
@@ -41,6 +41,24 @@ def read_position(position_str):
     """
     position_list = position_str.split(",")
     return int(position_list[0][1:]),int(position_list[1][:len(position_list[1])-1])  
+
+def read_type(type_str):
+    """
+        this function convert the str to the right type
+    """
+
+    if type_str == 'PlayerEnum.Rogue':
+        return PlayerEnum.Rogue
+    elif type_str == 'PlayerEnum.Fighter':
+        return PlayerEnum.Fighter
+    return PlayerEnum.Rogue
+
+def read_mod(type_str):
+    if type_str == 'PlayerEnum.Rogue':
+        return 'lizard_m'
+    elif type_str == 'PlayerEnum.Fighter':
+        return 'knight_m'
+    return 'wizzard_m'
 
 def read_attributes(att_str):
     """
