@@ -1,11 +1,9 @@
-
+#define SIZE_DATA_PY 20
 
 typedef struct   // struct for one player  
 {
     int id;   //essential element 
-    int x;
-    int y;
-    char name[5];
+    char dataPython[SIZE_DATA_PY];
 
 }data_player;
 

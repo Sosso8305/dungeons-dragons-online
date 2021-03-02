@@ -22,13 +22,12 @@
 
 
 
+
 void display_data_player (data_player player){    // fct for help to debug
     printf("=========================\n");
     printf("ID = %i\n",player.id);
-    printf("X = %i\n",player.x);
-    printf("Y = %i\n",player.y);
-    player.name[5]='\0';
-    printf("name = %s\n",player.name);
+    player.dataPython[20]='\0';
+    printf("name = %s\n",player.dataPython);
     printf("=========================\n\n");
 
 }
@@ -50,7 +49,7 @@ void * RecvPython(void * StructArg){
 
     while(1){
 
-        int n = recv((*arg).sockfd,&((*arg).data->MyPlayer),sizeof(data_player),0);     ///modif pour prendre l'ensemble de la struct myPlayer
+        int n = recv((*arg).sockfd,&((*arg).data->MyPlayer.dataPython),sizeof(SIZE_DATA_PY),0);  
 
         switch (n)
         {
@@ -83,7 +82,7 @@ void * SendPython(void * StructArg){
 
         for(int i = 0; i<(*arg).data->numberOtherPlayers; i++){
             sleep(1);
-            int n = send((*arg).sockfd,&((*arg).data->OtherPlayers[i]),sizeof(data_player),0);
+            int n = send((*arg).sockfd,&((*arg).data->OtherPlayers[i].dataPython),sizeof(SIZE_DATA_PY),0);
 
             if(n==-1){
                 printf("problem with send python\n");
@@ -267,7 +266,7 @@ void * RecevStuctOneOtherPlayer(void * StructArg){
         {
             for (int i=0; i<(*arg).data->numberOtherPlayers; i++){
                 if((*arg).data->OtherPlayers[i].id == MyID){
-                    memcpy(&((*arg).data->OtherPlayers[i]),&new_player,sizeof(data_player));
+                    memcpy(&((*arg).data->OtherPlayers[i].dataPython),&new_player.dataPython,sizeof(SIZE_DATA_PY));
                     break;
                 }
             }
@@ -447,6 +446,8 @@ int main(int argc, char *argv[]){
 
     data.numberOtherPlayers = 0;
     data.OtherPlayers = malloc( data.numberOtherPlayers*sizeof(data_player) );
+
+    data.MyPlayer.id= getpid();
 
  
     data.InterfaceConnected = 0;
