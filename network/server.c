@@ -161,9 +161,9 @@ void * interfacePython(void * Structdata){
 }
 
 
-void * SendStructMyPlayerInit(void * StructArg){
+void * SendStructMyPlayerInit(void * StructArg){ // function init use with a shell for enter the IP other Player 
 
-    sleep(0.5);
+    
     argument * arg = (argument *) StructArg;
 
     
@@ -182,6 +182,31 @@ void * SendStructMyPlayerInit(void * StructArg){
     argument arg1;
     arg1.data= (* arg).data;
     arg1.ip=IP_for_new_connection;
+    arg1.init=1;
+
+    if(pthread_create(&ID_threads[0],NULL,SendSructMyPlayer,&arg1) != 0 ) stop("thread struc player in init");
+
+
+    for(int t =0; t<number_thread;t++){
+        pthread_join(ID_threads[t],NULL);
+
+    }
+
+    pthread_exit(NULL);
+
+}
+
+void * SendStructMyPlayerInitARG(void * StructArg){ // function init use with on IP argument 
+
+
+    argument * arg = (argument *) StructArg;
+
+    int number_thread =1;
+    pthread_t  ID_threads[number_thread];
+
+    argument arg1;
+    arg1.data= (* arg).data;
+    arg1.ip=(* arg).ip;
     arg1.init=1;
 
     if(pthread_create(&ID_threads[0],NULL,SendSructMyPlayer,&arg1) != 0 ) stop("thread struc player in init");
@@ -434,10 +459,18 @@ int main(int argc, char *argv[]){
 
     if(pthread_create(&threads[1],NULL,serverPeer,&data) != 0) stop("thread_Server_PeerToPeer");
 
-    argument arg;
-    arg.data=&data;
-    if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&arg) != 0) stop("thread_init_Send");
-
+    if(argc<2){
+        argument arg;
+        arg.data=&data;
+        if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&arg) != 0) stop("thread_init_Send_shell");
+    }
+    else{
+        argument arg;
+        arg.data=&data;
+        arg.ip= argv[1];
+        if(pthread_create(&threads[2],NULL,SendStructMyPlayerInitARG,&arg) != 0) stop("thread_init_Send_ARGV");
+    }
+    
 
 
 

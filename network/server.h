@@ -39,3 +39,4 @@ void * SendStructMyPlayerInit(void * StructArg);
 void * RecevStuctOneOtherPlayer(void * StructArg);
 void * SendSructMyPlayer(void * StructArg);
 void * serverPeer(void * StrucData);
+void * SendStructMyPlayerInitARG(void * StructArg);
