@@ -30,26 +30,24 @@ void stop(char* msg,int FD){
 	exit(EXIT_FAILURE);
 	
 }
+#define SIZE_DATA_PY 20
 
 typedef struct   // struct for one player  
 {
-    int id;
-    int x;
-    int y;
-    char name[5];
+    int id;   //essential element 
+    char dataPython[SIZE_DATA_PY];
 
 }data_player;
 
 void display_data_player (data_player player){    // fct for help to debug
     printf("=========================\n");
-    printf("ID = %i\n",player.id);
-    printf("X = %i\n",player.x);
-    printf("Y = %i\n",player.y);
-    player.name[5]='\0';
-    printf("name = %s\n",player.name);
+    //printf("ID = %i\n",player.id);
+    player.dataPython[SIZE_DATA_PY]='\0';
+    printf("Data = %s\n",player.dataPython);
     printf("=========================\n\n");
 
 }
+
 
 
 
@@ -72,7 +70,7 @@ int main(int argc, char const *argv[])
 
  
 
-    data_player player ={1,50,70,"sosso"};
+    data_player player ={0,"sosso"};
 
 
     if(fork() == 0){
@@ -80,7 +78,7 @@ int main(int argc, char const *argv[])
         while (1)
         {   
             sleep(1);
-            send(sockfd,&player,sizeof(data_player),0);
+            send(sockfd,&player.dataPython,sizeof(char)*SIZE_DATA_PY,0);
         }
         
 
@@ -90,7 +88,7 @@ int main(int argc, char const *argv[])
         while (1)
         {
             data_player recvPlayer;
-        int n =recv(sockfd,&recvPlayer,sizeof(data_player),0);
+        int n =recv(sockfd,&recvPlayer.dataPython,sizeof(char)*SIZE_DATA_PY,0);
         if (n == -1)  stop("recv",sockfd);
 
         display_data_player(recvPlayer);

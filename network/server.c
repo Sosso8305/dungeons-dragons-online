@@ -26,7 +26,7 @@
 void display_data_player (data_player player){    // fct for help to debug
     printf("=========================\n");
     printf("ID = %i\n",player.id);
-    player.dataPython[20]='\0';
+    player.dataPython[SIZE_DATA_PY]='\0';
     printf("name = %s\n",player.dataPython);
     printf("=========================\n\n");
 
@@ -49,7 +49,7 @@ void * RecvPython(void * StructArg){
 
     while(1){
 
-        int n = recv((*arg).sockfd,&((*arg).data->MyPlayer.dataPython),sizeof(SIZE_DATA_PY),0);  
+        int n = recv((*arg).sockfd,&((*arg).data->MyPlayer.dataPython),SIZE_DATA_PY*sizeof(char),0);  
 
         switch (n)
         {
@@ -82,7 +82,7 @@ void * SendPython(void * StructArg){
 
         for(int i = 0; i<(*arg).data->numberOtherPlayers; i++){
             sleep(1);
-            int n = send((*arg).sockfd,&((*arg).data->OtherPlayers[i].dataPython),sizeof(SIZE_DATA_PY),0);
+            int n = send((*arg).sockfd,&((*arg).data->OtherPlayers[i].dataPython),SIZE_DATA_PY*sizeof(char),0);
 
             if(n==-1){
                 printf("problem with send python\n");
