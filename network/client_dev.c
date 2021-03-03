@@ -11,7 +11,7 @@
 
 
 #define SERVER "127.0.0.1"
-#define PORT 1234
+
 #define BUFSIZE  512
 #define NAMESIZE 10
 
@@ -54,7 +54,9 @@ void display_data_player (data_player player){    // fct for help to debug
 
 int main(int argc, char const *argv[])
 {
-    
+    int port;
+    sscanf(argv[1],"%d",&port);
+
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) stop("socket",sockfd);
     struct sockaddr_in serv_addr;
@@ -63,7 +65,7 @@ int main(int argc, char const *argv[])
     bzero(&serv_addr,sizeof(serv_addr));
 	serv_addr.sin_family = AF_INET;
     inet_aton(SERVER,&serv_addr.sin_addr);
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_port = htons(port);
     
    
     if (connect(sockfd,(const struct sockaddr *)&serv_addr,(socklen_t )len) < 0) stop("Connect",sockfd);

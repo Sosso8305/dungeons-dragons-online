@@ -13,18 +13,28 @@ typedef struct
     data_player MyPlayer;       //struct data myplayer
     int numberOtherPlayers;     //number other Player for tab dynamique
     data_player * OtherPlayers; //tab data of all player
-    int InterfaceConnected;  
+    int InterfaceConnected;
+    int port_Server;
+    int port_Interface;
 
 }all_data;
 
-typedef struct argument
+typedef struct
 {
     all_data * data;
     int sockfd;
     char * ip;
-    int init;  
+    int init;
+    int port_dest;  
     
 }argument;
+
+typedef struct 
+{
+    char * ip;
+    int port;
+} socketBSD;
+
 
 void display_data_player (data_player player);
 void stop(char *msg);
