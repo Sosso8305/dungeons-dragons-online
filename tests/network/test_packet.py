@@ -1,6 +1,6 @@
 from dungeonX.characters.players import Player, Fighter, Mage, Rogue, PlayerEnum
 from dungeonX.characters.skills import Skill, SkillFactory, SkillEnum
-from dungeonX.network.packet import Packet,read_packet,read_position,read_attributes,read_enemies_dict,read_list,read_type
+from dungeonX.network.packet import Packet,extract, read_id, read_type, read_position, read_attributes
 from dungeonX import Game
 
 
@@ -26,14 +26,17 @@ players = [player1,player2,player3]
 def testPacketCreation():
     packet = Packet(players)
     print(packet.create_packet())
-    assert packet.create_packet() == "PlayerEnum.Rogue//$$//(0, 0)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//PlayerEnum.Mage//$$//(1, 2)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$////perso//PlayerEnum.Fighter//$$//(3, 4)//$$//(100, 7, 2, 3, 4, 5, 6, 7)//$$//[]//$$//None//$$////perso//" 
+    n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
+    assert packet.create_packet() == n1+"ID00PlayerEnum.Rogue000(0, 0)00000(100, 7, 2, 3, 4, 5, 6, 7)0000000"+n2+"ID00PlayerEnum.Mage0000(1, 2)00000(100, 7, 2, 3, 4, 5, 6, 7)0000000"+n3+"ID00PlayerEnum.Fighter0(3, 4)00000(100, 7, 2, 3, 4, 5, 6, 7)0000000" 
                      
 def testPacketReadAndExtract():
     packet =Packet(players)
-    liste = read_packet(packet.create_packet())
-    assert liste == [["PlayerEnum.Rogue","(0, 0)","(100, 7, 2, 3, 4, 5, 6, 7)","[]"],["PlayerEnum.Mage","(1, 2)","(100, 7, 2, 3, 4, 5, 6, 7)","[]"],["PlayerEnum.Fighter","(3, 4)","(100, 7, 2, 3, 4, 5, 6, 7)","[]","None"]]
-    assert read_position(liste[0][1]) == (0,0)
-    assert type(read_position(liste[0][1])) == tuple
-    assert read_attributes(liste[0][2]) == (100,7,2,3,4,5,6,7)
-    assert read_type(liste[0][0]) == PlayerEnum.Rogue
-    #TODO: test read_ennemies_dict and read_list
+    n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
+    liste = extract(packet.create_packet())
+    assert liste == [[n1+"ID00","PlayerEnum.Rogue000","(0, 0)00000","(100, 7, 2, 3, 4, 5, 6, 7)0000000"],[n2+"ID00","PlayerEnum.Mage0000","(1, 2)00000","(100, 7, 2, 3, 4, 5, 6, 7)0000000"],[n3+"ID00","PlayerEnum.Fighter0","(3, 4)00000","(100, 7, 2, 3, 4, 5, 6, 7)0000000"]]
+    assert read_id(liste[0][0]) == int(n1)
+    assert read_type(liste[0][1]) == PlayerEnum.Rogue
+    assert read_position(liste[0][2]) == (0,0)
+    assert type(read_position(liste[0][2])) == tuple
+    assert read_attributes(liste[0][3]) == (100,7,2,3,4,5,6,7)
+
