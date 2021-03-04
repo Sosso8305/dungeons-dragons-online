@@ -32,7 +32,7 @@ class Player(Character) :
         self.level = 1
         self.exp = 0
         self._bag = self.game.inventorywindow.bag
-        self.packetBag=self._bag
+        #self.packetBag=self._bag
         self.name = PLAYERNAME
         self._playerType = playerType
         self.PlayerType= self._playerType
@@ -87,6 +87,7 @@ class Player(Character) :
         desc  : unequip an item and handle the according modification of stats
         @item : Item
         """
+
         if item not in self.equipment:
             print("Item not equipped")
             return

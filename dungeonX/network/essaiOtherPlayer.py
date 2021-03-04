@@ -1,5 +1,5 @@
 import pygame,math,os,random
-from dungeonX.network.packet import read_position, read_attributes,read_type, read_mod
+from dungeonX.network.message import read_position, read_attributes,read_type, read_mod
 from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT
 from dungeonX.characters.character import Character
 from ..map import Map
@@ -19,10 +19,16 @@ class OtherPlayer2(Character):
 
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
         print("Player created")
+        super().__init__(game,read_position(liste_str[1]), actionPointMax,*read_attributes(liste_str[2])) #( HP, armor, strength, dex, con, intell, wis, cha )
+
         self.type = read_type(liste_str[0])
         self.mod = read_mod(liste_str[0])
         self.pos = read_position(liste_str[1])
         self.att = read_attributes(liste_str[2])
+
+        self.equipment = [None, None, None, None, None]
+
+
 
         self.timeToMove = 300
         self.animationSpeed = {'idle': 120, 'run': 100}
@@ -54,6 +60,7 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
+        self._bag=self.MessageBag
 
     def __getstate__(self):
         d = dict(serializeSurf(self.__dict__))
