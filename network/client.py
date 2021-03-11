@@ -3,7 +3,7 @@ import threading
 
 
 class NetworkSend(threading.Thread) :
-    def __init__(self, ip, port) :
+    def __init__(self, ip, port, msg) :
         threading.Thread.__init__(self)
 
         self._stop_event = threading.Event()
@@ -14,7 +14,8 @@ class NetworkSend(threading.Thread) :
     def run(self) :
         self.stopped = False
         while(1):
-            message = input().encode("utf-8")
+            #message = input().encode("utf-8")
+            message = msg.encode("utf-8")
             if self.stopped :
                 break
             self.s.send(message)
@@ -23,12 +24,14 @@ class NetworkSend(threading.Thread) :
         self.stopped=True
 
 
+port=input("numéro de port?")
+msg=input("data-->").ljust(20,' ') #padding avec le caractére espace
 
-c = NetworkSend("127.0.0.1",1234)
+c = NetworkSend("127.0.0.1",int(port),msg)
 c.start()
 
 while(1) :
-    data = c.s.recv(1024).decode("utf-8")
+    data = c.s.recv(20).decode("utf-8")
     if not data :
         print("Connection lost, press ENTER to exit")
         break
