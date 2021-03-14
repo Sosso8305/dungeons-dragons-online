@@ -2,7 +2,7 @@ from dungeonX.characters.players.player import Player, PlayerEnum
 from dungeonX.characters.enemies.enemy import Enemy
 #from dungeonX.game import Game
 
-#To modify, for the moment it indicates the maximum size of: ID, PlayerType, Position,Attributes, HP (defined as strings)
+#To modify, for the moment it indicates the maximum size of: ID, PlayerType, Position,Attributes, HP (defined as strings, the sizes' list depends on the flag)
 MESSAGE_SIZE_MAX = {0 : [7,19,11,33], 1: [7,11], 2: [7,5,7,5]}
 
 def get_character(List, ID):
@@ -95,14 +95,16 @@ def read_type(type_str):
         return PlayerEnum.Rogue
     elif get(type_str,'0') == 'PlayerEnum.Fighter':
         return PlayerEnum.Fighter
-    return PlayerEnum.Rogue
+    elif get(type_str,'0') == 'PlayerEnum.Mage':
+        return PlayerEnum.Mage
 
 def read_mod(type_str):
-    if type_str == 'PlayerEnum.Rogue':
+    if get(type_str,'0') == 'PlayerEnum.Rogue':
         return 'lizard_m'
-    elif type_str == 'PlayerEnum.Fighter':
+    elif get(type_str,'0') == 'PlayerEnum.Fighter':
         return 'knight_m'
-    return 'wizzard_m'
+    elif get(type_str,'0') == 'PlayerEnum.Mage':
+        return 'wizzard_m'
 
 def read_attributes(att_str):
     """
@@ -112,7 +114,11 @@ def read_attributes(att_str):
     attributes_list = att_str.split(",")
     attributes_list[0] = attributes_list[0][1:]
     return int(attributes_list[0]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
-        ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7])  
+        ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7]) 
+
+def read_HP(hp_str):
+    hp_str = get(hp_str,'H')
+    return int(hp_str) 
 
 # def read_enemies_dict(dict_str):
 #     """

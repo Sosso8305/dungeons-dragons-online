@@ -1,6 +1,6 @@
 from dungeonX.characters.players import Player, Fighter, Mage, Rogue, PlayerEnum
 from dungeonX.characters.skills import Skill, SkillFactory, SkillEnum
-from dungeonX.network.message import Message,extract, read_id, read_type, read_position, read_attributes
+from dungeonX.network.message import Message,extract, read_id, read_type, read_position, read_attributes, read_HP
 from dungeonX.characters.enemies import Enemy, Zombie, Dragon, Goblin
 from dungeonX import Game
 
@@ -61,4 +61,6 @@ def testMessageReadAndExtract():
     assert read_position(liste[0][2]) == (0,0)
     assert type(read_position(liste[0][2])) == tuple
     assert read_attributes(liste[0][3]) == (100,7,2,3,4,5,6,7)
+    assert read_HP(liste3[1]) == 100
+    assert read_HP(liste3[3]) == 100
 
