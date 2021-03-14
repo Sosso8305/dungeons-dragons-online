@@ -15,6 +15,10 @@ def vectToPos(vect):
 def posToVect(pos):
     return pygame.Vector2(pos)*TILE_WIDTH
 
+def distanceBetween(xA, yA, xB, yB):
+    """ Returns the distance between A and B """
+    return math.sqrt((xB-xA)*(xB-xA) + (yB-yA)*(yB-yA))
+
 class OtherPlayer2(Character):
 
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
@@ -60,7 +64,7 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
-        self._bag=self.MessageBag
+        #self._bag=self.MessageBag
 
     def __getstate__(self):
         d = dict(serializeSurf(self.__dict__))
@@ -143,19 +147,11 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
 
     def playAction(self,dt:int,tup):
-        # a = self.pos[0]
-        # b = self.pos[1]
-        # self.pos = (a+2,b-2)
-        # self.rect.midbottom = posToVect(self.pos) + (TILE_WIDTH/2, TILE_WIDTH)
-
-        # self.setTarget(Map.vectToPos((tup[0], tup[1])))
         self.setTarget(tup)
         if self.currentTarget:
             self.state = 'run'
 
-            print("SELF.POSITIONS\n",self.positions)
             if not self.positions:
-                print("IFFFFFFFFFFFFFFFFFFFFFFF")
                 self.positions = self.positionsIter()
 
             try:
@@ -167,6 +163,5 @@ class OtherPlayer2(Character):
                 self.positions = None
                 self.nextTarget()
         else:
-            print("IDLE")
             self.state = 'idle'
         return self.state

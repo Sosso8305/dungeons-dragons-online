@@ -12,6 +12,7 @@ from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
+from ..network.message import check_size
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -297,8 +298,8 @@ class GameScreen(Window):
 
 		#Just for testing to remove later
 		if(not self.oplayersCreation):
-			self.dungeon.oplayers = [OtherPlayer2(['PlayerEnum.Rogue',str((self.players[0].pos[0]+2,self.players[0].pos[1]+2)),'(100, 7, 2, 3, 4, 5, 6, 7)'],self),\
-				OtherPlayer2(['PlayerEnum.Fighter',str((self.players[1].pos[0]+2,self.players[1].pos[1]+2)),'(100, 7, 2, 3, 4, 5, 6, 7)'],self)]
+			self.dungeon.oplayers = [OtherPlayer2(['PlayerEnum.Rogue000',check_size(str((self.players[0].pos[0]+2,self.players[0].pos[1]+2)),11),check_size('(100, 7, 2, 3, 4, 5, 6, 7)',33)],self),\
+				OtherPlayer2([check_size('PlayerEnum.Fighter',19),check_size(str((self.players[1].pos[0]+2,self.players[1].pos[1]+2)),11),check_size('(100, 7, 2, 3, 4, 5, 6, 7)',33)],self)]
 			self.oplayers = self.dungeon.oplayers
 			self.oplayersCreation = True
 			#print("premiere position\n",self.dungeon.oplayers[0].pos)
