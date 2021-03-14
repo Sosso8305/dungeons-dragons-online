@@ -1,6 +1,6 @@
 import socket
 import threading
-
+from copy import deepcopy
 
 class NetworkSend(threading.Thread) :
     def __init__(self, ip, port, msg) :
@@ -30,12 +30,28 @@ msg=input("data-->").ljust(20,' ') #padding avec le caractére espace
 c = NetworkSend("127.0.0.1",int(port),msg)
 c.start()
 
+
+file=[]
 while(1) :
     data = c.s.recv(20).decode("utf-8")
     if not data :
         print("Connection lost, press ENTER to exit")
         break
     print("recv : " + data)
+    file.append(data)
+
+def getLastMessage():
+    if file!=[] :
+        dt = file[0]
+        file.remove(dt)
+        return dt
+    else :
+        return []
+
+def getAllMessages():
+    fd=deepcopy(file)
+    file=[]
+    return fd
 
 c.s.close()
 c.stop()
