@@ -9,11 +9,11 @@ CIBLES	=	interface client_dev
 all: $(CIBLES) server
 
 server: server.o 
-	$(CC) -o server server.o $(CFLAGS)
+	$(CC) -o server.out server.o $(CFLAGS)
 
 server.o: server.c server.h
 	$(CC) -o server.o -c server.c  $(CFLAGS)
 
 clean: 
-	$(RM) -f core *.o $(CIBLES) *~
+	$(RM) -f core *.o $(CIBLES).out *~
 	rm server
