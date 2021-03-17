@@ -6,7 +6,7 @@ from time import sleep
 networkFPS=60
 ipC="127.0.0.1"
 portC=5133
-sizeMESSAGE = 20 #Fuck Sofiane
+sizeMESSAGE = 20
 class Network(threading.Thread) :
     def __init__(self, ip="valeur par défaut a enlever", port="valeur par défaut a enlever", portc=portC, ipc=ipC) :
         threading.Thread.__init__(self)
