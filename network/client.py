@@ -28,8 +28,9 @@ class Network(threading.Thread) :
             except socket.timeout :
                 continue
             except :
-                print("Network issue")
-                self.stop()
+                if not self.stopped :
+                    print("Network issue")
+                    self.stop()
 
 
     def getMessage(self):
@@ -62,6 +63,8 @@ if __name__=="__main__" :
     Networker.start()
     sleep(1)
     Networker.send("Je suis un message de test !")
-    sleep(3)
+    sleep(1)
+    print(Networker.getAllMessages())
+    sleep(1)
     Networker.stop()
     Networker.join()
