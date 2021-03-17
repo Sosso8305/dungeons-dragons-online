@@ -1,58 +1,67 @@
 import socket
 import threading
 from copy import deepcopy
+from time import sleep
 
-class NetworkSend(threading.Thread) :
-    def __init__(self, ip, port, msg) :
+networkFPS=60
+ipC="127.0.0.1"
+portC=5133
+sizeMESSAGE = 20 #Fuck Sofiane
+class Network(threading.Thread) :
+    def __init__(self, ip="valeur par défaut a enlever", port="valeur par défaut a enlever", portc=portC, ipc=ipC) :
         threading.Thread.__init__(self)
-
+        self.file = []
         self._stop_event = threading.Event()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect((ip, port))
-        print ("Connection on")
+        self.s.settimeout(1 / networkFPS)
+        self.s.connect((ipc, portc))
+        # self.send (connection aux autres joueurs)
+        print ("Connection on\n")
 
     def run(self) :
         self.stopped = False
-        while(1):
-            #message = input().encode("utf-8")
-            message = msg.encode("utf-8")
-            if self.stopped :
-                break
-            self.s.send(message)
+        while(not self.stopped):
+            try :
+                data = self.s.recv(sizeMESSAGE).decode("utf-8")
+                print(f"recv : {data}")
+                self.file.append(data)
+            except socket.timeout :
+                continue
+            except :
+                print("Network issue")
+                self.stop()
+
+
+    def getMessage(self):
+        if self.file:
+            return self.file.pop(0) #FIFO
+        else:
+            return ""
+
+    def getAllMessages(self):
+        msgL = deepcopy(self.file)
+        self.file = []
+        return msgL
+
+    def send(self, msg):
+        self.s.send(msg.encode("utf-8"))
+
+    def sendList(self, msgList) :
+        for msg in msgList :
+            self.s.send(msg.encode("utf-8"))
 
     def stop(self) :
+        self.s.close()
         self.stopped=True
 
 
-port=input("numéro de port?")
-msg=input("data-->").ljust(20,' ') #padding avec le caractére espace
-
-c = NetworkSend("127.0.0.1",int(port),msg)
-c.start()
-
-
-file=[]
-while(1) :
-    data = c.s.recv(20).decode("utf-8")
-    if not data :
-        print("Connection lost, press ENTER to exit")
-        break
-    print("recv : " + data)
-    file.append(data)
-
-def getLastMessage():
-    if file!=[] :
-        dt = file[0]
-        file.remove(dt)
-        return dt
-    else :
-        return []
-
-def getAllMessages():
-    fd=deepcopy(file)
-    file=[]
-    return fd
-
-c.s.close()
-c.stop()
-c.join()
+if __name__=="__main__" :
+    ipC=input("Adresse IP du C ? ")
+    portC = int(input("Port du C ? "))
+    Networker= Network(ipc=ipC,portc=portC)
+    Networker.start()
+    sleep(1)
+    Networker.send("Je suis un message de test !")
+    sleep(3)
+    Networker.stop()
+    Networker.join()
