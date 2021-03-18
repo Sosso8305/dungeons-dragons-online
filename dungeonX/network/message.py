@@ -2,8 +2,8 @@ from dungeonX.characters.players.player import Player, PlayerEnum
 from dungeonX.characters.enemies.enemy import Enemy
 #from dungeonX.game import Game
 
-#To modify, for the moment it indicates the maximum size of: ID, PlayerType, Position,Attributes, HP (defined as strings, the sizes' list depends on the flag)
-MESSAGE_SIZE_MAX = {0 : [7,19,11,33], 1: [7,11], 2: [7,5,7,5]}
+#To modify, for the moment it indicates the maximum size of: ID, PlayerType, xPosition, yPosition,Attributes, HP (defined as strings, the sizes' list depends on the flag)
+MESSAGE_SIZE_MAX = {0 : [5,19,4,4,33], 1: [5,4,4], 2: [5,3,5,3]}
 
 def get_character(List, ID):
     for character in List:
@@ -17,17 +17,26 @@ def get(string:str, c):
     """
     i = 0
     info = ""
-    while string[i] != c:
-        info += string[i]
+    while string[i] == c or string[i] == '0':
         i += 1
+
+    while i < len(string):
+        info += string[i]
+        i+=1
 
     return info
 
 def check_size(string: str, n: int):
-    while len(string) < n:
-        string += '0'
+    modified_str = ""
+    size = len(string)
 
-    return string 
+    while n - size > 0:
+        modified_str += '0'
+        size += 1
+
+    modified_str += string
+
+    return modified_str
 
 def extract(message, flag: int, n:int):
     """ 
@@ -69,22 +78,13 @@ def extract(message, flag: int, n:int):
     return l
 
 def read_id(id_str):
+    return int(id_str)
 
-    i = 0
-    info = ""
-    print(id_str)
-    while (i+2 < len(id_str) and id_str[i:i+2] != "ID"):
-        info += id_str[i]
-        i += 1
-    return int(info)
-
-def read_position(position_str):
+def read_position(position_str0, position_str1):
     """
         since we receive the position as a string this function's goal is simply to convert the first string to u tuple and replace it in the list
     """
-    position_str = get(position_str,')')
-    position_list = position_str.split(",")
-    return int(position_list[0][1:]),int(position_list[1])  
+    return int(position_str0),int(position_str1)  
 
 def read_type(type_str):
     """
@@ -110,42 +110,15 @@ def read_attributes(att_str):
     """
         the same functionality of the previous function but for attributes
     """
-    att_str = get(att_str,')')
+    att_str = get(att_str,'(')
     attributes_list = att_str.split(",")
-    attributes_list[0] = attributes_list[0][1:]
+    attributes_list[len(attributes_list)-1] = attributes_list[len(attributes_list)-1][:len(attributes_list[len(attributes_list)-1])-1]
     return int(attributes_list[0]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
         ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7]) 
 
 def read_HP(hp_str):
-    hp_str = get(hp_str,'H')
     return int(hp_str) 
 
-# def read_enemies_dict(dict_str):
-#     """
-#         this function is used to extract the dictionnary of monsters (affected by the player) from the received string message
-#     """
-#     dict_list = dict_str.split(",")
-#     d = {}
-#     dict_list[0] = dict_list[0][1:]
-#     dict_list[len(dict_list)-1] = dict_list[len(dict_list)-1][:len(dict_list[len(dict_list)-1])-1]
-
-#     for i in range(len(dict_list)):
-#         l = dict_list[i].split(":")
-#         d[int(l[0])] = int(l[1])
-#     return d
-
-# def read_list(list_str):
-#     """
-#         this function is used to extract the list of properties' ids (the player's properties)
-#     """
-#     #it should read items in bag and see those equiped and not in the bag 
-#     items_list_str = list_str.split(",")
-#     items_list_str[0] = items_list_str[0][1:]
-#     items_list_str[len(items_list_str) - 1] = items_list_str[len(items_list_str) - 1][:len(items_list_str[len(items_list_str) - 1]) - 1]
-#     items_ids = []
-#     for i in range(len(items_list_str)):
-#         items_ids.append(int(items_list_str[i]))
-#     return items_ids
 
 class Message:
     def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag = 0):
@@ -186,9 +159,9 @@ class Message:
         # un dictionnaire vide 
         #on va ajouter cet attribut a la classe player et ce dictionnaire serait rempli a chaque attaque
 
-        self.list1 = [self.id1,self.type1,self.pos1,self.attributes1]
-        self.list2 = [self.id2,self.type2,self.pos2,self.attributes2]
-        self.list3 = [self.id3,self.type3,self.pos3,self.attributes3]
+        self.list1 = [self.id1,self.type1,self.pos1[0],self.pos1[1],self.attributes1]
+        self.list2 = [self.id2,self.type2,self.pos2[0],self.pos2[1],self.attributes2]
+        self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1],self.attributes3]
         #TODO : add bag to the last list and add equiment message 
 
     def create_message(self, ID = 0, IDenemy = 0):
@@ -202,36 +175,24 @@ class Message:
             for i in range(3):
                 for j in range(len(liste[i])):
                     part = str(liste[i][j])
-                    if (not j):
-                        part += "ID"
                     message_str += check_size(part,MESSAGE_SIZE_MAX[0][j])
 
         elif (self.flag): 
             ID_str = str(ID)
-            ID_str += "ID"
 
             if self.flag == 1:
                 player = get_character(self.players, ID)
-                message_str += str(self.flag) + check_size(ID_str,MESSAGE_SIZE_MAX[1][0]) + check_size(str(player.pos),MESSAGE_SIZE_MAX[1][1])
+                message_str += str(self.flag) + check_size(ID_str,MESSAGE_SIZE_MAX[1][0]) + check_size(str(player.pos[0]),MESSAGE_SIZE_MAX[1][1]) + check_size(str(player.pos[1]),MESSAGE_SIZE_MAX[1][2])
 
             elif self.flag == 2:
                 IDE_str = str(IDenemy)
-                IDE_str += "ID"
                 player = get_character(self.players, ID)
                 enemy = get_character(self.enemies, IDenemy)
                 HP_str = str(player.getHP())
-                HP_str += "HP"
                 HP_str_e = str(enemy.getHP())
-                HP_str_e += "HP"
                 message_str += str(self.flag) + check_size(ID_str,MESSAGE_SIZE_MAX[2][0]) + check_size(HP_str, MESSAGE_SIZE_MAX[2][1]) + \
                     check_size(IDE_str, MESSAGE_SIZE_MAX[2][0]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[2][1])
             
         return message_str
         
 
-    
-
-
-#212ID00010014ID000980
-s="12ID000PlayerEnum.Rogue000(1,2)000000(100,2,4,5,6,7,66,56)000000000000PlayerEnum.Mage0000(22,3)00000\
-(100,2,4,5,6,7,66,56)000000000000PlayerEnum.Rogue000(122,22)000(100,2,4,5,6,7,66,56)000000000000"
