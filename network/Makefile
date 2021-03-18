@@ -6,6 +6,7 @@ CFLAGS  += -pthread
 
 CIBLES	=	interface client_dev
 
+
 all: $(CIBLES) server
 
 server: server.o 
@@ -15,5 +16,5 @@ server.o: server.c server.h
 	$(CC) -o server.o -c server.c  $(CFLAGS)
 
 clean: 
-	$(RM) -f core *.o $(CIBLES).out *~
-	rm server
+	$(RM) -f core *.o $(CIBLES) *~
+	rm server.out
