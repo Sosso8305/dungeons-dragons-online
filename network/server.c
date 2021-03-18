@@ -44,7 +44,50 @@ void stop(char *msg)
 void * RecvPython(void * StructArg){
 
     argument * arg = (argument *) StructArg;
+    int number_thread =1;
+    pthread_t  ID_threads[number_thread];
     
+    //first message and init new connection with other player
+
+   recv((*arg).sockfd,&((*arg).data->MyPlayer.dataPython),SIZE_DATA_PY*sizeof(char),0);
+   
+   char NewSocket[SIZE_DATA_PY];
+
+   strncpy(NewSocket,(*arg).data->MyPlayer.dataPython,SIZE_DATA_PY);
+
+   argument arg1;
+
+
+   if (strncmp(NewSocket,"con",3) == 0){
+        puts("\n new connexion");
+       
+        char IP[16];
+        char char_port[5];
+
+        for (int i =6; i<21;i++){
+            strncat(IP,&NewSocket[i],1);
+        }
+
+        for (int i =21; i<26;i++){
+            strncat(char_port,&NewSocket[i],1);
+        
+        }
+
+        int port;
+        sscanf(char_port,"%d",&port);
+
+        strncpy(arg1.ip,IP,16*sizeof(char));
+        arg1.port_dest=port;
+        arg->data=(*arg).data;
+        arg->init=1;
+
+
+
+        if(pthread_create(&ID_threads[0],NULL,SendSructMyPlayer,&arg1) != 0 );
+
+   }
+
+
 
     while(1){
 
@@ -70,10 +113,19 @@ void * RecvPython(void * StructArg){
     }
 
 
+    for(int t =0; t<number_thread;t++){
+    pthread_join(ID_threads[t],NULL);
+
+    }
+
+    pthread_exit(NULL);
+
+
 }
 
 
 void * SendPython(void * StructArg){
+
 
     argument * arg = (argument *) StructArg;
     
@@ -519,7 +571,7 @@ int main(int argc, char *argv[]){
     if(argc<4){
         argument arg;
         arg.data=&data;
-        sleep(0.1);
+        sleep(0.5);
         if(pthread_create(&threads[2],NULL,SendStructMyPlayerInit,&arg) != 0) stop("thread_init_Send_shell");
     }
     else{

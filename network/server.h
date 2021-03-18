@@ -1,4 +1,4 @@
-#define SIZE_DATA_PY 29
+#define SIZE_DATA_PY 27
 
 typedef struct   // struct for one player  
 {

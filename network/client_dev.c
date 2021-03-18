@@ -30,7 +30,7 @@ void stop(char* msg,int FD){
 	exit(EXIT_FAILURE);
 	
 }
-#define SIZE_DATA_PY 29
+#define SIZE_DATA_PY 27
 
 typedef struct   // struct for one player  
 {
@@ -79,6 +79,7 @@ int main(int argc, char const *argv[])
 
     if(fork() == 0){
 
+        send(sockfd,"conXXX127.000.000.00105555",sizeof(char)*SIZE_DATA_PY,0);
         while (1)
         {   
             sleep(1);
