@@ -143,6 +143,12 @@ class GameScreen(Window):
 
 		self.bottombarwindow = BottomBarWindow(self)
 		self.inventorywindow = InventoryWindow(game, self)
+		
+		#additions for the multi-inventory blitting
+		self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
+		self.nbPlayers = 2 # will be the size of the real player list later
+		self.id_current_inventory = 0 # necessary var
+		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
 		self.skillwindow=SkillWindow(game, self)
@@ -168,6 +174,10 @@ class GameScreen(Window):
 		self.zoneCell = Cell((128,20,20))
 		self.rangeCell = Cell((103,216,239, 120))
 		self.pauseButton= Button(game,(self.get_width()-66, 16), '', imgPath = "dungeonX/assets/ui/pause_button.png", size=(50,50), action=lambda:self.setState("paused"))
+
+		# next/previous inventory buttons init
+		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.changeInventory(1))
+		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.changeInventory(-1))
 
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
@@ -255,6 +265,20 @@ class GameScreen(Window):
 			self.__savedState = self.state
 		self.state = state
 
+	# new fonction to change the id_current_inventory (+1 or -1, action of the buttons l.178)
+	def changeInventory(self,inc):
+		""" To print other inventories
+
+		this method increments the id of the other inventory currently blitted
+		"""
+		print ("Test def changeInventory : id current inventory =",self.id_current_inventory)
+		if (self.id_current_inventory+inc)<self.nbPlayers and (self.id_current_inventory+inc)>=0 :
+			self.id_current_inventory += inc
+		else :
+			print ("Impossible d'incrémenter ",inc," car il n'y a que ",self.nbPlayers," joueurs.")
+		print ("Test def changeInventory : id current inventory =",self.id_current_inventory)
+	
+
 	def selectPlayer(self, p):
 		""" Setter for selectedPlayer
 
@@ -321,6 +345,7 @@ class GameScreen(Window):
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					if not any((self.passTurnButton.rect.collidepoint(event.pos),
 								self.pauseButton.rect.collidepoint(event.pos),
+								self.nextButton.rect.collidepoint(event.pos),
 								self.bottombarwindow.rect.collidepoint(event.pos))):
 						if event.button==3:
 							for player in self.players:
@@ -524,9 +549,18 @@ class GameScreen(Window):
 			if self.state == 'map_opened':
 				self.mapwindow.update(events)
 				self.blit(self.mapwindow, (0,0))
-			elif self.state == 'inventory_opened':
+			elif self.state == 'inventory_opened': 
 				self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
+				# buttons blitting
+				self.nextButton.update(events)
+				self.blit(self.nextButton.image,self.nextButton.rect)
+				self.prevButton.update(events)
+				self.blit(self.prevButton.image,self.prevButton.rect)
+				# affichage rudimentaire de l'autre inventaire, on fera avec un indice plus tard
+				if self.id_current_inventory==1:
+					self.inventorywindow2.update(events)
+					self.blit(self.inventorywindow2, (0,0))
 			elif self.state=='skillwindow_opened':	
 				self.blit(self.skillwindow,self.skillwindow.rect)
 			elif self.state =='npcwindow_opened':
