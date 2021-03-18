@@ -8,6 +8,21 @@ ipC="127.0.0.1"
 portC=5133
 sizeMESSAGE = 20
 encodage = "ascii"
+
+def padding(msg, n, orientation = "left") :
+    if orientation != 'right' :
+        return msg.rjust(n,'0')
+    else :
+        return msg.ljust(n,'0')
+
+def ipPadding(ip) :
+    fragment = ip.split(".")
+    res = ""
+    for f in fragment :
+        res+=padding(f,3)
+        res+="."
+    return res[0:-1] # we take the string -1 character because we add an extra dot with the loop
+
 class Network(threading.Thread) :
     def __init__(self, ip="valeur par défaut a enlever", port="valeur par défaut a enlever", portc=portC, ipc=ipC) :
         threading.Thread.__init__(self)
