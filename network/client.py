@@ -7,6 +7,7 @@ networkFPS=60
 ipC="127.0.0.1"
 portC=5133
 sizeMESSAGE = 20
+encodage = "ascii"
 class Network(threading.Thread) :
     def __init__(self, ip="valeur par défaut a enlever", port="valeur par défaut a enlever", portc=portC, ipc=ipC) :
         threading.Thread.__init__(self)
@@ -22,7 +23,7 @@ class Network(threading.Thread) :
         self.stopped = False
         while(not self.stopped):
             try :
-                data = self.s.recv(sizeMESSAGE).decode("utf-8")
+                data = self.s.recv(sizeMESSAGE).decode(encodage)
                 print(f"recv : {data}")
                 self.file.append(data)
             except socket.timeout :
@@ -45,11 +46,11 @@ class Network(threading.Thread) :
         return msgL
 
     def send(self, msg):
-        self.s.send(msg.encode("utf-8"))
+        self.s.send(msg.encode(encodage))
 
     def sendList(self, msgList) :
         for msg in msgList :
-            self.s.send(msg.encode("utf-8"))
+            self.s.send(msg.encode(encodage))
 
     def stop(self) :
         self.s.close()

@@ -12,9 +12,9 @@
 
 
 
-#define DEFAUT_PORT_INTERNE 1234
+#define DEFAUT_PORT_INTERNE 5133
 #define IP_INTERNE "127.0.0.1"
-#define DEFAUT_PORT_EXTERNE 5555  
+#define DEFAUT_PORT_EXTERNE 5555
 #define NUM_THREADS 3  // #0 interface  Python   #1 server Peer2Peer   #3 init to other server
 #define DEBUG 0
 
