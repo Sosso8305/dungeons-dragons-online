@@ -369,7 +369,7 @@ void * serverPeer(void * StrucData){
 
     if(listen(main_sockfd,5) == -1) stop("listen");
 
-    printf("Start network Server Peer2peer\n");
+    printf("Start network Server Peer2peer  with  my port %i\n",(*data).port_Server);
 
 
     int numberOfThread =0;
@@ -418,11 +418,22 @@ void * serverPeer(void * StrucData){
 
         
 
+        //init new size de Otherplayer 
+
+        // data_player * tempOtherPlayer;
+        // tempOtherPlayer = malloc((*data).numberOtherPlayers*sizeof(data_player));
+        // memcpy(tempOtherPlayer,(*data).OtherPlayers,(*data).numberOtherPlayers*sizeof(data_player));
+
+
         data->numberOtherPlayers++;
 
-        //init new size de Otherplayer 
         (*data).OtherPlayers = malloc( (*data).numberOtherPlayers*sizeof(data_player) );
         bzero(&((*data).OtherPlayers[(data->numberOtherPlayers)-1]),sizeof(data_player));
+        // memcpy((*data).OtherPlayers,tempOtherPlayer,((*data).numberOtherPlayers -1)*sizeof(data_player));
+
+        // free(tempOtherPlayer);
+
+
 
         argument arg;
         arg.ip = malloc(16*sizeof(char));

@@ -30,7 +30,7 @@ void stop(char* msg,int FD){
 	exit(EXIT_FAILURE);
 	
 }
-#define SIZE_DATA_PY 20
+#define SIZE_DATA_PY 29
 
 typedef struct   // struct for one player  
 {
@@ -72,7 +72,9 @@ int main(int argc, char const *argv[])
 
  
 
-    data_player player ={0,"sosso"};
+    data_player player;
+    player.id = getpid();
+    strncpy(player.dataPython,argv[2],SIZE_DATA_PY);
 
 
     if(fork() == 0){
