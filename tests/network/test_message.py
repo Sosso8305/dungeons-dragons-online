@@ -34,37 +34,36 @@ enemy3 = Goblin(game,(0,0),defaultStats, types3)
 enemies = [enemy, enemy2, enemy3]
 
 # def testMessageCreation():
-#     message = Message(players,enemies)
-#     message1 = Message(players, enemies, flag=1)
-#     message2 = Message(players, enemies, flag=2)
+#     message = Message(players,enemies,flag = "wlc")
+#     message1 = Message(players, enemies, flag = "pos")
+#     message2 = Message(players, enemies, flag = "hps")
 #     print(message.create_message())
 #     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
 #     n = str(enemy.ID)
 #     zeros = "00" if len(n1) == 3 else "000"
 #     zerosm = "00" if len(n) == 3 else "000"
-#     assert message.create_message() == zeros+n1+"000PlayerEnum.Rogue000000000000000(100, 7, 2, 3, 4, 5, 6, 7)"+zeros+n2+"0000PlayerEnum.Mage000100020000000(100, 7, 2, 3, 4, 5, 6, 7)"+zeros+n3+"0PlayerEnum.Fighter000300040000000(100, 7, 2, 3, 4, 5, 6, 7)" 
-#     assert message1.create_message(ID = int(n1)) == "1"+zeros+n1+"00000000" 
-#     assert message2.create_message(ID = int(n1), IDenemy = int(n))  == "2"+zeros+n1+"100"+zerosm+n+"100"
+#     assert message.create_message() == "wlc"+zeros+n1+"R00000000"+zeros+n2+"M00010002"+zeros+n3+"F00030004" 
+#     assert message1.create_message(ID = int(n1)) == "pos"+zeros+n1+"00000000" 
+#     assert message2.create_message(ID = int(n1), IDenemy = int(n))  == "hps"+zeros+n1+"100"+zerosm+n+"100"
 
 # def testMessageReadAndExtract():
-#     message = Message(players)
-#     message1 = Message(players, enemies, flag=1)
-#     message2 = Message(players, enemies, flag=2)
+#     message = Message(players,flag = "wlc")
+#     message1 = Message(players, enemies, flag="pos")
+#     message2 = Message(players, enemies, flag="hps")
 #     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
 #     n = str(enemy.ID)
-#     zeros = "0000" #if len(n1) == 3 else "000"
+#     zeros = "00" if len(n1) == 3 else "000"
 #     zerosm = "00" if len(n) == 3 else "000"
-#     liste = extract(message.create_message(),0,5)
-#     liste2 = extract(message1.create_message(ID = int(n1)),1,3)
-#     liste3 = extract(message2.create_message(ID = int(n1), IDenemy = int(n)),2,4)
-#     assert liste == [[zeros+n1,"000PlayerEnum.Rogue","0000","0000","0000000(100, 7, 2, 3, 4, 5, 6, 7)"],[zeros+n2,"0000PlayerEnum.Mage","0001","0002","0000000(100, 7, 2, 3, 4, 5, 6, 7)"],[zeros+n3,"0PlayerEnum.Fighter","0003","0004","0000000(100, 7, 2, 3, 4, 5, 6, 7)"]]
+#     liste = extract(message.create_message(),"wlc",4)
+#     liste2 = extract(message1.create_message(ID = int(n1)),"pos",3)
+#     liste3 = extract(message2.create_message(ID = int(n1), IDenemy = int(n)),"hps",4)
+#     assert liste == [[zeros+n1,"R","0000","0000"],[zeros+n2,"M","0001","0002"],[zeros+n3,"F","0003","0004"]]
 #     assert liste2 == [zeros+n1,"0000","0000"]
 #     assert liste3 == [zeros+n1,"100",zerosm+n,"100"]
 #     assert read_id(liste[0][0]) == int(n1)
 #     assert read_type(liste[0][1]) == PlayerEnum.Rogue
 #     assert read_position(liste[0][2],liste[0][3]) == (0,0)
 #     assert type(read_position(liste[0][2],liste[0][3])) == tuple
-#     assert read_attributes(liste[0][4]) == (100,7,2,3,4,5,6,7)
 #     assert read_HP(liste3[1]) == 100
 #     assert read_HP(liste3[3]) == 100
 

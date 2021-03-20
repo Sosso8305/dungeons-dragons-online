@@ -3,13 +3,20 @@ from dungeonX.characters.enemies.enemy import Enemy
 #from dungeonX.game import Game
 
 #To modify, for the moment it indicates the maximum size of: ID, PlayerType, xPosition, yPosition,Attributes, HP (defined as strings, the sizes' list depends on the flag)
-MESSAGE_SIZE_MAX = {0 : [5,19,4,4,33], 1: [5,4,4], 2: [5,3,5,3]}
+MESSAGE_SIZE_MAX = {"wlc" : [5,1,4,4], "pos": [5,4,4], "hps": [5,3,5,3]}
 
 def get_character(List, ID):
     for character in List:
         if character.ID == ID:
             return character
 
+def get_initial(ptype):
+    if ptype == PlayerEnum.Rogue:
+        return 'R'
+    elif ptype == PlayerEnum.Fighter:
+        return 'F'
+    elif ptype == PlayerEnum.Mage:
+        return 'M'
 
 def get(string:str, c):
     """
@@ -42,12 +49,14 @@ def extract(message, flag: int, n:int):
     """ 
         This function is going to take as an argument a string and returns a list of other players' infos in string format.
         This infos will be converted into the right format in other functions.
+        n : nombre d'elts a extraire
     """
 
-    if (not flag):
+    if (flag == "wlc"):
         l = [[] for k in range(3)]
         info = ""
         i = 0
+        message = message[3:]
         
         for liste in l:
             j = 0
@@ -60,11 +69,11 @@ def extract(message, flag: int, n:int):
                 liste.append(info)
                 info = ""
                 j += 1
-    elif (flag):
+    elif (flag == "pos" or flag == "hps"):
         j,i = 0,0
         info = ""
         l = []
-        message  = message[1:]
+        message  = message[3:]
         while j < n: 
             k = 0
             while k < MESSAGE_SIZE_MAX[flag][j] and i < len(message):
@@ -91,19 +100,19 @@ def read_type(type_str):
         this function convert the str to the right type
     """
 
-    if get(type_str,'0') == 'PlayerEnum.Rogue':
+    if type_str == 'R':
         return PlayerEnum.Rogue
-    elif get(type_str,'0') == 'PlayerEnum.Fighter':
+    elif type_str == 'F':
         return PlayerEnum.Fighter
-    elif get(type_str,'0') == 'PlayerEnum.Mage':
+    elif type_str == 'M':
         return PlayerEnum.Mage
 
 def read_mod(type_str):
-    if get(type_str,'0') == 'PlayerEnum.Rogue':
+    if type_str == 'R':
         return 'lizard_m'
-    elif get(type_str,'0') == 'PlayerEnum.Fighter':
+    elif type_str == 'F':
         return 'knight_m'
-    elif get(type_str,'0') == 'PlayerEnum.Mage':
+    elif type_str == 'M':
         return 'wizzard_m'
 
 def read_attributes(att_str):
@@ -121,7 +130,7 @@ def read_HP(hp_str):
 
 
 class Message:
-    def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag = 0):
+    def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag=""):
         
         self.flag = flag
         self.players = PlayerList
@@ -144,24 +153,14 @@ class Message:
         self.pos3 = PlayerList[2].pos
         self.positions = [PlayerList[0].pos ,PlayerList[1].pos ,PlayerList[2].pos]
 
-        self.attributes1 = PlayerList[0].stats
-        self.attributes2 = PlayerList[1].stats
-        self.attributes3 = PlayerList[2].stats 
-
-        # self.equipment1 = self.extract_items_ids(PlayerList[0].equipment)
-        # self.equipment2 = self.extract_items_ids(PlayerList[1].equipment)
-        # self.equipment3 = self.extract_items_ids(PlayerList[2].equipment)
-
-        # self.items = self.extract_items_ids(self.Player1Type1.messageBag.content)
+        #self.attributes1 = PlayerList[0].stats
+        #self.attributes2 = PlayerList[1].stats
+        #self.attributes3 = PlayerList[2].stats 
 
 
-        # self.enemiesHP = None #a changer une fois defini
-        # un dictionnaire vide 
-        #on va ajouter cet attribut a la classe player et ce dictionnaire serait rempli a chaque attaque
-
-        self.list1 = [self.id1,self.type1,self.pos1[0],self.pos1[1],self.attributes1]
-        self.list2 = [self.id2,self.type2,self.pos2[0],self.pos2[1],self.attributes2]
-        self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1],self.attributes3]
+        self.list1 = [self.id1,self.type1,self.pos1[0],self.pos1[1]]
+        self.list2 = [self.id2,self.type2,self.pos2[0],self.pos2[1]]
+        self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1]]
         #TODO : add bag to the last list and add equiment message 
 
     def create_message(self, ID = 0, IDenemy = 0):
@@ -169,30 +168,31 @@ class Message:
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
         """
-        message_str = ""
-        if (not self.flag): 
+        message_str = self.flag
+        if (self.flag == "wlc"): 
             liste = [self.list1,self.list2,self.list3]
             for i in range(3):
                 for j in range(len(liste[i])):
-                    part = str(liste[i][j])
-                    message_str += check_size(part,MESSAGE_SIZE_MAX[0][j])
+                    if (j==1):
+                        part = get_initial(liste[i][j])
+                    else:
+                        part = str(liste[i][j])
+                    message_str += check_size(part,MESSAGE_SIZE_MAX[self.flag][j])
 
-        elif (self.flag): 
+        else: 
             ID_str = str(ID)
 
-            if self.flag == 1:
+            if self.flag == "pos":
                 player = get_character(self.players, ID)
-                message_str += str(self.flag) + check_size(ID_str,MESSAGE_SIZE_MAX[1][0]) + check_size(str(player.pos[0]),MESSAGE_SIZE_MAX[1][1]) + check_size(str(player.pos[1]),MESSAGE_SIZE_MAX[1][2])
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][0]) + check_size(str(player.pos[0]),MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(player.pos[1]),MESSAGE_SIZE_MAX[self.flag][2])
 
-            elif self.flag == 2:
+            elif (self.flag == "hps"):
                 IDE_str = str(IDenemy)
                 player = get_character(self.players, ID)
                 enemy = get_character(self.enemies, IDenemy)
                 HP_str = str(player.getHP())
                 HP_str_e = str(enemy.getHP())
-                message_str += str(self.flag) + check_size(ID_str,MESSAGE_SIZE_MAX[2][0]) + check_size(HP_str, MESSAGE_SIZE_MAX[2][1]) + \
-                    check_size(IDE_str, MESSAGE_SIZE_MAX[2][0]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[2][1])
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][0]) + check_size(HP_str, MESSAGE_SIZE_MAX[self.flag][1]) + check_size(IDE_str, MESSAGE_SIZE_MAX[self.flag][0]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[self.flag][1])
             
         return message_str
         
-
