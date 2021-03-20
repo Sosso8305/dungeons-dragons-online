@@ -11,8 +11,11 @@ class CharacterEnum(Enum):
 
 class Character :
     ID = 0
+    RealPlayerID=0
+    MyPlayers=[]
 
     def __init__(self, game, pos: tuple, actionPointMax, HP, armor, strength, dex, con, intell, wis, cha):
+#       super().__init__(game)
         self.game = game
         self.actionPoint = actionPointMax
         self.actionPointMax = actionPointMax
@@ -29,8 +32,18 @@ class Character :
         }
         self.stats=(HP,armor, strength, dex, con, intell, wis, cha)
         self.ID = Character.ID
-        Character.ID += 1
+        self.RealPlayerID= Character.RealPlayerID
+        #TODO: the ids will go from 1 to 3 (will do and modify the tests for the next commit)
         self.maxHP = HP
+        self.MyPlayers=Character.MyPlayers
+        if Character.ID > 2 :
+            Character.RealPlayerID +=1
+            Character.ID=0
+        else :
+          #  self.MyPlayers.append(self)
+            Character.ID += 1
+       
+            
 
 
 
