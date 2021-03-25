@@ -76,23 +76,36 @@ int main(int argc, char const *argv[])
     player.id = getpid();
     strncpy(player.dataPython,argv[2],SIZE_DATA_PY);
 
+    data_player player2;
+    player.id = getpid();
+    strncpy(player2.dataPython,argv[3],SIZE_DATA_PY);
+
+    display_data_player(player);
+    display_data_player(player2);
+    
+
+    puts("+++++++++++++\n+++++++++++++\n");
 
     if(fork() == 0){
 
-        send(sockfd,"conXXX127.000.000.00105555",sizeof(char)*SIZE_DATA_PY,0);
+        //send(sockfd,"conXXX127.000.000.00105555",sizeof(char)*SIZE_DATA_PY,0);
         while (1)
         {   
-            sleep(1);
+            
             send(sockfd,&player.dataPython,sizeof(char)*SIZE_DATA_PY,0);
+            sleep(10);
+            send(sockfd,&player2.dataPython,sizeof(char)*SIZE_DATA_PY,0);
+            sleep(10);
         }
         
 
     }
     else
     {
+        data_player recvPlayer;
         while (1)
         {
-            data_player recvPlayer;
+        bzero(&recvPlayer.dataPython,sizeof(char)*SIZE_DATA_PY); 
         int n =recv(sockfd,&recvPlayer.dataPython,sizeof(char)*SIZE_DATA_PY,0);
         if (n == -1)  stop("recv",sockfd);
 

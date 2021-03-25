@@ -46,6 +46,7 @@ void *RecvPython(void *StructArg)
 
         int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char), 0);
 
+
         switch (n)
         {
         case -1:
@@ -122,12 +123,20 @@ void *SendPython(void *StructArg)
         for (int i = 0; i < (*arg).data->numberOtherPlayers; i++)
         {
             sleep(1);
-            int n = send((*arg).sockfd, &((*arg).data->OtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char), 0);
 
-            if (n == -1)
+            if (!(memcmp(&((*arg).data->OtherPlayers[i].dataPython), &((*arg).data->MemoryOtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char)) == 0))
             {
-                printf("problem with send python\n");
-                pthread_exit(NULL);
+                
+                memcpy(&((*arg).data->MemoryOtherPlayers[i].dataPython), &((*arg).data->OtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char));
+
+                
+                int n = send((*arg).sockfd, &((*arg).data->MemoryOtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char), 0);
+
+                if (n == -1)
+                {
+                    printf("problem with send python\n");
+                    pthread_exit(NULL);
+                }
             }
         }
     }
@@ -279,6 +288,7 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
 
         int n = recv((*arg).sockfd, &new_player, sizeof(data_player), 0);
 
+
         switch (n)
         {
         case -1:
@@ -312,7 +322,7 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
             {
                 if ((*arg).data->OtherPlayers[i].id == MyID)
                 {
-                    memcpy(&((*arg).data->OtherPlayers[i].dataPython), &new_player.dataPython, sizeof(SIZE_DATA_PY));
+                    memcpy(&((*arg).data->OtherPlayers[i].dataPython), &new_player.dataPython, SIZE_DATA_PY*sizeof(char));
                     break;
                 }
             }
@@ -354,10 +364,20 @@ void *SendSructMyPlayer(void *StructArg)
     send(sockfd, &init, sizeof(int), 0);
     send(sockfd, &myPort, sizeof(int), 0);
 
+    data_player MyPlayer; // variable tempon pour verifier que les donner on changer
+    bzero(&MyPlayer,sizeof(data_player));
+    
+
     while (1)
     {
         sleep(1);
-        send(sockfd, &((*arg).data->MyPlayer), sizeof(data_player), 0);
+
+        if (!(memcmp(&MyPlayer, &((*arg).data->MyPlayer), sizeof(data_player)) == 0))
+        {
+            
+            memcpy(&MyPlayer, &((*arg).data->MyPlayer), sizeof(data_player));
+            send(sockfd, &MyPlayer, sizeof(data_player), 0);
+        }
     }
 
     pthread_exit(NULL);
@@ -448,7 +468,7 @@ void *serverPeer(void *StrucData)
             break;
         }
 
-        //init new size de Otherplayer
+        //----------init new size de Otherplayer------------//
 
         // data_player * tempOtherPlayer;
         // tempOtherPlayer = malloc((*data).numberOtherPlayers*sizeof(data_player));
@@ -458,6 +478,10 @@ void *serverPeer(void *StrucData)
 
         (*data).OtherPlayers = malloc((*data).numberOtherPlayers * sizeof(data_player));
         bzero(&((*data).OtherPlayers[(data->numberOtherPlayers) - 1]), sizeof(data_player));
+
+        (*data).MemoryOtherPlayers = malloc((*data).numberOtherPlayers * sizeof(data_player));
+        bzero(&((*data).MemoryOtherPlayers[(data->numberOtherPlayers) - 1]), sizeof(data_player));
+
         // memcpy((*data).OtherPlayers,tempOtherPlayer,((*data).numberOtherPlayers -1)*sizeof(data_player));
 
         // free(tempOtherPlayer);

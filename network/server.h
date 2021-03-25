@@ -13,6 +13,7 @@ typedef struct
     data_player MyPlayer;       //struct data myplayer
     int numberOtherPlayers;     //number other Player for tab dynamique
     data_player * OtherPlayers; //tab data of all player
+    data_player * MemoryOtherPlayers;
     int InterfaceConnected;
     int port_Server;
     int port_Interface;
