@@ -30,3 +30,12 @@ htmlcov/
 node_modules
 package-lock.json
 dist
+
+
+# C files compiled
+*.out
+*.o
+
+# test network
+
+network/test/*
