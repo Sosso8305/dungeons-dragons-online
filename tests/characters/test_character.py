@@ -39,8 +39,10 @@ defaultPotions = ItemFactory(ItemList.Potion)
 
 def testCharacterCreation():
     Character.ID = 50
+    print(Character.ID)
     character = Character(game, defaultPosition, actionPoint, *defaultStats)
     assert character.getID() == 50
+    print(Character.ID)
     assert character.getHP() == 100 # Cette méthode est redondante avec character.getAttribute(Attributes.HP), il faudrait l'enlever ou alors enlever HP des attributs
     assert character.getPosition() == defaultPosition
     assert character.getActionPoint() == 10
