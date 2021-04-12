@@ -3,7 +3,7 @@ from dungeonX.characters.enemies.enemy import Enemy
 #from dungeonX.game import Game
 
 #To modify, for the moment it indicates the maximum size of: ID, PlayerType, xPosition, yPosition,Attributes, HP (defined as strings, the sizes' list depends on the flag)
-MESSAGE_SIZE_MAX = {"wlc" : [5,1,4,4], "pos": [5,4,4], "hps": [5,3,5,3]}
+MESSAGE_SIZE_MAX = {"wlc" : [2,5,1,4,4], "pos": [2,5,4,4], "hps": [2,5,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,5,5]} #replace the 5 by 1 once we replace the character's ID by 0,1 or 2
 
 def get_character(List, ID):
     for character in List:
@@ -45,35 +45,35 @@ def check_size(string: str, n: int):
 
     return modified_str
 
-def extract(message, flag: int, n:int):
+def extract(message, flag: str, n:int):
     """ 
         This function is going to take as an argument a string and returns a list of other players' infos in string format.
         This infos will be converted into the right format in other functions.
         n : nombre d'elts a extraire
     """
 
-    if (flag == "wlc"):
-        l = [[] for k in range(3)]
+    if (flag == "wlc" or flag == "new"):
+        l = [message[3:5]]+[[] for k in range(3)]
         info = ""
         i = 0
-        message = message[3:]
+        message = message[5:]
         
-        for liste in l:
+        for liste in l[1:]:
             j = 0
             while j < n: #This should change if we send more infos i am supposing that  we're sending only for the moment:ID, type, position and attributes 
                 k = 0
-                while k < MESSAGE_SIZE_MAX[flag][j] and i < len(message):
+                while k < MESSAGE_SIZE_MAX[flag][j+1] and i < len(message):
                     info += message[i]
                     i += 1
                     k += 1
                 liste.append(info)
                 info = ""
                 j += 1
-    elif (flag == "pos" or flag == "hps"):
-        j,i = 0,0
+    elif (flag == "pos" or flag == "hps" or flag == "con" or flag == "ite"):
+        j,i = 1 if (flag == "pos" or flag == "hps") else 0,0
         info = ""
-        l = []
-        message  = message[3:]
+        l = [message[3:5]] if (flag == "pos" or flag == "hps") else []
+        message  = message[5:] if (flag == "pos" or flag == "hps") else message[3:]
         while j < n: 
             k = 0
             while k < MESSAGE_SIZE_MAX[flag][j] and i < len(message):
@@ -125,33 +125,41 @@ def read_attributes(att_str):
     return int(attributes_list[0]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
         ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7]) 
 
-def read_HP(hp_str):
-    return int(hp_str) 
+def read_int(int_str):
+    return int(int_str) 
 
+def read_IP(IP_str):
+    liste_nb = IP_str.split(".")
+    liste_nb[0] = str(int(liste_nb[0]))
+    return ".".join(liste_nb)
 
 class Message:
-    def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag=""):
+    def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag="", IP=0,port=0):
         
         self.flag = flag
         self.players = PlayerList
         self.enemies = EnemyList
+        self.playerID = 1 #we have to change this when we create the Player Class
 
         self.Player1Type1 = PlayerList[0]
         self.Player1Type2 = PlayerList[1] 
         self.Player1Type3 = PlayerList[2] 
 
-        self.id1 = PlayerList[0].ID
-        self.id2 = PlayerList[1].ID
-        self.id3 = PlayerList[2].ID
+        self.id1 = PlayerList[0].ID if PlayerList[0] != None else 0
+        self.id2 = PlayerList[1].ID if PlayerList[1] != None else 0
+        self.id3 = PlayerList[2].ID if PlayerList[2] != None else 0
 
-        self.type1 = PlayerList[0].PlayerType
-        self.type2 = PlayerList[1].PlayerType
-        self.type3 = PlayerList[2].PlayerType
+        self.type1 = PlayerList[0].PlayerType if PlayerList[0] != None else ""
+        self.type2 = PlayerList[1].PlayerType if PlayerList[1] != None else ""
+        self.type3 = PlayerList[2].PlayerType if PlayerList[2] != None else ""
 
-        self.pos1 = PlayerList[0].pos              
-        self.pos2 = PlayerList[1].pos
-        self.pos3 = PlayerList[2].pos
-        self.positions = [PlayerList[0].pos ,PlayerList[1].pos ,PlayerList[2].pos]
+        self.pos1 = PlayerList[0].pos if PlayerList[0] != None else (None,None)       
+        self.pos2 = PlayerList[1].pos if PlayerList[1] != None else (None,None) 
+        self.pos3 = PlayerList[2].pos if PlayerList[2] != None else (None,None) 
+        self.positions = [self.pos1,self.pos2,self.pos3]
+
+        self.IP = IP
+        self.port = port
 
         #self.attributes1 = PlayerList[0].stats
         #self.attributes2 = PlayerList[1].stats
@@ -163,12 +171,12 @@ class Message:
         self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1]]
         #TODO : add bag to the last list and add equiment message 
 
-    def create_message(self, ID = 0, IDenemy = 0):
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0):
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
         """
-        message_str = self.flag
+        message_str = self.flag + check_size(str(self.playerID),2) if(self.flag != "con") else self.flag
         if (self.flag == "wlc"): 
             liste = [self.list1,self.list2,self.list3]
             for i in range(3):
@@ -177,14 +185,22 @@ class Message:
                         part = get_initial(liste[i][j])
                     else:
                         part = str(liste[i][j])
-                    message_str += check_size(part,MESSAGE_SIZE_MAX[self.flag][j])
-
+                    message_str += check_size(part,MESSAGE_SIZE_MAX[self.flag][j+1])
+        elif (self.flag == "new"): 
+            liste = [self.list1[1:],self.list2[1:],self.list3[1:]]
+            for i in range(3):
+                for j in range(len(liste[i])):
+                    if (j==0):
+                        part = get_initial(liste[i][j])
+                    else:
+                        part = str(liste[i][j])
+                    message_str += check_size(part,MESSAGE_SIZE_MAX[self.flag][j+1])
         else: 
             ID_str = str(ID)
 
             if self.flag == "pos":
                 player = get_character(self.players, ID)
-                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][0]) + check_size(str(player.pos[0]),MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(player.pos[1]),MESSAGE_SIZE_MAX[self.flag][2])
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(player.pos[0]),MESSAGE_SIZE_MAX[self.flag][2]) + check_size(str(player.pos[1]),MESSAGE_SIZE_MAX[self.flag][3])
 
             elif (self.flag == "hps"):
                 IDE_str = str(IDenemy)
@@ -192,7 +208,12 @@ class Message:
                 enemy = get_character(self.enemies, IDenemy)
                 HP_str = str(player.getHP())
                 HP_str_e = str(enemy.getHP())
-                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][0]) + check_size(HP_str, MESSAGE_SIZE_MAX[self.flag][1]) + check_size(IDE_str, MESSAGE_SIZE_MAX[self.flag][0]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[self.flag][1])
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(HP_str, MESSAGE_SIZE_MAX[self.flag][2]) + check_size(IDE_str, MESSAGE_SIZE_MAX[self.flag][1]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[self.flag][2])
             
+            elif (self.flag == "con"):
+                message_str += check_size(str(self.IP),MESSAGE_SIZE_MAX[self.flag][0]) + check_size(str(self.port),MESSAGE_SIZE_MAX[self.flag][1])
+            
+            elif (self.flag == "ite"):
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(IDItem),MESSAGE_SIZE_MAX[self.flag][2])
         return message_str
         
