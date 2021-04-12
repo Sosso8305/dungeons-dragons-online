@@ -38,10 +38,10 @@ lineOfSight = 9
 defaultPotions = ItemFactory(ItemList.Potion)
 
 def testCharacterCreation():
-    Character.ID = 1
+    Character.ID = 50
     print(Character.ID)
     character = Character(game, defaultPosition, actionPoint, *defaultStats)
-    assert character.getID() == 1
+    assert character.getID() == 50
     print(Character.ID)
     assert character.getHP() == 100 # Cette méthode est redondante avec character.getAttribute(Attributes.HP), il faudrait l'enlever ou alors enlever HP des attributs
     assert character.getPosition() == defaultPosition
@@ -53,7 +53,7 @@ def testCharacterCreation():
     assert fighter.getHP() == 100
     assert fighter.getPosition() == defaultPosition
     assert fighter.getActionPoint() == 5
-    assert fighter.getID() == 2
+    assert fighter.getID() == 51
     for i, attribute in enumerate(Attributes):
         assert fighter.getAttribute(attribute) == defaultStats[i]
 
@@ -62,7 +62,7 @@ def testCharacterCreation():
     assert rogue.getHP() == 100
     assert rogue.getPosition() == defaultPosition
     assert rogue.getActionPoint() == 5
-    assert rogue.getID() == 3
+    assert rogue.getID() == 52
     for i, attribute in enumerate(Attributes):
         assert rogue.getAttribute(attribute) == defaultStats[i]
 
