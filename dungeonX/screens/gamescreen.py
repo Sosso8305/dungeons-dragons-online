@@ -181,8 +181,8 @@ class GameScreen(Window):
 
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
-		# self.oplayers = self.dungeon.oplayers
-		# self.oplayersCreation = False
+		self.oplayers = self.dungeon.oplayers
+		self.oplayersCreation = False
 
 	def __getstate__(self):
 		return None
@@ -321,11 +321,11 @@ class GameScreen(Window):
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
 
 		#Just for testing to remove later
-		# if(not self.oplayersCreation):
-		# 	self.dungeon.oplayers = [OtherPlayer2(['PlayerEnum.Rogue000',check_size(str((self.players[0].pos[0]+2,self.players[0].pos[1]+2)),11),check_size('(100, 7, 2, 3, 4, 5, 6, 7)',33)],self),\
-		# 		OtherPlayer2([check_size('PlayerEnum.Fighter',19),check_size(str((self.players[1].pos[0]+2,self.players[1].pos[1]+2)),11),check_size('(100, 7, 2, 3, 4, 5, 6, 7)',33)],self)]
-		# 	self.oplayers = self.dungeon.oplayers
-		# 	self.oplayersCreation = True
+		if(not self.oplayersCreation):
+			self.dungeon.oplayers = [OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self),\
+				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)]
+			self.oplayers = self.dungeon.oplayers
+			self.oplayersCreation = True
 			#print("premiere position\n",self.dungeon.oplayers[0].pos)
 
 		# --- Events Handling --- #
@@ -501,20 +501,20 @@ class GameScreen(Window):
 		
 		# ---- Entity rendering ---- #
 		#to remove later just for test
-		# try:
-		# 	if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
-		# 		(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
-		# 		l = self.oplayers[0]._move_zone()
-		# 		l1 = self.oplayers[1]._move_zone()
-		# 		if len(l):
-		# 			self.oplayers[0].playAction(self.game.dt,l[0])
-		# 		if len(l1) > 1:
-		# 			self.oplayers[1].playAction(self.game.dt,l1[1])
-		# except TypeError as e:
-		# 	print(str(e))
+		try:
+			if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
+				(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
+				l = self.oplayers[0]._move_zone()
+				l1 = self.oplayers[1]._move_zone()
+				if len(l):
+					self.oplayers[0].playAction(self.game.dt,l[0])
+				if len(l1) > 1:
+					self.oplayers[1].playAction(self.game.dt,l1[1])
+		except TypeError as e:
+			print(str(e))
 
-		# for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
-		for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
+		for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
+		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
 				ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)

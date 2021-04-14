@@ -23,12 +23,12 @@ class OtherPlayer2(Character):
 
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
         print("Player created")
-        super().__init__(game,read_position(liste_str[1]), actionPointMax,*read_attributes(liste_str[2])) #( HP, armor, strength, dex, con, intell, wis, cha )
+        super().__init__(game,read_position(liste_str[1],liste_str[2]), actionPointMax,100, 5, 6, 11, 3, 12, 8, 9) #( HP, armor, strength, dex, con, intell, wis, cha )
 
         self.type = read_type(liste_str[0])
         self.mod = read_mod(liste_str[0])
-        self.pos = read_position(liste_str[1])
-        self.att = read_attributes(liste_str[2])
+        self.pos = read_position(liste_str[1],liste_str[2])
+        #self.att = read_attributes(liste_str[2])
 
         self.equipment = [None, None, None, None, None]
 
