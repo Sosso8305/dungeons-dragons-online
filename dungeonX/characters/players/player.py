@@ -22,7 +22,9 @@ class PlayerEnum(Enum):
         
 
 class Player(Character) :
-
+    ID=0
+    RealPlayerID=0
+    MyPlayers=[]
     def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : [Skill] =[]):
         print("stat", stats)
         print("lineOfSightRadius",lineOfSightRadius)
@@ -41,6 +43,15 @@ class Player(Character) :
         self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring
         self.expToLevelUp = 100
         self.lineOfSightNormalTurn = None
+        self.RealPlayerID= Player.RealPlayerID
+        self.MyPlayers=Player.MyPlayers
+        if Player.ID > 2 :
+            Player.RealPlayerID +=1
+            Player.ID=1
+        else :
+           #  self.MyPlayers.append(self)
+            Player.ID+=1
+        self.ID=Player.ID
         
     def getVisibility(self):
         userSkill: Skill = self._searchSkill(SkillEnum.Stealth)
