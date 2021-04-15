@@ -1,9 +1,7 @@
 from dungeonX.characters.players.player import Player, PlayerEnum
 from dungeonX.characters.enemies.enemy import Enemy
-#from dungeonX.game import Game
 
-#To modify, for the moment it indicates the maximum size of: ID, PlayerType, xPosition, yPosition,Attributes, HP (defined as strings, the sizes' list depends on the flag)
-MESSAGE_SIZE_MAX = {"wlc" : [2,5,1,4,4], "pos": [2,5,4,4], "hps": [2,5,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,5,5]} #replace the 5 by 1 once we replace the character's ID by 0,1 or 2
+MESSAGE_SIZE_MAX = {"wlc" : [2,1,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5]}
 
 def get_character(List, ID):
     for character in List:
@@ -60,7 +58,7 @@ def extract(message, flag: str, n:int):
         
         for liste in l[1:]:
             j = 0
-            while j < n: #This should change if we send more infos i am supposing that  we're sending only for the moment:ID, type, position and attributes 
+            while j < n: 
                 k = 0
                 while k < MESSAGE_SIZE_MAX[flag][j+1] and i < len(message):
                     info += message[i]
@@ -161,11 +159,6 @@ class Message:
         self.IP = IP
         self.port = port
 
-        #self.attributes1 = PlayerList[0].stats
-        #self.attributes2 = PlayerList[1].stats
-        #self.attributes3 = PlayerList[2].stats 
-
-
         self.list1 = [self.id1,self.type1,self.pos1[0],self.pos1[1]]
         self.list2 = [self.id2,self.type2,self.pos2[0],self.pos2[1]]
         self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1]]
@@ -208,7 +201,7 @@ class Message:
                 enemy = get_character(self.enemies, IDenemy)
                 HP_str = str(player.getHP())
                 HP_str_e = str(enemy.getHP())
-                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(HP_str, MESSAGE_SIZE_MAX[self.flag][2]) + check_size(IDE_str, MESSAGE_SIZE_MAX[self.flag][1]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[self.flag][2])
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(HP_str, MESSAGE_SIZE_MAX[self.flag][2]) + check_size(IDE_str, MESSAGE_SIZE_MAX[self.flag][3]) + check_size(HP_str_e, MESSAGE_SIZE_MAX[self.flag][4])
             
             elif (self.flag == "con"):
                 message_str += check_size(str(self.IP),MESSAGE_SIZE_MAX[self.flag][0]) + check_size(str(self.port),MESSAGE_SIZE_MAX[self.flag][1])
