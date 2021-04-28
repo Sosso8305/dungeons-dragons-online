@@ -31,4 +31,12 @@ node_modules
 package-lock.json
 dist
 
-.swp
+
+# C files compiled
+*.out
+*.o
+
+# test network
+
+network/test/*
+*.swp 

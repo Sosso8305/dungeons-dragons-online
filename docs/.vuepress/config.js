@@ -36,8 +36,10 @@ module.exports = {
                     collapsable: false,
                     children: [
                     'online/',
-                    'online/exemple1',
-                    'online/exemple2',
+                    'online/RESEAUX',
+                    'online/InterfacePython',
+                    'online/Peer2Peer',
+                    'online/Connection_with_other',
                     ],
                 },
             ],

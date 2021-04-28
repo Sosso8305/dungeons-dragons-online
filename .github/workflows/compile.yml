@@ -1,0 +1,16 @@
+name : compile
+
+on : push
+
+jobs :
+  check-compile :
+    name : Compilable C file checker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+      - name : compilation
+        shell : bash
+        run : |
+          cd network 
+          make all
