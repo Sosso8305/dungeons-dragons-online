@@ -39,3 +39,4 @@ dist
 # test network
 
 network/test/*
+*.swp 
