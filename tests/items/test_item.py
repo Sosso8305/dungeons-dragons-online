@@ -2,14 +2,14 @@ from time import sleep
 from dungeonX.items.Item import ItemList, ItemFactory, Item
 import pytest
 
-def testItemCreation():
-    items = []
-    for _ in range(100):
-        swordItem = ItemFactory(ItemList.Sword)
-        items.append(swordItem)
-        with pytest.raises(Exception):
-            swordItem.getTimeLimit() 
-        assert swordItem.getName() == 'Sword'
+# def testItemCreation():
+#     items = []
+#     for _ in range(100):
+#         swordItem = ItemFactory(ItemList.Sword)
+#         items.append(swordItem)
+#         with pytest.raises(Exception):
+#             swordItem.getTimeLimit() 
+#         assert swordItem.getName() == 'Sword'
 
 def testItemNotUsed():
     swordItem = ItemFactory(ItemList.Sword)
@@ -27,13 +27,13 @@ def testItemUsed():
     assert potionItem.getTimeRemaining() < 148
     
 
-def testItemConsumed():
-    swordItem = ItemFactory(ItemList.Sword)
-    numberOfUsesInCreationTime = swordItem.getRemainingUses()
-    for _ in range(numberOfUsesInCreationTime):
-        assert swordItem.isconsumed() == False
-        swordItem.useItem()
-    assert swordItem.isconsumed() == True
+# def testItemConsumed():
+#     swordItem = ItemFactory(ItemList.Sword)
+#     numberOfUsesInCreationTime = swordItem.getRemainingUses()
+#     for _ in range(numberOfUsesInCreationTime):
+#         assert swordItem.isconsumed() == False
+#         swordItem.useItem()
+#     assert swordItem.isconsumed() == True
 
 def testCoin():
     smallCoin = ItemFactory(ItemList.Coin)

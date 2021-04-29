@@ -10,9 +10,11 @@ class Bag():
         if (contentWeight > self._maxWeight):
             print("Please add less items in the bag since limit is reached")
             self._content = []
+            self.content  = self._content
             self._currentWeight = 0
         else:
             self._content = content
+            self.content = self._content
             self._currentWeight = contentWeight
         
 

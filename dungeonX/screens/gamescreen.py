@@ -11,6 +11,8 @@ from ..graphics import Button, Cell
 from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
+from ..network.essaiOtherPlayer import OtherPlayer2
+from ..network.message import check_size
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -141,6 +143,12 @@ class GameScreen(Window):
 
 		self.bottombarwindow = BottomBarWindow(self)
 		self.inventorywindow = InventoryWindow(game, self)
+		
+		#additions for the multi-inventory blitting
+		self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
+		self.nbPlayers = 2 # will be the size of the real player list later
+		self.id_current_inventory = 0 # necessary var
+		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
 		self.skillwindow=SkillWindow(game, self)
@@ -167,8 +175,14 @@ class GameScreen(Window):
 		self.rangeCell = Cell((103,216,239, 120))
 		self.pauseButton= Button(game,(self.get_width()-66, 16), '', imgPath = "dungeonX/assets/ui/pause_button.png", size=(50,50), action=lambda:self.setState("paused"))
 
+		# next/previous inventory buttons init
+		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.changeInventory(1))
+		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.changeInventory(-1))
+
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
+		self.oplayers = self.dungeon.oplayers
+		self.oplayersCreation = False
 
 	def __getstate__(self):
 		return None
@@ -251,6 +265,20 @@ class GameScreen(Window):
 			self.__savedState = self.state
 		self.state = state
 
+	# new fonction to change the id_current_inventory (+1 or -1, action of the buttons l.178)
+	def changeInventory(self,inc):
+		""" To print other inventories
+
+		this method increments the id of the other inventory currently blitted
+		"""
+		print ("Test def changeInventory : id current inventory =",self.id_current_inventory)
+		if (self.id_current_inventory+inc)<self.nbPlayers and (self.id_current_inventory+inc)>=0 :
+			self.id_current_inventory += inc
+		else :
+			print ("Impossible d'incrémenter ",inc," car il n'y a que ",self.nbPlayers," joueurs.")
+		print ("Test def changeInventory : id current inventory =",self.id_current_inventory)
+	
+
 	def selectPlayer(self, p):
 		""" Setter for selectedPlayer
 
@@ -292,6 +320,14 @@ class GameScreen(Window):
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
 
+		#Just for testing to remove later
+		if(not self.oplayersCreation):
+			self.dungeon.oplayers = [OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self),\
+				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)]
+			self.oplayers = self.dungeon.oplayers
+			self.oplayersCreation = True
+			#print("premiere position\n",self.dungeon.oplayers[0].pos)
+
 		# --- Events Handling --- #
 		for event in events:
 			if self.state in ("map_opened", "inventory_opened", "paused", "skillwindow_opened","npcwindow_opened"):
@@ -309,6 +345,7 @@ class GameScreen(Window):
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					if not any((self.passTurnButton.rect.collidepoint(event.pos),
 								self.pauseButton.rect.collidepoint(event.pos),
+								self.nextButton.rect.collidepoint(event.pos),
 								self.bottombarwindow.rect.collidepoint(event.pos))):
 						if event.button==3:
 							for player in self.players:
@@ -463,7 +500,21 @@ class GameScreen(Window):
 	
 		
 		# ---- Entity rendering ---- #
-		for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
+		#to remove later just for test
+		try:
+			if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
+				(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
+				l = self.oplayers[0]._move_zone()
+				l1 = self.oplayers[1]._move_zone()
+				if len(l):
+					self.oplayers[0].playAction(self.game.dt,l[0])
+				if len(l1) > 1:
+					self.oplayers[1].playAction(self.game.dt,l1[1])
+		except TypeError as e:
+			print(str(e))
+
+		for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
+		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
 				ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
@@ -499,9 +550,18 @@ class GameScreen(Window):
 			if self.state == 'map_opened':
 				self.mapwindow.update(events)
 				self.blit(self.mapwindow, (0,0))
-			elif self.state == 'inventory_opened':
+			elif self.state == 'inventory_opened': 
 				self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
+				# buttons blitting
+				self.nextButton.update(events)
+				self.blit(self.nextButton.image,self.nextButton.rect)
+				self.prevButton.update(events)
+				self.blit(self.prevButton.image,self.prevButton.rect)
+				# affichage rudimentaire de l'autre inventaire, on fera avec un indice plus tard
+				if self.id_current_inventory==1:
+					self.inventorywindow2.update(events)
+					self.blit(self.inventorywindow2, (0,0))
 			elif self.state=='skillwindow_opened':	
 				self.blit(self.skillwindow,self.skillwindow.rect)
 			elif self.state =='npcwindow_opened':

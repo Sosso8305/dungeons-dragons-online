@@ -99,7 +99,7 @@ class PlayerController(Player):
         self.stepsToTarget = None
         self.timeToMove = 300 # in milliseconds
         self.animationSpeed = {'idle': 120, 'run': 100} # in milliseconds
-        self.game=game
+        self.game = game
         self.rect = pygame.Rect((0,0), (TILE_WIDTH, math.floor(TILE_WIDTH*24/16)))
         self.rect.midbottom = posToVect(pos) + (TILE_WIDTH/2, TILE_WIDTH)
         self.state = 'idle'

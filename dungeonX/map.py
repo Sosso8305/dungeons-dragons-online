@@ -315,7 +315,7 @@ class Map:
 
 	def canWalkOn(self, x, y):
 		""" Return True if the tile is walkable """
-		return 0<=x<self.width and 0<y<=self.height and self.get(x, y)=='.' and not any(entity.pos==(x,y) for entity in self.enemies+self.objects+(self.dungeon.players if self.dungeon.players!=None else []))
+		return 0<=x<self.width and 0<y<=self.height and self.get(x, y)=='.' and not any(entity.pos==(x,y) for entity in self.enemies+self.objects+(self.dungeon.players if self.dungeon.players!=None else [])+(self.dungeon.oplayers if self.dungeon.oplayers!=None else []))
 
 
 	def set(self, x, y, char):
@@ -407,6 +407,7 @@ class Dungeon:
 		self.game = game
 		self.editMode = editMode
 		self.players = None
+		self.oplayers = None
 		if not self.editMode:
 			self.game.blitLoadingScreen()
 		self.currentFloor = Map(self, generate=not editMode)

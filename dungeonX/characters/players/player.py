@@ -22,7 +22,9 @@ class PlayerEnum(Enum):
         
 
 class Player(Character) :
-
+    ID=0
+    RealPlayerID=0
+    MyPlayers=[]
     def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : [Skill] =[]):
         print("stat", stats)
         print("lineOfSightRadius",lineOfSightRadius)
@@ -32,13 +34,24 @@ class Player(Character) :
         self.level = 1
         self.exp = 0
         self._bag = self.game.inventorywindow.bag
+        #self.packetBag=self._bag
         self.name = PLAYERNAME
         self._playerType = playerType
+        self.PlayerType= self._playerType
         self.lineOfSightRadius = lineOfSightRadius
         self.normalLoSRadius = lineOfSightRadius
         self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring
         self.expToLevelUp = 100
         self.lineOfSightNormalTurn = None
+        self.RealPlayerID= Player.RealPlayerID
+        self.MyPlayers=Player.MyPlayers
+        if Player.ID > 2 :
+            Player.RealPlayerID +=1
+            Player.ID=1
+        else :
+           #  self.MyPlayers.append(self)
+            Player.ID+=1
+        self.ID=Player.ID
         
     def getVisibility(self):
         userSkill: Skill = self._searchSkill(SkillEnum.Stealth)
@@ -85,6 +98,7 @@ class Player(Character) :
         desc  : unequip an item and handle the according modification of stats
         @item : Item
         """
+
         if item not in self.equipment:
             print("Item not equipped")
             return
