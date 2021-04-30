@@ -28,12 +28,9 @@ class OnlineScreen(Window):
         self.cancelButton = Button(game, (self.get_width()//2+5, (self.get_height()+self.choiceBackground.get_height())//2-64-15), "Cancel", size=(140, 64), imgPath="dungeonX/assets/ui/button_red.png", textScale=0.3) #action=self.cancelDialog)
 
         self.IPAddressInput = TextInput(game, (self.get_width()//2-325, (self.get_height())//2-75),width=15, textScale=0.6)
-        self.AddInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-80),width=8)
-        self.Add1Input = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15)
-        self.Add2Input = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8)
-
-       
-
+        self.AddPortCInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-80),width=8)
+        self.AddIPInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15)
+        self.AddPortInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8)
 
 
         self.currentscreen = 'online_screen'
@@ -43,15 +40,15 @@ class OnlineScreen(Window):
     def saveIPaddress(self):
         if self.IPAddressInput.text!='':
             self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
-            self.dialogState = "save_confirmed"
-            self.filenameInput.unfocus()
+ #           self.dialogState = "save_confirmed"
+            self.IPAddressInput.unfocus()
             self.IPSaved = True
 
     def saveOptionalParameters (self):
         if self.AddInput.text!='':
             self.dungeon.save('dungeonX/saves/'+self.AddInput.text.replace(' ', '_')+'.txt')
-            self.dialogState = "save_confirmed"
-            self.filenameInput.unfocus()
+#            self.dialogState = "save_confirmed"
+            self.AddInput.unfocus()
             self.OpParamSaved = True
 
 
@@ -67,18 +64,21 @@ class OnlineScreen(Window):
             self.blit(self.IPAddressInput, self.IPAddressInput.rect)
             self.nextButton.update(events)
         if self.nextButton.isPressed():
-            self.game.setScreen('character_choice')
+            #TODO : Condition si c'est le tout premier joueur qui lance le jeu if not then : character choice directly with map already in check !!!
+            self.game.setScreen('map_selector')
         self.OptionalButton.update(events)
         if self.OptionalButton.isPressed() or self.isPressed:
             self.isPressed = True
             self.blit(self.choiceBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.choiceBackground.get_size())//2)
             self.game.textDisplayer.print("Add: Port , IPC , Port C", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.choiceBackground.get_size())//2, rectSize=(580,150), center=True, scale=0.3)
-            self.AddInput.update(events)
-            self.blit(self.AddInput, self.AddInput.rect)
-            self.Add1Input.update(events)
-            self.blit(self.Add1Input, self.Add1Input.rect)
-            self.Add2Input.update(events)
-            self.blit(self.Add2Input, self.Add2Input.rect)
+            
+            self.AddPortCInput.update(events, concurrentTextInputs=[self.AddIPInput, self.AddPortInput])
+            self.blit(self.AddPortCInput, self.AddPortCInput.rect)
+            self.AddIPInput.update(events, concurrentTextInputs=[self.AddPortCInput, self.AddPortInput])
+            self.blit(self.AddIPInput, self.AddIPInput.rect)
+            self.AddPortInput.update(events, concurrentTextInputs=[self.AddIPInput, self.AddPortCInput])
+            self.blit(self.AddPortInput, self.AddPortInput.rect)
+            
             
             self.saveButton.update(events)
             self.blit(self.saveButton.image, self.saveButton.rect)
