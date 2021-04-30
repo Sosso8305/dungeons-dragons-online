@@ -1,6 +1,6 @@
 import pygame, io
 from . import Window
-from ..graphics import Button, TextInput
+from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
 from ..constants import TILE_WIDTH
 START_BUTTON_WIDTH = 200
@@ -24,33 +24,45 @@ class OnlineScreen(Window):
         self.choiceBackground.set_colorkey((0,0,0))
         self.nextButton = Button(game,(self.get_width()-2.5*START_BUTTON_WIDTH,5*self.get_height()//6-START_BUTTON_HEIGHT//2),"Next",(START_BUTTON_WIDTH, START_BUTTON_HEIGHT),action=self.saveIPaddress)
         self.OptionalButton = Button(game,(self.get_width()-1000,5*self.get_height()//6-100//2),"Optional Parameters",(200, 100),textScale=0.3) 
-        self.saveButton = Button(game, (self.get_width()//2-140-5, (self.get_height()+self.choiceBackground.get_height())//2-64-15), "Save", size=(140, 64), textScale=0.3)
+        self.saveButton = Button(game, (self.get_width()//2-140-5, (self.get_height()+self.choiceBackground.get_height())//2-64-15), "Save", size=(140, 64), textScale=0.3,action=self.saveOptionalParam)
         self.cancelButton = Button(game, (self.get_width()//2+5, (self.get_height()+self.choiceBackground.get_height())//2-64-15), "Cancel", size=(140, 64), imgPath="dungeonX/assets/ui/button_red.png", textScale=0.3) #action=self.cancelDialog)
 
-        self.IPAddressInput = TextInput(game, (self.get_width()//2-325, (self.get_height())//2-75),width=15, textScale=0.6)
-        self.AddPortCInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-80),width=8)
-        self.AddIPInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15)
-        self.AddPortInput = TextInput(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8)
+        self.IPAddressInput = TextInputOnline(game, (self.get_width()//2-325, (self.get_height())//2-75),width=15, textScale=0.6,IP=True)
+        self.AddPortCInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-80),width=8,text="5555")
+        self.AddIPInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15,text="127.0.0.1",IP=True)
+        self.AddPortInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8,text="5133")
 
 
+        self.IPaddress=""
+        self.Port=""
+        self.PortC=""
+        self.IPC=""
         self.currentscreen = 'online_screen'
         
-
-
+    def saveall(self):
+        self.saveIPaddress()
+        self.saveOptionalParam()
     def saveIPaddress(self):
         if self.IPAddressInput.text!='':
-            self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
+            self.IPaddress= self.IPAddressInput.text
+ #           self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
  #           self.dialogState = "save_confirmed"
             self.IPAddressInput.unfocus()
             self.IPSaved = True
 
-    def saveOptionalParameters (self):
-        if self.AddInput.text!='':
-            self.dungeon.save('dungeonX/saves/'+self.AddInput.text.replace(' ', '_')+'.txt')
-#            self.dialogState = "save_confirmed"
-            self.AddInput.unfocus()
-            self.OpParamSaved = True
+    def saveOptionalParam(self):
+        if self.AddPortInput.text!='':
+            self.Port=self.AddPortInput.text
+            self.AddPortInput.unfocus()
+        if self.AddPortCInput.text!='':
+            self.PortC=self.AddPortCInput.text
+            self.AddPortCInput.unfocus()
+        if self.AddIPInput.text!='':
+            self.IPC=self.AddIPInput.text
+            self.AddIPInput.unfocus()
+        self.OpParamSaved = True
 
+    
 
     def update(self, events):
         # --- Render --- #
@@ -82,6 +94,9 @@ class OnlineScreen(Window):
             
             self.saveButton.update(events)
             self.blit(self.saveButton.image, self.saveButton.rect)
+            if self.saveButton.isPressed():
+                #self.saveOptionalParam()
+                self.isPressed = False
             self.cancelButton.update(events)
             self.blit(self.cancelButton.image, self.cancelButton.rect)
             if self.cancelButton.isPressed():
