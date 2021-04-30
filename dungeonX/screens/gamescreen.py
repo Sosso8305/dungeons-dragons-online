@@ -155,6 +155,7 @@ class GameScreen(Window):
 		self.characterwindow=CharacterWindow(game, self)
 		self.statuswindow = StatusWindow(game, self)
 		self.displaycharacterwindow=False
+		self.currentCharacterSheet=-1
 
 		self.camera = pygame.Rect((0,0), (self.__viewport.get_width(), self.__viewport.get_height()))
 		self.setCamera(Map.posToVect(self.dungeon.currentFloor.startPos))
@@ -178,6 +179,10 @@ class GameScreen(Window):
 		# next/previous inventory buttons init
 		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.changeInventory(1))
 		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.changeInventory(-1))
+
+		#next/previous charactersheet buttons
+		self.nextButtonC= Button(game,(self.get_width()-40, 150), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(30,30), action=lambda:self.nextSheet(1))
+		self.prevButtonC= Button(game,(self.get_width()-285, 150), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(30,30), action=lambda:self.nextSheet(-1))
 
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
@@ -319,15 +324,13 @@ class GameScreen(Window):
 
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
-
 		#Just for testing to remove later
 		if(not self.oplayersCreation):
 			self.dungeon.oplayers = [OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self),\
 				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)]
 			self.oplayers = self.dungeon.oplayers
 			self.oplayersCreation = True
-			#print("premiere position\n",self.dungeon.oplayers[0].pos)
-
+		
 		# --- Events Handling --- #
 		for event in events:
 			if self.state in ("map_opened", "inventory_opened", "paused", "skillwindow_opened","npcwindow_opened"):
@@ -346,6 +349,8 @@ class GameScreen(Window):
 					if not any((self.passTurnButton.rect.collidepoint(event.pos),
 								self.pauseButton.rect.collidepoint(event.pos),
 								self.nextButton.rect.collidepoint(event.pos),
+								self.nextButtonC.rect.collidepoint(event.pos),
+								self.prevButtonC.rect.collidepoint(event.pos),
 								self.bottombarwindow.rect.collidepoint(event.pos))):
 						if event.button==3:
 							for player in self.players:
@@ -580,7 +585,24 @@ class GameScreen(Window):
 					self.blit(self.passTurnButton.image, self.passTurnButton.rect)
 				self.statuswindow.handleInput(events)
 				if self.displaycharacterwindow:
-					self.characterwindow.update(events)
+					oplayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+					try:
+						if oplayersList != []:
+							self.nextButtonC.update(events)
+							self.blit(self.nextButtonC.image,self.nextButtonC.rect)
+							self.prevButtonC.update(events)
+							self.blit(self.prevButtonC.image,self.prevButtonC.rect)
+						if not (self.currentCharacterSheet == -1):
+							self.characterwindow.update(events,plyr=oplayersList[self.currentCharacterSheet])
+						else:
+							self.characterwindow.update(events)
+					except IndexError:
+						self.currentCharacterSheet = len(oplayersList)-1
+						if not (self.currentCharacterSheet == -1):
+							self.characterwindow.update(events,plyr=oplayersList[self.currentCharacterSheet])
+						else:
+							self.characterwindow.update(events)
+
 					self.blit(self.characterwindow, self.characterwindow.rect)
 				else:
 					self.statuswindow.update(events)
@@ -592,6 +614,13 @@ class GameScreen(Window):
 			self.blit(self.bottombarwindow, (0,0))
 			self.skillwindow.update(events)
 			self.npcwindow.update(events)
+
+	def nextSheet(self,index):
+		if (self.currentCharacterSheet+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentCharacterSheet+index < -1):
+			print("No more players in the line of sight")
+			return
+		self.currentCharacterSheet += index
+		
 
 
 		

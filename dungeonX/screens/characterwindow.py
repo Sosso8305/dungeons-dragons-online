@@ -45,14 +45,15 @@ class CharacterWindow(Window):
 		
 		self.bar_foreground.set_colorkey((0,0,0))
 		
-	def update(self,event):
+	def update(self,event,plyr=None):
 		
-		player = self.parentScreen.selectedPlayer
+		player = self.parentScreen.selectedPlayer if plyr == None else plyr
 		
 		self.fill((0,0,0))
 
 		self.blit(self.bar_background, (73*CHARACTER_SCALE, 42*CHARACTER_SCALE))
-		self.blit(self.bar_foreground, ((73-(1-player.getExp()/player.expToLevelUp)*29)*CHARACTER_SCALE, 42*CHARACTER_SCALE))
+		if plyr == None:
+			self.blit(self.bar_foreground, ((73-(1-player.getExp()/player.expToLevelUp)*29)*CHARACTER_SCALE, 42*CHARACTER_SCALE))
 		self.blit(self.background, (0,0))
 		self.blit(pygame.transform.scale(player.image,(math.floor((24*CHARACTER_SCALE)), math.floor(36*CHARACTER_SCALE))), (math.floor(8*CHARACTER_SCALE)+2, math.floor(10*CHARACTER_SCALE)+5))
 

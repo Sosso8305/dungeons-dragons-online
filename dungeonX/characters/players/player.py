@@ -10,10 +10,14 @@ from dungeonX.objects import Chest,Door
 from datetime import datetime
 import time
 from copy import copy 
-import random
+import random,math
 
 BASE_MODIFIER = -5
 DEFAULT_DIFFICULTY_CHECK = 20
+
+def distanceBetween(xA, yA, xB, yB):
+    """ Returns the distance between A and B """
+    return math.sqrt((xB-xA)*(xB-xA) + (yB-yA)*(yB-yA))
 
 class PlayerEnum(Enum):
     Rogue ='Rogue'
@@ -370,3 +374,16 @@ class Player(Character) :
         if userSkill == None:
             print(f'This Skill ({skillType}) was not found'); return
         return userSkill.getCurrentRankUpPoints()
+
+    def checkLineOfSight(self,oplayers):
+        """
+        This function checks if the other player is in the line of sight of the player selected
+        """
+        inLineOfSight = []
+        lineOfSight = self.getLineOfSightCells()
+        for oplayer in oplayers:
+            for pos in lineOfSight:
+                if distanceBetween(*pos,*oplayer.pos) <= 1.5:
+                    inLineOfSight.append(oplayer)
+                    break
+        return inLineOfSight

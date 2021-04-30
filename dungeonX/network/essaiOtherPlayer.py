@@ -1,6 +1,6 @@
 import pygame,math,os,random
 from dungeonX.network.message import read_position, read_attributes,read_type, read_mod
-from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT
+from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT,OTHERPLAYERNAME
 from dungeonX.characters.character import Character
 from ..map import Map
 
@@ -28,6 +28,7 @@ class OtherPlayer2(Character):
         self.type = read_type(liste_str[0])
         self.mod = read_mod(liste_str[0])
         self.pos = read_position(liste_str[1],liste_str[2])
+        self.exp = 0 #we have to modify this later if we create a message type for exp
         #self.att = read_attributes(liste_str[2])
 
         self.equipment = [None, None, None, None, None]
@@ -64,6 +65,8 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
+        self.name = OTHERPLAYERNAME
+        self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
 
     def __getstate__(self):
@@ -165,3 +168,6 @@ class OtherPlayer2(Character):
         else:
             self.state = 'idle'
         return self.state
+
+    def getLevel(self) :
+        return self.level
