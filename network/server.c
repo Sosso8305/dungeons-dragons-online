@@ -25,10 +25,26 @@ void display_data_player(data_player player)
     printf("=========================\n\n");
 }
 
+void display_socket(socketBSD sock){
+    printf("## IP--> %s     port--> %i ## \n",sock.ip,sock.port);
+}
+
 void stop(char *msg)
 {
     perror(msg);
     exit(EXIT_FAILURE);
+}
+
+void sendSocketPlayerInNetwork(int sockfd,all_data * data){
+
+    int numberPlayer = (*data).numberOtherPlayers;
+    send(sockfd,&numberPlayer,sizeof(int),0);
+
+    for (int i=0;i< numberPlayer; i++){
+        send(sockfd,&((*data).AllSocketInNetwork[i]),sizeof(socketBSD),0); 
+    }
+
+
 }
 
 void *RecvPython(void *StructArg)
@@ -364,6 +380,10 @@ void *SendSructMyPlayer(void *StructArg)
     send(sockfd, &init, sizeof(int), 0);
     send(sockfd, &myPort, sizeof(int), 0);
 
+
+    //sendSocketPlayerInNetwork(sockfd,(*arg).data); // to communicate all knowed-socket in network for to init new connection.
+
+
     data_player MyPlayer; // variable tempon pour verifier que les donner on changer
     bzero(&MyPlayer,sizeof(data_player));
     
@@ -422,7 +442,7 @@ void *serverPeer(void *StrucData)
     printf("Start network Server Peer2peer  with  my port %i\n", (*data).port_Server);
 
     int numberOfThread = 0;
-    pthread_t *thread_server; // #1 recv struct data_player(Otherplayer) and add on data     #0  create new connection with other server ans send MyPlayer
+    pthread_t *thread_server; // #1 recv struct data_player(Otherplayer) and add on data     #0  create new connection with other server and send MyPlayer
 
     while (1)
     {
@@ -433,6 +453,8 @@ void *serverPeer(void *StrucData)
 
         int init;
         int otherPort;
+        //int numberSocket;
+       
 
         int n = recv(new_playerFD, &init, sizeof(int), 0);
         if (DEBUG)
@@ -468,6 +490,73 @@ void *serverPeer(void *StrucData)
             break;
         }
 
+       /*n = recv(new_playerFD, &numberSocket, sizeof(int), 0);
+        if (DEBUG)
+            printf("number of other player in network --> %i \n", numberSocket);
+
+        switch (n)
+        {
+        case -1:
+            pthread_exit(NULL);
+
+        case 0:
+            printf("End connection by peer \n");
+            pthread_exit(NULL);
+
+        default:
+            break;
+        }
+
+        //------------look all socket in network and if necessary, to create a new connection -----// 
+        socketBSD OneSocketInNetwork;
+        for ( int i=0; i < numberSocket ; i++){
+            
+            n = recv(new_playerFD, &OneSocketInNetwork, sizeof(socketBSD), 0);
+            switch (n)
+            {
+            case -1:
+                pthread_exit(NULL);
+
+            case 0:
+                printf("End connection by peer \n");
+                pthread_exit(NULL);
+
+            default:
+                break;
+            }
+
+            int MakeNewConnection = 1;
+            for (int k=0; k< (*data).numberOtherPlayers; k++){
+
+                if(memcmp(&((*data).AllSocketInNetwork[k]),&OneSocketInNetwork,sizeof(socketBSD)) == 0 )
+                {
+                    MakeNewConnection = 0;
+                    break;   
+                }
+                
+            }
+
+            if (MakeNewConnection){
+
+                numberOfThread++;
+                thread_server = malloc(numberOfThread * sizeof(pthread_t));
+
+                argument arg;
+                arg.data=data;
+                arg.port_dest=OneSocketInNetwork.port;
+                arg.ip=malloc(16*sizeof(socketBSD));
+                strncpy(arg.ip,OneSocketInNetwork.ip,16*sizeof(char));
+
+                 if (pthread_create(&thread_server[numberOfThread-1], NULL, SendStructMyPlayerInitARG, &arg) != 0)
+                    stop("thread_init_Send_Make_New_Connection_In_Network");
+            }
+
+
+        }
+
+*/
+
+
         //----------init new size de Otherplayer------------//
 
         // data_player * tempOtherPlayer;
@@ -485,6 +574,36 @@ void *serverPeer(void *StrucData)
         // memcpy((*data).OtherPlayers,tempOtherPlayer,((*data).numberOtherPlayers -1)*sizeof(data_player));
 
         // free(tempOtherPlayer);
+
+        
+        //------------Memory of new soket----------------//
+        socketBSD socket;
+        socket.ip =malloc(16* sizeof(char));
+        strncpy(socket.ip,ip_OtherServer,16* sizeof(char));
+        socket.port = otherPort;
+        
+
+        socketBSD * tempAllSocketInNetwork;
+        if((*data).numberOtherPlayers > 1){
+            tempAllSocketInNetwork = malloc((*data).numberOtherPlayers * sizeof(socketBSD));
+            memcpy(tempAllSocketInNetwork,(*data).AllSocketInNetwork,((*data).numberOtherPlayers -1)*sizeof(socketBSD));
+        }
+
+        (*data).AllSocketInNetwork = malloc((*data).numberOtherPlayers * sizeof(socketBSD));
+        
+        if((*data).numberOtherPlayers > 1){
+            memcpy((*data).AllSocketInNetwork,tempAllSocketInNetwork,((*data).numberOtherPlayers -1)*sizeof(socketBSD));
+            free(tempAllSocketInNetwork);
+        }
+
+        memcpy(&((*data).AllSocketInNetwork[((*data).numberOtherPlayers-1)]),&socket,sizeof(socketBSD));
+
+
+        for (int i=0; i< (*data).numberOtherPlayers; i++){
+            printf("##%i",i);
+            display_socket((*data).AllSocketInNetwork[i]);
+
+        }
 
         argument arg;
         arg.ip = malloc(16 * sizeof(char));

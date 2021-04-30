@@ -93,9 +93,9 @@ int main(int argc, char const *argv[])
         {   
             
             send(sockfd,&player.dataPython,sizeof(char)*SIZE_DATA_PY,0);
-            sleep(10);
+            sleep(2);
             send(sockfd,&player2.dataPython,sizeof(char)*SIZE_DATA_PY,0);
-            sleep(10);
+            sleep(2);
         }
         
 
