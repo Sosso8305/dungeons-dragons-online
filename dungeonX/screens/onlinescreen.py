@@ -36,20 +36,24 @@ class OnlineScreen(Window):
         self.okayButton = Button(game, (self.get_width()//2-75, (self.get_height()+self.infoBackground.get_height())//2-64-15), "Okay", size=(140, 64), textScale=0.3)
 
         self.IPAddressInput = TextInputOnline(game, (self.get_width()//2-325, (self.get_height())//2-75),width=15, textScale=0.6,IP=True)
+        self.AddPortInInput = TextInputOnline(game, (self.get_width()//2-160, (self.get_height()//2)),width=8,textScale=0.6,text="5555")
         self.AddPortCInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-80),width=8,text="5555")
         self.AddIPInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15,text="127.0.0.1",IP=True)
         self.AddPortInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8,text="5133")
 
 
         self.IPaddress=""
+        self.PortIn=""
         self.Port=""
         self.PortC=""
         self.IPC=""
         self.currentscreen = 'online_screen'
         
+
     def saveall(self):
         self.saveIPaddress()
         self.saveOptionalParam()
+
     def saveIPaddress(self):
         if self.IPAddressInput.text!='':
             self.IPaddress= self.IPAddressInput.text
@@ -57,6 +61,9 @@ class OnlineScreen(Window):
  #           self.dialogState = "save_confirmed"
             self.IPAddressInput.unfocus()
             self.IPSaved = True
+        if self.AddPortInInput.text!='':
+            self.PortIn= self.AddPortInInput.text
+            self.AddPortInInput.unfocus()
 
     def saveOptionalParam(self):
         if self.AddPortInput.text!='':
@@ -87,8 +94,10 @@ class OnlineScreen(Window):
             self.blit(self.nextButton.image,self.nextButton.rect)
             self.blit(self.OptionalButton.image,self.OptionalButton.rect)
             self.IPAddressInput.update(events)
-
             self.blit(self.IPAddressInput, self.IPAddressInput.rect)
+            
+            self.AddPortInInput.update(events)
+            self.blit(self.AddPortInInput, self.AddPortInInput.rect)
         
         self.OptionalButton.update(events)
         if self.OptionalButton.isPressed() or self.isPressed:
@@ -96,6 +105,7 @@ class OnlineScreen(Window):
             self.blit(self.choiceBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.choiceBackground.get_size())//2)
             self.game.textDisplayer.print("Add: Port , IPC , Port C", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.choiceBackground.get_size())//2, rectSize=(580,150), center=True, scale=0.3)
             
+
             self.AddPortCInput.update(events, concurrentTextInputs=[self.AddIPInput, self.AddPortInput])
             self.blit(self.AddPortCInput, self.AddPortCInput.rect)
             self.AddIPInput.update(events, concurrentTextInputs=[self.AddPortCInput, self.AddPortInput])
@@ -112,6 +122,7 @@ class OnlineScreen(Window):
             self.blit(self.cancelButton.image, self.cancelButton.rect)
             if self.cancelButton.isPressed():
                 self.isPressed = False
+                
         self.nextButton.update(events)
         if self.nextButton.isPressed() or self.isPressedN:
             #TODO : Condition si c'est le tout premier joueur qui lance le jeu if not then : character choice directly with map already in check !!!
@@ -121,7 +132,7 @@ class OnlineScreen(Window):
                 self.isPressedN = True
                 self.blit(self.infoBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2)
                 self.game.textDisplayer.print("Invalid IP address Format : example 127.0.0.1", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2, rectSize=(600,80), center=True, scale=0.3)
-                print("IP adress format Invalid : example 127.0.0.1")    
+                #print("IP adress format Invalid : example 127.0.0.1")    
                 self.okayButton.update(events)
                 self.blit(self.okayButton.image, self.okayButton.rect)
                 if self.okayButton.isPressed():
