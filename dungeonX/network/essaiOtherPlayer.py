@@ -3,7 +3,7 @@ from dungeonX.network.message import read_position, read_attributes,read_type, r
 from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT,OTHERPLAYERNAME
 from dungeonX.characters.character import Character
 from ..map import Map
-
+from dungeonX.characters import Bag
 
 def vectToPos(vect):
     if type(vect) in (tuple, list):
@@ -31,9 +31,8 @@ class OtherPlayer2(Character):
         self.exp = 0 #we have to modify this later if we create a message type for exp
         #self.att = read_attributes(liste_str[2])
 
-        self.equipment = [None, None, None, None, None]
-
-
+        # bag initialization : empty at the beginning, no weight, no money, no equipment
+        self.bag = Bag(500)
 
         self.timeToMove = 300
         self.animationSpeed = {'idle': 120, 'run': 100}
