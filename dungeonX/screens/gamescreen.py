@@ -11,6 +11,8 @@ from ..graphics import Button, Cell
 from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
+from ..network.essaiOtherPlayer import OtherPlayer2
+from ..network.message import check_size
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -141,12 +143,20 @@ class GameScreen(Window):
 
 		self.bottombarwindow = BottomBarWindow(self)
 		self.inventorywindow = InventoryWindow(game, self)
+		
+		#additions for the multi-inventory blitting
+		self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
+		self.nbPlayers = 2 # will be the size of the real player list later
+		self.id_current_inventory = 0 # necessary var
+		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
 		self.skillwindow=SkillWindow(game, self)
 		self.characterwindow=CharacterWindow(game, self)
 		self.statuswindow = StatusWindow(game, self)
 		self.displaycharacterwindow=False
+		self.currentCharacterSheet=-1
+		self.currentInventory=-1
 
 		self.camera = pygame.Rect((0,0), (self.__viewport.get_width(), self.__viewport.get_height()))
 		self.setCamera(Map.posToVect(self.dungeon.currentFloor.startPos))
@@ -167,8 +177,18 @@ class GameScreen(Window):
 		self.rangeCell = Cell((103,216,239, 120))
 		self.pauseButton= Button(game,(self.get_width()-66, 16), '', imgPath = "dungeonX/assets/ui/pause_button.png", size=(50,50), action=lambda:self.setState("paused"))
 
+		# next/previous inventory buttons init
+		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.nextInventory(1))
+		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.nextInventory(-1))
+
+		#next/previous charactersheet buttons
+		self.nextButtonC= Button(game,(self.get_width()-40, 150), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(30,30), action=lambda:self.nextSheet(1))
+		self.prevButtonC= Button(game,(self.get_width()-285, 150), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(30,30), action=lambda:self.nextSheet(-1))
+
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
+		self.oplayers = self.dungeon.oplayers
+		self.oplayersCreation = False
 
 	def __getstate__(self):
 		return None
@@ -250,6 +270,7 @@ class GameScreen(Window):
 		if self.state in ('input', 'walk', 'enemy'):
 			self.__savedState = self.state
 		self.state = state
+	
 
 	def selectPlayer(self, p):
 		""" Setter for selectedPlayer
@@ -291,7 +312,13 @@ class GameScreen(Window):
 
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
-
+		#Just for testing to remove later
+		if(not self.oplayersCreation):
+			self.dungeon.oplayers = [OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self),\
+				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)]
+			self.oplayers = self.dungeon.oplayers
+			self.oplayersCreation = True
+		
 		# --- Events Handling --- #
 		for event in events:
 			if self.state in ("map_opened", "inventory_opened", "paused", "skillwindow_opened","npcwindow_opened"):
@@ -309,6 +336,10 @@ class GameScreen(Window):
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					if not any((self.passTurnButton.rect.collidepoint(event.pos),
 								self.pauseButton.rect.collidepoint(event.pos),
+								self.nextButton.rect.collidepoint(event.pos),
+								self.prevButton.rect.collidepoint(event.pos),
+								self.nextButtonC.rect.collidepoint(event.pos),
+								self.prevButtonC.rect.collidepoint(event.pos),
 								self.bottombarwindow.rect.collidepoint(event.pos))):
 						if event.button==3:
 							for player in self.players:
@@ -463,7 +494,21 @@ class GameScreen(Window):
 	
 		
 		# ---- Entity rendering ---- #
-		for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
+		#to remove later just for test
+		try:
+			if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
+				(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
+				l = self.oplayers[0]._move_zone()
+				l1 = self.oplayers[1]._move_zone()
+				if len(l):
+					self.oplayers[0].playAction(self.game.dt,l[0])
+				if len(l1) > 1:
+					self.oplayers[1].playAction(self.game.dt,l1[1])
+		except TypeError as e:
+			print(str(e))
+
+		for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
+		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
 				ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
@@ -491,6 +536,10 @@ class GameScreen(Window):
 		# ---- GUI rendering ---- #
 		self.game.particleSystem.update(self.game.dt)
 		self.blit(pygame.transform.scale(self.__viewport, (self.get_width(), self.get_height())), (0,0))
+		
+		# liste des joueurs visibles pour afficher en fonction 
+		visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+		self.visiblePlayersList=visiblePlayersList
 
 		if self.state == 'paused':
 			self.pausemenu.update(events)
@@ -499,9 +548,20 @@ class GameScreen(Window):
 			if self.state == 'map_opened':
 				self.mapwindow.update(events)
 				self.blit(self.mapwindow, (0,0))
-			elif self.state == 'inventory_opened':
+			elif self.state == 'inventory_opened': 
 				self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
+				if self.visiblePlayersList != []:
+					self.nextButton.update(events)
+					self.blit(self.nextButton.image,self.nextButton.rect)
+					self.prevButton.update(events)
+					self.blit(self.prevButton.image,self.prevButton.rect)
+				if not (self.currentInventory == -1):
+					self.inventorywindow.update(events, otherplayer=self.visiblePlayersList[self.currentInventory])
+					self.blit(self.inventorywindow, (0,0))
+				else :
+					self.inventorywindow.update(events)
+					self.blit(self.inventorywindow, (0,0))
 			elif self.state=='skillwindow_opened':	
 				self.blit(self.skillwindow,self.skillwindow.rect)
 			elif self.state =='npcwindow_opened':
@@ -520,7 +580,25 @@ class GameScreen(Window):
 					self.blit(self.passTurnButton.image, self.passTurnButton.rect)
 				self.statuswindow.handleInput(events)
 				if self.displaycharacterwindow:
-					self.characterwindow.update(events)
+					# je teste de deplacer pcq j'en ai aussi besoin 
+					# self.visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+					try:
+						if self.visiblePlayersList != []:
+							self.nextButtonC.update(events)
+							self.blit(self.nextButtonC.image,self.nextButtonC.rect)
+							self.prevButtonC.update(events)
+							self.blit(self.prevButtonC.image,self.prevButtonC.rect)
+						if not (self.currentCharacterSheet == -1):
+							self.characterwindow.update(events,plyr=self.visiblePlayersList[self.currentCharacterSheet])
+						else:
+							self.characterwindow.update(events)
+					except IndexError:
+						self.currentCharacterSheet = len(self.visiblePlayersList)-1
+						if not (self.currentCharacterSheet == -1):
+							self.characterwindow.update(events,plyr=self.visiblePlayersList[self.currentCharacterSheet])
+						else:
+							self.characterwindow.update(events)
+
 					self.blit(self.characterwindow, self.characterwindow.rect)
 				else:
 					self.statuswindow.update(events)
@@ -532,6 +610,19 @@ class GameScreen(Window):
 			self.blit(self.bottombarwindow, (0,0))
 			self.skillwindow.update(events)
 			self.npcwindow.update(events)
+		
+	def nextInventory(self,index):
+		if (self.currentInventory+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentInventory+index < -1):
+			print("No more players in the line of sight")
+			return
+		self.currentInventory += index
+
+	def nextSheet(self,index):
+		if (self.currentCharacterSheet+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentCharacterSheet+index < -1):
+			print("No more players in the line of sight")
+			return
+		self.currentCharacterSheet += index
+		
 
 
 		

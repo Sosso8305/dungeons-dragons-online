@@ -143,8 +143,62 @@ class TextInput(pygame.Surface):
 		pygame.key.stop_text_input()
 		self.selected = False
 
-	def update(self, events):
+	def update(self, events, concurrentTextInputs=[]):
 		for event in events:
+			
+			if event.type==pygame.MOUSEBUTTONDOWN:
+				if self.rect.collidepoint(event.pos):
+					self.focus()
+				else:
+					self.unfocus()
+			if self.selected and event.type==pygame.KEYDOWN:
+				if event.key==pygame.K_BACKSPACE:
+					self.text = self.text[:-1]
+			if self.selected and event.type==pygame.TEXTINPUT:
+				print(self.text, self.width)
+				if len(self.text)<self.width:
+					self.text += event.text
+			
+
+		if self.selected:
+			self.fill((100, 100, 100))
+		elif self.rect.collidepoint(pygame.mouse.get_pos()):
+			self.fill((70, 70, 70))
+		else:
+			self.fill((50 ,50 ,50))
+		self.game.textDisplayer.print(self.text+('_' if self.selected and len(self.text)<self.width else ''), (10,0), rectSize=self.rect.size, scale=self.textScale, screen=self)
+
+
+class TextInputOnline(pygame.Surface):
+	def __init__(self, game, pos,IP : bool = False, width=10, textScale=0.3,text: str = ""):
+		self.game = game
+		self.textScale = textScale
+		super().__init__((game.textDisplayer.getWidthOf('W', scale=textScale)*width+15, game.textDisplayer.height*textScale+10))
+		self.selected = False
+		self.rect = self.get_rect().move(pos)
+		self.text = text
+		self.width = width
+		self.IP =IP
+
+
+	def focus(self):
+		pygame.key.start_text_input()
+		self.selected = True
+
+	def unfocus(self):
+		pygame.key.stop_text_input()
+		self.selected = False
+    
+	def unfocusConcurrentInputs(self, concurrents):
+		for concurrent in concurrents:
+			concurrent.unfocus()
+			print(concurrent.selected)
+
+
+	def update(self, events, concurrentTextInputs=[]):
+		for event in events:
+			
+			pygame.key.start_text_input()
 			if event.type==pygame.MOUSEBUTTONDOWN:
 				if self.rect.collidepoint(event.pos):
 					self.focus()
@@ -155,7 +209,15 @@ class TextInput(pygame.Surface):
 					self.text = self.text[:-1]
 			if self.selected and event.type==pygame.TEXTINPUT:
 				if len(self.text)<self.width:
-					self.text += event.text
+					if self.IP == True :
+						if event.text.isnumeric() or event.text== "." :
+							self.text += event.text
+					else :
+						if event.text.isnumeric() :
+							self.text += event.text
+
+					
+			
 
 		if self.selected:
 			self.fill((100, 100, 100))
@@ -163,7 +225,6 @@ class TextInput(pygame.Surface):
 			self.fill((70, 70, 70))
 		else:
 			self.fill((50 ,50 ,50))
-
 		self.game.textDisplayer.print(self.text+('_' if self.selected and len(self.text)<self.width else ''), (10,0), rectSize=self.rect.size, scale=self.textScale, screen=self)
 
 
@@ -546,5 +607,4 @@ def createRoundImage(radius, background:pygame.Color = (0,0,0), foreground:pygam
 					if diag_neighbours=='1101':
 						image.fill(background, (x*TILE_WIDTH, y*TILE_WIDTH, TILE_WIDTH, TILE_WIDTH))
 						image.blit(pygame.transform.rotate(little_corner, -90), (x*TILE_WIDTH, y*TILE_WIDTH))
-
 	return image
