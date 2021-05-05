@@ -47,7 +47,7 @@ def ipPadding(ip):
 
 
 class Network(threading.Thread):
-    def __init__(self, ipc=ipC, portc=portC):
+    def __init__(self, ipc=ipC, portc=portC, host=1):
         """The global network class, made to ensure the connection between the C and the python. Must be started with self.start() after initialization
 
         Args:
@@ -59,7 +59,8 @@ class Network(threading.Thread):
         self._stop_event = threading.Event()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.settimeout(1 / networkFPS)
-        self.s.connect((ipc, portc))
+        if not host:
+            self.s.connect((ipc, portc))
         print("Connection on\n")
 
     def run(self):
@@ -138,12 +139,12 @@ class Network(threading.Thread):
 if __name__ == "__main__":
     ipC = input("Adresse IP du C ? ")
     portC = int(input("Port du C ? "))
-    Networker = Network(ipC, portC)
+    Networker = Network(ipC, portC, host=0)
     Networker.start()
     sleep(1)
     Networker.send("Je suis un message de test !")
     sleep(1)
     print(Networker.getAllMessages())
     sleep(1)
-    Networker.stop()
+    #Networker.stop()
     Networker.join()
