@@ -557,7 +557,7 @@ class GameScreen(Window):
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 				if not (self.currentInventory == -1):
-					self.inventorywindow.update(events, otherbag=self.visiblePlayersList[self.currentInventory].bag)
+					self.inventorywindow.update(events, otherplayer=self.visiblePlayersList[self.currentInventory])
 					self.blit(self.inventorywindow, (0,0))
 				else :
 					self.inventorywindow.update(events)

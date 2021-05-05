@@ -33,10 +33,10 @@ class InventoryWindow(Window):
 
 	
 
-	def update(self, events, otherbag=None):
-		# otherbag : if it's None it's the main player bag, if not it's an otherplayer bag
+	def update(self, events, otherplayer=None):
+		# otherplayer : if it's None it's the main player bag, if not it's an otherplayer bag
 		# if it's the main real player's bag : he can equip/unequip and see his bag (normal stuff)
-		if (otherbag==None) :
+		if (otherplayer==None) :
 			#self.bag = self.playerBag
 
 			mousePos = pygame.mouse.get_pos()
@@ -104,8 +104,16 @@ class InventoryWindow(Window):
 
 			self.fill((0,0,0))
 			self.blit(self.bar_background, (176*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
-			self.blit(self.bar_foreground, ((176-(1-otherbag.getCurrentWeight()/otherbag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
+			self.blit(self.bar_foreground, ((176-(1-otherplayer.bag.getCurrentWeight()/otherplayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 
 			self.blit(self.background, self.rect)
-			self.game.textDisplayer.print(str(otherbag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
+			self.game.textDisplayer.print(str(otherplayer.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
+			
+			otherAllItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, otherplayer.bag.getAllItems()))
 
+			for i,item in enumerate(otherAllItems):
+				if self.selectedItemIndex != i+15:
+					rect = self.itemRects[i+15]
+					self.blit(ITEMS_IMAGES[item.getItemType()], rect)
+					if rect.collidepoint(mousePos):
+						self.blit(self.hovered, self.hoveredRect.move(rect.topleft))
