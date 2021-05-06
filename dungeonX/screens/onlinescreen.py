@@ -4,6 +4,7 @@ from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
 from ..constants import TILE_WIDTH
 import ipaddress
+from PygameUtils import checkbox
 
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 100
@@ -16,8 +17,7 @@ class OnlineScreen(Window):
         self.OpParamSaved = False
         self.__viewport = pygame.Surface((40*TILE_WIDTH, 40*TILE_WIDTH/game.RATIO))
         self.isPressed = False
-        self.isPressedN = False
-
+        self.isPressedN = False        
 
 
         self.rect = self.get_rect()
@@ -30,6 +30,9 @@ class OnlineScreen(Window):
         self.infoBackground.set_colorkey((0,0,0))
 
         self.nextButton = Button(game,(self.get_width()-2.5*START_BUTTON_WIDTH,5*self.get_height()//6-START_BUTTON_HEIGHT//2),"Next",(START_BUTTON_WIDTH, START_BUTTON_HEIGHT),action=self.saveIPaddress)
+        # import os
+        # os.system("pwd")
+        # os.system("cd ... && make all && ./...")
         self.OptionalButton = Button(game,(self.get_width()-1000,5*self.get_height()//6-100//2),"Optional Parameters",(200, 100),textScale=0.3) 
         self.saveButton = Button(game, (self.get_width()//2-140-5, (self.get_height()+self.choiceBackground.get_height())//2-64-15), "Save", size=(140, 64), textScale=0.3,action=self.saveOptionalParam)
         self.cancelButton = Button(game, (self.get_width()//2+5, (self.get_height()+self.choiceBackground.get_height())//2-64-15), "Cancel", size=(140, 64), imgPath="dungeonX/assets/ui/button_red.png", textScale=0.3) #action=self.cancelDialog)
@@ -41,14 +44,15 @@ class OnlineScreen(Window):
         self.AddIPInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15,text="127.0.0.1",IP=True)
         self.AddPortInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8,text="5133")
 
-
         self.IPaddress=""
         self.PortIn=""
         self.Port=""
         self.PortC=""
         self.IPC=""
+        self.checkHost = checkbox((0,0,0),200,200,25,25,text="First player")
+
         self.currentscreen = 'online_screen'
-        
+    
 
     def saveall(self):
         self.saveIPaddress()
@@ -98,7 +102,14 @@ class OnlineScreen(Window):
             
             self.AddPortInInput.update(events)
             self.blit(self.AddPortInInput, self.AddPortInInput.rect)
-        
+            
+            for event in events:  
+                if self.checkHost.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+                    self.checkHost.convert()
+                    print("Clicked")
+                print(self.checkHost.isChecked())
+        self.checkHost.draw(self.background)
+                
         self.OptionalButton.update(events)
         if self.OptionalButton.isPressed() or self.isPressed:
             self.isPressed = True
