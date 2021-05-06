@@ -156,6 +156,7 @@ class GameScreen(Window):
 		self.statuswindow = StatusWindow(game, self)
 		self.displaycharacterwindow=False
 		self.currentCharacterSheet=-1
+		self.currentInventory=-1
 
 		self.camera = pygame.Rect((0,0), (self.__viewport.get_width(), self.__viewport.get_height()))
 		self.setCamera(Map.posToVect(self.dungeon.currentFloor.startPos))
@@ -177,8 +178,8 @@ class GameScreen(Window):
 		self.pauseButton= Button(game,(self.get_width()-66, 16), '', imgPath = "dungeonX/assets/ui/pause_button.png", size=(50,50), action=lambda:self.setState("paused"))
 
 		# next/previous inventory buttons init
-		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.changeInventory(1))
-		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.changeInventory(-1))
+		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.nextInventory(1))
+		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.nextInventory(-1))
 
 		#next/previous charactersheet buttons
 		self.nextButtonC= Button(game,(self.get_width()-40, 150), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(30,30), action=lambda:self.nextSheet(1))
@@ -269,19 +270,6 @@ class GameScreen(Window):
 		if self.state in ('input', 'walk', 'enemy'):
 			self.__savedState = self.state
 		self.state = state
-
-	# new fonction to change the id_current_inventory (+1 or -1, action of the buttons l.178)
-	def changeInventory(self,inc):
-		""" To print other inventories
-
-		this method increments the id of the other inventory currently blitted
-		"""
-		print ("Test def changeInventory : id current inventory =",self.id_current_inventory)
-		if (self.id_current_inventory+inc)<self.nbPlayers and (self.id_current_inventory+inc)>=0 :
-			self.id_current_inventory += inc
-		else :
-			print ("Impossible d'incrémenter ",inc," car il n'y a que ",self.nbPlayers," joueurs.")
-		print ("Test def changeInventory : id current inventory =",self.id_current_inventory)
 	
 
 	def selectPlayer(self, p):
@@ -349,6 +337,7 @@ class GameScreen(Window):
 					if not any((self.passTurnButton.rect.collidepoint(event.pos),
 								self.pauseButton.rect.collidepoint(event.pos),
 								self.nextButton.rect.collidepoint(event.pos),
+								self.prevButton.rect.collidepoint(event.pos),
 								self.nextButtonC.rect.collidepoint(event.pos),
 								self.prevButtonC.rect.collidepoint(event.pos),
 								self.bottombarwindow.rect.collidepoint(event.pos))):
@@ -547,6 +536,10 @@ class GameScreen(Window):
 		# ---- GUI rendering ---- #
 		self.game.particleSystem.update(self.game.dt)
 		self.blit(pygame.transform.scale(self.__viewport, (self.get_width(), self.get_height())), (0,0))
+		
+		# liste des joueurs visibles pour afficher en fonction 
+		visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+		self.visiblePlayersList=visiblePlayersList
 
 		if self.state == 'paused':
 			self.pausemenu.update(events)
@@ -558,15 +551,17 @@ class GameScreen(Window):
 			elif self.state == 'inventory_opened': 
 				self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
-				# buttons blitting
-				self.nextButton.update(events)
-				self.blit(self.nextButton.image,self.nextButton.rect)
-				self.prevButton.update(events)
-				self.blit(self.prevButton.image,self.prevButton.rect)
-				# affichage rudimentaire de l'autre inventaire, on fera avec un indice plus tard
-				if self.id_current_inventory==1:
-					self.inventorywindow2.update(events)
-					self.blit(self.inventorywindow2, (0,0))
+				if self.visiblePlayersList != []:
+					self.nextButton.update(events)
+					self.blit(self.nextButton.image,self.nextButton.rect)
+					self.prevButton.update(events)
+					self.blit(self.prevButton.image,self.prevButton.rect)
+				if not (self.currentInventory == -1):
+					self.inventorywindow.update(events, otherplayer=self.visiblePlayersList[self.currentInventory])
+					self.blit(self.inventorywindow, (0,0))
+				else :
+					self.inventorywindow.update(events)
+					self.blit(self.inventorywindow, (0,0))
 			elif self.state=='skillwindow_opened':	
 				self.blit(self.skillwindow,self.skillwindow.rect)
 			elif self.state =='npcwindow_opened':
@@ -585,21 +580,22 @@ class GameScreen(Window):
 					self.blit(self.passTurnButton.image, self.passTurnButton.rect)
 				self.statuswindow.handleInput(events)
 				if self.displaycharacterwindow:
-					oplayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+					# je teste de deplacer pcq j'en ai aussi besoin 
+					# self.visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
 					try:
-						if oplayersList != []:
+						if self.visiblePlayersList != []:
 							self.nextButtonC.update(events)
 							self.blit(self.nextButtonC.image,self.nextButtonC.rect)
 							self.prevButtonC.update(events)
 							self.blit(self.prevButtonC.image,self.prevButtonC.rect)
 						if not (self.currentCharacterSheet == -1):
-							self.characterwindow.update(events,plyr=oplayersList[self.currentCharacterSheet])
+							self.characterwindow.update(events,plyr=self.visiblePlayersList[self.currentCharacterSheet])
 						else:
 							self.characterwindow.update(events)
 					except IndexError:
-						self.currentCharacterSheet = len(oplayersList)-1
+						self.currentCharacterSheet = len(self.visiblePlayersList)-1
 						if not (self.currentCharacterSheet == -1):
-							self.characterwindow.update(events,plyr=oplayersList[self.currentCharacterSheet])
+							self.characterwindow.update(events,plyr=self.visiblePlayersList[self.currentCharacterSheet])
 						else:
 							self.characterwindow.update(events)
 
@@ -614,6 +610,12 @@ class GameScreen(Window):
 			self.blit(self.bottombarwindow, (0,0))
 			self.skillwindow.update(events)
 			self.npcwindow.update(events)
+		
+	def nextInventory(self,index):
+		if (self.currentInventory+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentInventory+index < -1):
+			print("No more players in the line of sight")
+			return
+		self.currentInventory += index
 
 	def nextSheet(self,index):
 		if (self.currentCharacterSheet+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentCharacterSheet+index < -1):

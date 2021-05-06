@@ -71,10 +71,11 @@ class Network(threading.Thread):
                 self.file.append(data)
             except socket.timeout:
                 continue
-            except:
+            except Exception as e:
                 if not self.stopped:
-                    print("Network issue")
+                    print(f"Network issue : {e}")
                     self.stop()
+                    raise e
 
     def connexion(self, ip, port):
         """Initiate the connexion between this game and the other games
@@ -94,7 +95,7 @@ class Network(threading.Thread):
         """Pop the oldest message from the queue (FIFO)
 
         Returns:
-            str: the oldest message from the queue
+            str: the oldest message from the queue. If the queue is empty, returns the empty string
         """
         if self.file:
             return self.file.pop(0)  #FIFO
