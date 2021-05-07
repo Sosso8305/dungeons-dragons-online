@@ -81,7 +81,8 @@ class Network(threading.Thread):
 
     def connexion(self, ip, port):
         """Initiate the connexion between this game and the other games
-            IMPORTANT NOTE : for now, it only sends the CON, waits 2 sec, and throw away all the answers received for the last 2 seconds
+
+            This function builds and send the CON message
 
         Args:
             ip (str): the ip address of the other player
@@ -89,9 +90,7 @@ class Network(threading.Thread):
         """
         self.send(f"conxxx{ipPadding(ip)}{padding(port,5)}"
                   )  # message spécial a destination uniquement du C
-        sleep(2)
-        for msg in self.getAllMessages():
-            pass
+        return
 
     def getMessage(self):
         """Pop the oldest message from the queue (FIFO)
