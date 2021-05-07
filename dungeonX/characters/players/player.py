@@ -57,6 +57,8 @@ class Player(Character) :
             Player.ID+=1
         self.ID=Player.ID
         
+    def getName(self):
+            return self.name
     def getVisibility(self):
         userSkill: Skill = self._searchSkill(SkillEnum.Stealth)
         if userSkill == None:

@@ -1,12 +1,14 @@
 from dungeonX.characters.players.player import Player, PlayerEnum
 from dungeonX.characters.enemies.enemy import Enemy
 
-MESSAGE_SIZE_MAX = {"wlc" : [2,1,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5]}
+MESSAGE_SIZE_MAX = {"wlc" : [2,1,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5],"nam": [2,1,10]}
 
 def get_character(List, ID):
     for character in List:
         if character.ID == ID:
             return character
+
+
 
 def get_initial(ptype):
     if ptype == PlayerEnum.Rogue:
@@ -67,7 +69,7 @@ def extract(message, flag: str, n:int):
                 liste.append(info)
                 info = ""
                 j += 1
-    elif (flag == "pos" or flag == "hps" or flag == "con" or flag == "ite"):
+    elif (flag == "pos" or flag == "hps" or flag == "con" or flag == "ite" or flag =="nam"):
         j,i = 1 if (flag == "pos" or flag == "hps") else 0,0
         info = ""
         l = [message[3:5]] if (flag == "pos" or flag == "hps") else []
@@ -80,7 +82,7 @@ def extract(message, flag: str, n:int):
                 k += 1
             l.append(info)
             info = ""
-            j += 1
+            j += 1  
 
     return l
 
@@ -162,6 +164,8 @@ class Message:
         self.list1 = [self.id1,self.type1,self.pos1[0],self.pos1[1]]
         self.list2 = [self.id2,self.type2,self.pos2[0],self.pos2[1]]
         self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1]]
+        
+        #self.name = PlayerList[0].name if PlayerList[0] != None else ""
         #TODO : add bag to the last list and add equiment message 
 
     def create_message(self, ID = 0, IDenemy = 0, IDItem = 0):
@@ -208,5 +212,8 @@ class Message:
             
             elif (self.flag == "ite"):
                 message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(IDItem),MESSAGE_SIZE_MAX[self.flag][2])
+            elif (self.flag=="nam"):
+                name = self.Player1Type1.getName()
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) +check_size(name,MESSAGE_SIZE_MAX[self.flag][2])
         return message_str
         
