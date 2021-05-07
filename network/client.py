@@ -10,21 +10,23 @@ sizeMESSAGE = 20
 encodage = "ascii"
 
 
-def padding(msg, n, orientation="left"):
+def padding(msg, n, orientation="left", character = '0'):
     """A padding function used to ensure the length of network messages (shortcut of rjust and ljust). Does the padding with '0's
 
     Args:
         msg (str): the message to be padded
         n (int): total lenght the message should be
         orientation (str, optional): The orientation of the padding. Can be "left" or "right". Defaults to "left".
+        character (str, optional): The chararcter to pad with. Defaults to '0'.
 
     Returns:
         str: the padded message
     """
+
     if orientation != 'right':
-        return msg.rjust(n, '0')
+        return msg.rjust(n, character)
     else:
-        return msg.ljust(n, '0')
+        return msg.ljust(n, character)
 
 
 def ipPadding(ip):
