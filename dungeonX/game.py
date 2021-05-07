@@ -75,7 +75,7 @@ class Game:
 		self.clock = pygame.time.Clock()
 		self.textDisplayer = TextDisplayer(self)
 		self.particleSystem = ParticleSystem(self)
-
+		self.playerName = ""
 		for item in ITEMS_IMAGES:
 			if type(ITEMS_IMAGES[item]) is str:
 				ITEMS_IMAGES[item] = pygame.image.load("dungeonX/assets/ui/icons/items/"+ITEMS_IMAGES[item]+".png").convert()
@@ -168,3 +168,5 @@ this method
 		self.log.newmessage=True
 
 	#essai
+
+	
