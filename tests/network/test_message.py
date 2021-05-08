@@ -78,13 +78,13 @@ def testMessageReadAndExtract():
     assert liste4 == ["01","00000Alice",["R","0000","0000"],["M","0001","0002"],["F","0003","0004"]]
     assert liste5 == ["01",n1,"0"+str(swordItem.id)]
 
-    # assert read_id(liste[1][0]) == int(n1)
-    # assert read_type(liste[1][1]) == PlayerEnum.Rogue
-    # assert read_position(liste[1][2],liste[1][3]) == (0,0)
-    # assert type(read_position(liste[1][2],liste[1][3])) == tuple
-    # assert read_int(liste2[2]) == 100
-    # assert read_int(liste2[4]) == 100
-    # assert read_IP(liste3[0]) == "121.0.0.7"
-    # assert read_int(liste3[1]) == 8000
+    assert read_id(liste[2][0]) == int(n1)
+    assert read_type(liste[2][1]) == PlayerEnum.Rogue
+    assert read_position(liste[2][2],liste[2][3]) == (0,0)
+    assert type(read_position(liste[2][2],liste[2][3])) == tuple
+    assert read_int(liste2[2]) == 100
+    assert read_int(liste2[4]) == 100
+    assert read_IP(liste3[0]) == "121.0.0.7"
+    assert read_int(liste3[1]) == 8000
     assert read_name(liste[1]) == "Alice"
 
