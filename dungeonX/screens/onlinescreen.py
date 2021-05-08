@@ -4,7 +4,7 @@ from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
 from ..constants import TILE_WIDTH
 import ipaddress
-from PygameUtils import checkbox
+#from PygameUtils import checkbox
 
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 100
@@ -49,7 +49,7 @@ class OnlineScreen(Window):
         self.Port=""
         self.PortC=""
         self.IPC=""
-        self.checkHost = checkbox((0,0,0),200,200,25,25,text="First player")
+        #self.checkHost = checkbox((0,0,0),200,200,25,25,text="First player")
 
         self.currentscreen = 'online_screen'
     
@@ -103,12 +103,12 @@ class OnlineScreen(Window):
             self.AddPortInInput.update(events)
             self.blit(self.AddPortInInput, self.AddPortInInput.rect)
             
-            for event in events:  
-                if self.checkHost.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                    self.checkHost.convert()
-                    print("Clicked")
-                print(self.checkHost.isChecked())
-        self.checkHost.draw(self.background)
+            #for event in events:  
+                #if self.checkHost.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+                    #self.checkHost.convert()
+                    #print("Clicked")
+                #print(self.checkHost.isChecked())
+        #self.checkHost.draw(self.background)
                 
         self.OptionalButton.update(events)
         if self.OptionalButton.isPressed() or self.isPressed:

@@ -30,9 +30,10 @@ class OtherPlayer2(Character):
         self.pos = read_position(liste_str[1],liste_str[2])
         self.exp = 0 #we have to modify this later if we create a message type for exp
         #self.att = read_attributes(liste_str[2])
-
+        self.username=""
         # bag initialization : empty at the beginning, no weight, no money, no equipment
-        self.bag = Bag(500)
+        # self.bag = Bag(500)
+        self.equipment=[]
 
         self.timeToMove = 300
         self.animationSpeed = {'idle': 120, 'run': 100}

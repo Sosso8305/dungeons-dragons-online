@@ -33,10 +33,10 @@ class InventoryWindow(Window):
 
 	
 
-	def update(self, events, otherplayer=None):
-		# otherplayer : if it's None it's the main player bag, if not it's an otherplayer bag
+	def update(self, events, otherRealPlayer=None):
+		# otherRealPlayer : if it's None it's the main player bag, if not it's an otherRealPlayer bag
 		# if it's the main real player's bag : he can equip/unequip and see his bag (normal stuff)
-		if (otherplayer==None) :
+		if (otherRealPlayer==None) :
 			#self.bag = self.playerBag
 
 			mousePos = pygame.mouse.get_pos()
@@ -99,17 +99,18 @@ class InventoryWindow(Window):
 				else:
 					item = allItems[self.selectedItemIndex-15]
 				self.blit(ITEMS_IMAGES[item.getItemType()], rect)
-		# but if it's an otherplayer's bag : he cannot move objects, all that he can do is see what's in his bag
+		# but if it's an otherRealPlayer's bag : he cannot move objects, all that he can do is see what's in his bag
 		else :
+			print("C'est l'inventaire de"+otherRealPlayer.username)
 
 			self.fill((0,0,0))
 			self.blit(self.bar_background, (176*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
-			self.blit(self.bar_foreground, ((176-(1-otherplayer.bag.getCurrentWeight()/otherplayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
+			self.blit(self.bar_foreground, ((176-(1-otherRealPlayer.bag.getCurrentWeight()/otherRealPlayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 
 			self.blit(self.background, self.rect)
-			self.game.textDisplayer.print(str(otherplayer.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
+			self.game.textDisplayer.print(str(otherRealPlayer.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
 			
-			otherAllItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, otherplayer.bag.getAllItems()))
+			otherAllItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, otherRealPlayer.bag.getAllItems()))
 
 			for i,item in enumerate(otherAllItems):
 				if self.selectedItemIndex != i+15:
@@ -117,3 +118,14 @@ class InventoryWindow(Window):
 					self.blit(ITEMS_IMAGES[item.getItemType()], rect)
 					if rect.collidepoint(mousePos):
 						self.blit(self.hovered, self.hoveredRect.move(rect.topleft))
+			
+			for i,player in enumerate(otherRealPlayer.playersList):
+				self.blit(pygame.transform.scale(player.image, (16*INVENTORY_SCALE, 24*INVENTORY_SCALE)), (9*INVENTORY_SCALE+self.rect.left, (23+31*i)*INVENTORY_SCALE+self.rect.top))
+				for j,item in enumerate(player.equipment):
+					if item!=None:
+						if self.selectedItemIndex != i*5+j:
+							rect = self.itemRects[i*5+j]
+							self.fill((211,191,169), rect=rect)
+							self.blit(ITEMS_IMAGES[item.getItemType()], rect)
+							if rect.collidepoint(mousePos):
+								self.blit(self.hovered, self.hoveredRect.move(rect.topleft))
