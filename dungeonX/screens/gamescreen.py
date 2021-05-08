@@ -345,7 +345,7 @@ class GameScreen(Window):
 			# visible RealPlayersList scripted because we will have to adapt the "LineOfSight" method
 			# (the test will check for every player of every realplayer in a double "for" loop)
 			# this new LineOfSight method must return a RealPlayer object (if at least one of its players are visible)
-			visibleRealPlayersList.append(realPlayer1)
+			#visibleRealPlayersList.append(realPlayer1)
 			self.realPlayerCreation = True
 		
 		# --- Events Handling --- #
@@ -566,9 +566,17 @@ class GameScreen(Window):
 		self.game.particleSystem.update(self.game.dt)
 		self.blit(pygame.transform.scale(self.__viewport, (self.get_width(), self.get_height())), (0,0))
 		
-		# liste des joueurs visibles pour afficher en fonction 
+		# players in LineOfSight list
 		visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
 		self.visiblePlayersList=visiblePlayersList
+		# add the RealPlayer linked in the visible RealPlayer list
+		# a realPlayer can only be added to this list once !
+		for visiblePlayer in (visiblePlayersList) :
+			for realPlayer in (self.realPlayersList) :
+				if visiblePlayer.username==realPlayer.username and (realPlayer not in self.visibleRealPlayersList) :
+					self.visibleRealPlayersList.append(realPlayer)
+					print(realPlayer.username+" added to the visible realPlayers list !")
+
 
 		if self.state == 'paused':
 			self.pausemenu.update(events)
@@ -586,6 +594,7 @@ class GameScreen(Window):
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 				if not (self.currentInventory == -1):
+					print("C'est l'inventaire de "+self.visibleRealPlayersList[self.currentInventory].username)
 					self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
 					self.blit(self.inventorywindow, (0,0))
 				else :

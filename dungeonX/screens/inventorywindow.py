@@ -76,8 +76,7 @@ class InventoryWindow(Window):
 				self.blit(ITEMS_IMAGES[item.getItemType()], rect)
 		# but if it's an otherRealPlayer's bag : he cannot move objects, all that he can do is see what's in his bag
 		else :
-			print("C'est l'inventaire de"+otherRealPlayer.username)
-
+			
 			self.fill((0,0,0))
 			self.blit(self.bar_background, (176*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 			self.blit(self.bar_foreground, ((176-(1-otherRealPlayer.bag.getCurrentWeight()/otherRealPlayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
