@@ -29,10 +29,7 @@ class OtherPlayer2(Character):
         self.mod = read_mod(liste_str[0])
         self.pos = read_position(liste_str[1],liste_str[2])
         self.exp = 0 #we have to modify this later if we create a message type for exp
-        #self.att = read_attributes(liste_str[2])
-        self.username=""
-        # bag initialization : empty at the beginning, no weight, no money, no equipment
-        # self.bag = Bag(500)
+        self.name=OTHERPLAYERNAME # default name before realPlayer's username assignment 
         self.equipment=[]
 
         self.timeToMove = 300
@@ -66,7 +63,7 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
-        self.name = ""
+        
         self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
 
@@ -75,6 +72,9 @@ class OtherPlayer2(Character):
         del d["positions"]
         del d["frames"]
         return d
+    
+    def updateName(self,name):
+        self.name=name
 
     def __setstate__(self, state):
         state["positions"] = None

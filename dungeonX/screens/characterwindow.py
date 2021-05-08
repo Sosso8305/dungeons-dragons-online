@@ -56,9 +56,10 @@ class CharacterWindow(Window):
 			self.blit(self.bar_foreground, ((73-(1-player.getExp()/player.expToLevelUp)*29)*CHARACTER_SCALE, 42*CHARACTER_SCALE))
 		self.blit(self.background, (0,0))
 		self.blit(pygame.transform.scale(player.image,(math.floor((24*CHARACTER_SCALE)), math.floor(36*CHARACTER_SCALE))), (math.floor(8*CHARACTER_SCALE)+2, math.floor(10*CHARACTER_SCALE)+5))
-
+		
 		self.game.textDisplayer.print(player.name, (48*CHARACTER_SCALE,15*CHARACTER_SCALE), scale=0.3, rectSize=(56*CHARACTER_SCALE, 11*CHARACTER_SCALE), center=True, screen=self)
 		
+
 		self.game.textDisplayer.print("lvl\n"+str(player.level), (40*CHARACTER_SCALE,34*CHARACTER_SCALE), scale=0.2, rectSize=(24*CHARACTER_SCALE, 16*CHARACTER_SCALE), center=True, screen=self)
 		
 		self.game.textDisplayer.print(str(player.getAttribute(Attributes.Cha)), (91*CHARACTER_SCALE,58*CHARACTER_SCALE), scale=0.2, rectSize=(17*CHARACTER_SCALE, 10*CHARACTER_SCALE), center=True, screen=self)

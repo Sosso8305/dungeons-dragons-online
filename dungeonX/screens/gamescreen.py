@@ -14,6 +14,7 @@ from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
 from ..network.realPlayer import *
 from ..network.message import check_size
+from dungeonX.items.Item import Item, ItemFactory, ItemList
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -336,8 +337,12 @@ class GameScreen(Window):
 			self.dungeon.oplayers.append(otherplayer2)
 			otherplayer3=OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)
 			self.dungeon.oplayers.append(otherplayer3)
+			self.oplayers = self.dungeon.oplayers
 			# now we can create the Real Player ! its parameters are its 3 players and its username
 			realPlayer1=RealPlayer([otherplayer1,otherplayer2,otherplayer3],"Donatien de Montazac")
+			# test d'ajout d'un objet dans son sac
+			sword = ItemFactory(ItemList.Sword)
+			realPlayer1.bag.addItem(sword)
 			# all the RealPlayers are added to the realPlayersList list (list of every little players on the map)
 			self.realPlayersList.append(realPlayer1)
 			visibleRealPlayersList=[]
@@ -573,7 +578,7 @@ class GameScreen(Window):
 		# a realPlayer can only be added to this list once !
 		for visiblePlayer in (visiblePlayersList) :
 			for realPlayer in (self.realPlayersList) :
-				if visiblePlayer.username==realPlayer.username and (realPlayer not in self.visibleRealPlayersList) :
+				if visiblePlayer.name==realPlayer.username and (realPlayer not in self.visibleRealPlayersList) :
 					self.visibleRealPlayersList.append(realPlayer)
 					print(realPlayer.username+" added to the visible realPlayers list !")
 
@@ -594,7 +599,6 @@ class GameScreen(Window):
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 				if not (self.currentInventory == -1):
-					print("C'est l'inventaire de "+self.visibleRealPlayersList[self.currentInventory].username)
 					self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
 					self.blit(self.inventorywindow, (0,0))
 				else :

@@ -8,8 +8,9 @@ class InventoryWindow(Window):
 		self.background = pygame.image.load("dungeonX/assets/ui/inventory/background.png").convert()
 		self.background.set_colorkey((255,0,255))
 		self.background = pygame.transform.scale(self.background, (self.background.get_width()*INVENTORY_SCALE, self.background.get_height()*INVENTORY_SCALE))
+		self.titre = "Inventory"
+		game.textDisplayer.print(self.titre, (116*INVENTORY_SCALE,7*INVENTORY_SCALE), scale=0.4, rectSize=(94*INVENTORY_SCALE, 12*INVENTORY_SCALE), center=True, screen=self.background)
 		game.textDisplayer.print("Equipment", (8*INVENTORY_SCALE,7*INVENTORY_SCALE), scale=0.4, rectSize=(99*INVENTORY_SCALE, 12*INVENTORY_SCALE), center=True, screen=self.background)
-		game.textDisplayer.print("Inventory", (116*INVENTORY_SCALE,7*INVENTORY_SCALE), scale=0.4, rectSize=(94*INVENTORY_SCALE, 12*INVENTORY_SCALE), center=True, screen=self.background)
 		game.textDisplayer.print("Bag Weight", (140*INVENTORY_SCALE,106*INVENTORY_SCALE), scale=0.2, screen=self.background)
 		game.textDisplayer.print("Money : ", (218*INVENTORY_SCALE,17*INVENTORY_SCALE), scale=0.2, rectSize=(22*INVENTORY_SCALE, 10*INVENTORY_SCALE), screen=self.background)
 		self.set_colorkey((0,0,0))
@@ -82,24 +83,22 @@ class InventoryWindow(Window):
 			self.blit(self.bar_foreground, ((176-(1-otherRealPlayer.bag.getCurrentWeight()/otherRealPlayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 
 			self.blit(self.background, self.rect)
+			self.titre = otherRealPlayer.username
 			self.game.textDisplayer.print(str(otherRealPlayer.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
+			# print the otherplayer's username
+			self.game.textDisplayer.print(otherRealPlayer.username, (29*INVENTORY_SCALE+self.rect.left,18*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(120*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
+			
 			
 			otherAllItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, otherRealPlayer.bag.getAllItems()))
 
 			for i,item in enumerate(otherAllItems):
-				if self.selectedItemIndex != i+15:
-					rect = self.itemRects[i+15]
-					self.blit(ITEMS_IMAGES[item.getItemType()], rect)
-					if rect.collidepoint(mousePos):
-						self.blit(self.hovered, self.hoveredRect.move(rect.topleft))
+				rect = self.itemRects[i+15]
+				self.blit(ITEMS_IMAGES[item.getItemType()], rect)
 			
 			for i,player in enumerate(otherRealPlayer.playersList):
 				self.blit(pygame.transform.scale(player.image, (16*INVENTORY_SCALE, 24*INVENTORY_SCALE)), (9*INVENTORY_SCALE+self.rect.left, (23+31*i)*INVENTORY_SCALE+self.rect.top))
 				for j,item in enumerate(player.equipment):
 					if item!=None:
-						if self.selectedItemIndex != i*5+j:
-							rect = self.itemRects[i*5+j]
-							self.fill((211,191,169), rect=rect)
-							self.blit(ITEMS_IMAGES[item.getItemType()], rect)
-							if rect.collidepoint(mousePos):
-								self.blit(self.hovered, self.hoveredRect.move(rect.topleft))
+						rect = self.itemRects[i*5+j]
+						self.fill((211,191,169), rect=rect)
+						self.blit(ITEMS_IMAGES[item.getItemType()], rect)

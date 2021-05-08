@@ -13,4 +13,7 @@ class RealPlayer(object):
         self.bag = Bag(500)
         # every players of this RealPlayer must have the same "username" field
         for player in playersList :
-            player.username=username
+            #player.name=username
+            #player.username=username
+            player.updateName(self.username)
+            print("player renamed : "+player.name)
