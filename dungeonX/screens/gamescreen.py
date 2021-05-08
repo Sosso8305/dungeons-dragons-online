@@ -307,7 +307,7 @@ class GameScreen(Window):
 			3. Blit all players
 			4. Blit the second layer of the map (walls)
 			4. Handle and blit fog
-			5. Blit the UI (User Interface), i.e mapwindows or passTurnButton
+			5. Blit the UI (User Intcerface), i.e mapwindows or passTurnButton
 		"""
 
 		mousePosition = pygame.mouse.get_pos()
@@ -593,6 +593,8 @@ class GameScreen(Window):
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 				if not (self.currentInventory == -1):
+					if self.visibleRealPlayersList==[]:
+						self.currentInventory=-1
 					self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
 					self.blit(self.inventorywindow, (0,0))
 				else :
