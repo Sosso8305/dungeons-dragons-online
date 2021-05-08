@@ -12,8 +12,8 @@ from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
-from ..network.realPlayer import RealPlayer
-from ..network.message import check_size, Message, extract, read_name
+from ..network.realPlayer import *
+from ..network.message import check_size
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -144,11 +144,6 @@ class GameScreen(Window):
 		self.bottombarwindow = BottomBarWindow(self)
 		self.inventorywindow = InventoryWindow(game, self)
 		
-		#additions for the multi-inventory blitting
-		# self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
-		# self.nbPlayers = 2 # will be the size of the real player list later
-		# self.id_current_inventory = 0 # necessary var
-		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
 		self.skillwindow=SkillWindow(game, self)
@@ -190,6 +185,7 @@ class GameScreen(Window):
 		self.oplayers = self.dungeon.oplayers
 		self.realPlayers = []
 		self.oplayersCreation = False
+		self.realPlayerCreation = False
 
 		self.playerName = ""
 
@@ -327,6 +323,30 @@ class GameScreen(Window):
 			self.dungeon.oplayers = otherPlayers
 			self.oplayers = self.dungeon.oplayers
 			self.oplayersCreation = True
+
+		# test RealPlayer 1 : initialization of 1 Real player
+		if(not self.realPlayerCreation):
+			realPlayersList=[]
+			self.realPlayersList=realPlayersList
+			#creation of every players of the real player we want to create
+			# all these players are added to the otherPlayer list (list of every little players on the map)
+			otherplayer1=OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self)
+			self.dungeon.oplayers.append(otherplayer1)
+			otherplayer2=OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)
+			self.dungeon.oplayers.append(otherplayer2)
+			otherplayer3=OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)
+			self.dungeon.oplayers.append(otherplayer3)
+			# now we can create the Real Player ! its parameters are its 3 players and its username
+			realPlayer1=RealPlayer([otherplayer1,otherplayer2,otherplayer3],"Donatien de Montazac")
+			# all the RealPlayers are added to the realPlayersList list (list of every little players on the map)
+			self.realPlayersList.append(realPlayer1)
+			visibleRealPlayersList=[]
+			self.visibleRealPlayersList=visibleRealPlayersList
+			# visible RealPlayersList scripted because we will have to adapt the "LineOfSight" method
+			# (the test will check for every player of every realplayer in a double "for" loop)
+			# this new LineOfSight method must return a RealPlayer object (if at least one of its players are visible)
+			visibleRealPlayersList.append(realPlayer1)
+			self.realPlayerCreation = True
 		
 		# --- Events Handling --- #
 		for event in events:
@@ -558,20 +578,17 @@ class GameScreen(Window):
 				self.mapwindow.update(events)
 				self.blit(self.mapwindow, (0,0))
 			elif self.state == 'inventory_opened': 
-				if self.visiblePlayersList != []:
-					self.crews=[]
-					for visiblePlayer in self.visiblePlayersList:
-						if not (visiblePlayer.checkPresence(self.crews)):
-							self.crews.append(visiblePlayer.parent.persos)
+				self.inventorywindow.update(events)
+				self.blit(self.inventorywindow, (0,0))
+				if self.visibleRealPlayersList != []:
 					self.nextButton.update(events)
 					self.blit(self.nextButton.image,self.nextButton.rect)
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
-					if not (self.currentInventory == -1):
-						self.inventorywindow.update(events,plyr=self.crews[self.currentInventory])
-					else:
-						self.inventorywindow.update(events)
-				else:
+				if not (self.currentInventory == -1):
+					self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
+					self.blit(self.inventorywindow, (0,0))
+				else :
 					self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
 			elif self.state=='skillwindow_opened':	
@@ -624,7 +641,7 @@ class GameScreen(Window):
 			self.npcwindow.update(events)
 		
 	def nextInventory(self,index):
-		if (self.currentInventory+index >= len(self.crews) or self.currentInventory+index < -1):
+		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
 			print("No more players in the line of sight")
 			return
 		self.currentInventory += index

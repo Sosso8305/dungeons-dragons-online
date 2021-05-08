@@ -4,7 +4,7 @@ from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
 from ..constants import TILE_WIDTH
 import ipaddress
-from PygameUtils import checkbox
+#from PygameUtils import checkbox
 
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 100
@@ -107,7 +107,7 @@ class OnlineScreen(Window):
                 if self.checkFirstPlayer.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
                     self.checkFirstPlayer.convert()
                     print("Clicked")
-                print(self.checkFirstPlayer.isChecked())
+                #print(self.checkFirstPlayer.isChecked())
         self.checkFirstPlayer.draw(self.background)
                 
         self.OptionalButton.update(events)
