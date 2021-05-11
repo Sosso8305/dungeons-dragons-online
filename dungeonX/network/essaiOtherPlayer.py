@@ -171,3 +171,6 @@ class OtherPlayer2(Character):
 
     def getLevel(self) :
         return self.level
+    
+    def getName(self) :
+        return self.name
