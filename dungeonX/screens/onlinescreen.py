@@ -128,7 +128,11 @@ class OnlineScreen(Window):
             #TODO : Condition si c'est le tout premier joueur qui lance le jeu if not then : character choice directly with map already in check !!!
             if self.isvalidIPFormat(self.IPaddress) and self.isvalidIPFormat(self.IPC):
                 self.game.setScreen('map_selector') 
-                os.system("./network/server.out "+self.PortC+" "+self.Port+"> ./logs/logsofiane.log 2>&1 & "+"python ./network/client.py")       
+                os.system("./dungeonX/network/server.out "+self.PortC+" "+self.Port+"> ./logs/logsofiane.log 2>&1 &")       
+                from ..network.client import Network
+                Networker = Network(self.IPC, int(self.PortC))
+                Networker.start()
+                Networker.send("Je suis un message de test !")
             else : # Blit Real visual WARNING 
                 self.isPressedN = True
                 self.blit(self.infoBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2)

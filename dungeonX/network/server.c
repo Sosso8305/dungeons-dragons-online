@@ -311,12 +311,9 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
             pthread_exit(NULL);
 
         case 0:
-            // printf("End connection by peer \n");
-            // pthread_exit(NULL);
-            //Somebody disconnected , get his details and print
-            getpeername((*arg).sockfd , (struct sockaddr*)&serv_addr , (socklen_t *)&len);
-            printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(serv_addr.sin_addr) , ntohs(serv_addr.sin_port));    
-            close( (*arg).sockfd );
+            printf("End connection by peer \n");
+            pthread_exit(NULL);
+            
 
         default:
             break;
