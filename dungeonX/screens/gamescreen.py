@@ -12,9 +12,11 @@ from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
-from ..network.realPlayer import *
+#from ..network.realPlayer import *
 from ..network.message import check_size
 from dungeonX.items.Item import Item, ItemFactory, ItemList
+# test
+from ..network.message_agathe import *
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -331,26 +333,26 @@ class GameScreen(Window):
 			self.realPlayersList=realPlayersList
 			#creation of every players of the real player we want to create
 			# all these players are added to the otherPlayer list (list of every little players on the map)
-			otherplayer1=OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self)
-			self.dungeon.oplayers.append(otherplayer1)
-			otherplayer2=OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)
-			self.dungeon.oplayers.append(otherplayer2)
-			otherplayer3=OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)
-			self.dungeon.oplayers.append(otherplayer3)
-			self.oplayers = self.dungeon.oplayers
+			#otherplayer1=OtherPlayer2(['R',str(self.players[0].pos[0]+3),str(self.players[0].pos[1]+2)],self)
+			#self.dungeon.oplayers.append(otherplayer1)
+			#otherplayer2=OtherPlayer2(['F',str(self.players[1].pos[0]+3),str(self.players[1].pos[1]+2)],self)
+			#self.dungeon.oplayers.append(otherplayer2)
+			#otherplayer3=OtherPlayer2(['F',str(self.players[1].pos[0]+3),str(self.players[1].pos[1]+2)],self)
+			#self.dungeon.oplayers.append(otherplayer3)
+			#self.oplayers = self.dungeon.oplayers
 			# now we can create the Real Player ! its parameters are its 3 players and its username
-			realPlayer1=RealPlayer([otherplayer1,otherplayer2,otherplayer3],"Donatien de Montazac")
+			#realPlayer1=RealPlayer([otherplayer1,otherplayer2,otherplayer3],"Fabrice",2)
 			# test d'ajout d'un objet dans son sac
-			sword = ItemFactory(ItemList.Sword)
-			realPlayer1.bag.addItem(sword)
+			#sword = ItemFactory(ItemList.Sword)
+			#realPlayer1.bag.addItem(sword)
 			# all the RealPlayers are added to the realPlayersList list (list of every little players on the map)
-			self.realPlayersList.append(realPlayer1)
-			visibleRealPlayersList=[]
-			self.visibleRealPlayersList=visibleRealPlayersList
-			# visible RealPlayersList scripted because we will have to adapt the "LineOfSight" method
-			# (the test will check for every player of every realplayer in a double "for" loop)
-			# this new LineOfSight method must return a RealPlayer object (if at least one of its players are visible)
-			#visibleRealPlayersList.append(realPlayer1)
+			#self.realPlayersList.append(realPlayer1)
+			#self.realPlayerCreation = True
+		
+			# test create_msg welcome
+			createMessage("wlc",self.players,1,myEnnemies=None,myUsername="First") #self.playerName
+			extractMessage("wlc01xF00740028M00880028M00760032000Fabrice",self)
+
 			self.realPlayerCreation = True
 		
 		# --- Events Handling --- #
@@ -574,13 +576,14 @@ class GameScreen(Window):
 		# players in LineOfSight list
 		visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
 		self.visiblePlayersList=visiblePlayersList
+		visibleRealPlayersList=[]
+		self.visibleRealPlayersList=visibleRealPlayersList
 		# add the RealPlayer linked in the visible RealPlayer list
 		# a realPlayer can only be added to this list once !
 		for visiblePlayer in (visiblePlayersList) :
 			for realPlayer in (self.realPlayersList) :
 				if visiblePlayer.name==realPlayer.username and (realPlayer not in self.visibleRealPlayersList) :
 					self.visibleRealPlayersList.append(realPlayer)
-					print(realPlayer.username+" added to the visible realPlayers list !")
 
 
 		if self.state == 'paused':

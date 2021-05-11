@@ -1,3 +1,7 @@
+from dungeonX.characters.players.player import Player, PlayerEnum
+from .essaiOtherPlayer import *
+from .realPlayer import *
+
 'Un debut de message qui va plus correspondre au niveau type de message. '
 'Il faudra y integrer le code de christine (ou l inverse) car les deux sont complementaires !'
 'Le but est que les fonctions puissent etre utilisees a n importe-quel endroit du code, comme une librairie.'
@@ -9,31 +13,49 @@
 # importer l'api de lucas le bourgeois gentilhomme 
 
 
+def check_size(string : str,n : int):
+    zero_str=""
+    if len(string)!=n :
+        for i in range (n-len(string)) :
+            zero_str+='0'
+            i+=1
+    return zero_str+string
 
-def createMessage(id,perso,type_msg,donnees) :
-    '# on pourra utiliser le createMessage a tout moment dans le code : il va creer un message qui sera automatiquement envoye'
-    part1=str(id) # une unite pour l'instant, 0->9 
-    part2=str(perso) # un caractere : 1,2 ou 3 (les 3 personnages d'un joueur)
-    part3=type_msg # fera toujours 3 caracteres
-    # TYPES DE MESSAGES A GERER
-    # pos -> position
-    # typ -> Type
-    # ini -> 1er message, arrivee en jeu, initialisation du otherplayer (donnees : type des personnages)
-    # nhp -> les hp du personnage 
-    # arm -> armor
-    # strength -> strength
-    # dex -> dexerity 
-    # con
-    # int -> intelligence
-    # wis -> wisdom
-    # char -> charism
-    # spt -> skillsPoint
-    # equ -> equipement 
-    part4=str(donnees) # il faudra definir une taille max des donnees et ajouter du padding si necessaire
-    chaine=part1+part2+part3+part4
-    print("Le message envoye est : ",chaine) # test
-    # la fonction send de lucas pour l'envoyer directement, pourquoi creer un message si on ne l'envoit pas ?? (rip les lettres que g jamais envoyees)
-    return chaine
+def suppPadding(string : str):
+    string = string.replace('0','')
+    return string
+
+def get_initial(ptype):
+    if ptype == PlayerEnum.Rogue:
+        return 'R'
+    elif ptype == PlayerEnum.Fighter:
+        return 'F'
+    elif ptype == PlayerEnum.Mage:
+        return 'M'
+
+def createMessage(flag,myPlayersList,myId,myEnnemies=None,myUsername="Test") :
+    'automatization of the message creation. We suppose that messages creation is always from the players that have the information he send on HIS game'
+    message_str = flag 
+    if (flag == "wlc"):
+        message_str += check_size(str(myId),2)+'x'
+        for player in (myPlayersList) :
+            print("Position :"+str(player.pos))
+            message_str += get_initial(player.PlayerType)+check_size(str(player.pos[0]),4)+check_size(str(player.pos[1]),4)
+        message_str += check_size(myUsername,10)
+    print("Message cree :\n"+message_str)
+
+def extractMessage(message,game) :
+    flag=message[0:3]
+    if (flag == "wlc"):
+        otherplayer1=OtherPlayer2([message[6:7],message[7:11],message[11:15]],game)
+        game.dungeon.oplayers.append(otherplayer1)
+        otherplayer2=OtherPlayer2([message[15:16],message[16:20],message[20:24]],game)
+        game.dungeon.oplayers.append(otherplayer2)
+        otherplayer3=OtherPlayer2([message[24:25],message[25:29],message[29:33]],game)
+        game.dungeon.oplayers.append(otherplayer3)
+        game.oplayers = game.dungeon.oplayers
+        game.realPlayersList.append(RealPlayer([otherplayer1,otherplayer2,otherplayer3],suppPadding(message[33:43]),message[3:5]))
+
 
 # pour la reception je ne sais pas trop comment elle s'integrera au code
 def recvMessage(chaine) :
@@ -58,10 +80,3 @@ def recvMessage(chaine) :
         print("Type de message inconnu pour le moment.")
 
 #### TEST ####
-
-# exemple d'un message cre dans 
-chaine=createMessage(1,3,'pos',12)
-
-recvMessage(chaine)
-
-chaine=createMessage(1,3,'ini',12)

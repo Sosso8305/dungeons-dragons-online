@@ -3,7 +3,7 @@ from dungeonX.characters import Bag
 
 class RealPlayer(object):
 
-    def __init__(self,playersList,username):
+    def __init__(self,playersList,username,id):
         print("other Real player is created !")
         # the real player's username
         self.username=username
@@ -12,6 +12,7 @@ class RealPlayer(object):
         # bag initialization : empty at the beginning, no weight, no money, no equipment
         self.bag = Bag(500)
         # every players of this RealPlayer must have the same "username" field
+        self.id=id 
         for player in playersList :
             #player.name=username
             #player.username=username

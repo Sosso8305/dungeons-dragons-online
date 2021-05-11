@@ -172,10 +172,6 @@ class OtherPlayer2(Character):
 
     def getLevel(self) :
         return self.level
-        
-    def checkPresence(self,crews):
-        """
-        This function is made to avoid repeating the same crew in the list crews
-        """
-        if self.parent.persos in crews: return True
-        return False
+    
+    def getName(self) :
+        return self.name
