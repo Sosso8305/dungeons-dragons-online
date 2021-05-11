@@ -12,5 +12,5 @@ jobs :
       - name : compilation
         shell : bash
         run : |
-          cd network 
+          cd dungeonX/network 
           make all
