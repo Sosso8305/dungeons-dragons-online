@@ -43,6 +43,7 @@ class OtherPlayer2(Character):
         self.currentTarget = None
         self.finalTarget    = None
         self.stepsToTarget  = None
+        self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring
 
          # Load all frames
         self.images = dict()
@@ -170,3 +171,18 @@ class OtherPlayer2(Character):
 
     def getLevel(self) :
         return self.level
+
+    def getCrew(self,players):
+        crew = [self]
+        for player in players:
+            if (player.name == self.name and player != self):
+                crew.append(player)
+        return crew
+
+    def checkPresence(self,crews):
+        """
+        This function is made to avoid repeating the same crew in the list crews
+        """
+        for crew in crews:
+            if self in crew: return True
+        return False
