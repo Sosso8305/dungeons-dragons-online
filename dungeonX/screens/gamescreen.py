@@ -144,9 +144,9 @@ class GameScreen(Window):
 		self.inventorywindow = InventoryWindow(game, self)
 		
 		#additions for the multi-inventory blitting
-		self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
-		self.nbPlayers = 2 # will be the size of the real player list later
-		self.id_current_inventory = 0 # necessary var
+		# self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
+		# self.nbPlayers = 2 # will be the size of the real player list later
+		# self.id_current_inventory = 0 # necessary var
 		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
@@ -155,7 +155,7 @@ class GameScreen(Window):
 		self.statuswindow = StatusWindow(game, self)
 		self.displaycharacterwindow=False
 		self.currentCharacterSheet=-1
-		self.currentInventory=-1
+		self.currentInventory = -1
 
 		self.camera = pygame.Rect((0,0), (self.__viewport.get_width(), self.__viewport.get_height()))
 		self.setCamera(Map.posToVect(self.dungeon.currentFloor.startPos))
@@ -317,7 +317,7 @@ class GameScreen(Window):
 		#Just for testing to remove later
 		if(not self.oplayersCreation):
 			self.dungeon.oplayers = [OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self),\
-				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self)]
+				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self),OtherPlayer2(['F',str(self.players[1].pos[0]+4),str(self.players[1].pos[1]+4)],self)]
 			self.oplayers = self.dungeon.oplayers
 			self.oplayersCreation = True
 		
@@ -551,19 +551,22 @@ class GameScreen(Window):
 				self.mapwindow.update(events)
 				self.blit(self.mapwindow, (0,0))
 			elif self.state == 'inventory_opened': 
-				self.inventorywindow.update(events)
-				self.blit(self.inventorywindow, (0,0))
 				if self.visiblePlayersList != []:
+					self.crews=[]
+					for visiblePlayer in self.visiblePlayersList:
+						if not (visiblePlayer.checkPresence(self.crews)):
+							self.crews.append(visiblePlayer.getCrew(self.oplayers))
 					self.nextButton.update(events)
 					self.blit(self.nextButton.image,self.nextButton.rect)
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
-				if not (self.currentInventory == -1):
-					self.inventorywindow.update(events, otherplayer=self.visiblePlayersList[self.currentInventory])
-					self.blit(self.inventorywindow, (0,0))
-				else :
+					if not (self.currentInventory == -1):
+						self.inventorywindow.update(events,plyr=self.crews[self.currentInventory])
+					else:
+						self.inventorywindow.update(events)
+				else:
 					self.inventorywindow.update(events)
-					self.blit(self.inventorywindow, (0,0))
+				self.blit(self.inventorywindow, (0,0))
 			elif self.state=='skillwindow_opened':	
 				self.blit(self.skillwindow,self.skillwindow.rect)
 			elif self.state =='npcwindow_opened':
@@ -614,7 +617,7 @@ class GameScreen(Window):
 			self.npcwindow.update(events)
 		
 	def nextInventory(self,index):
-		if (self.currentInventory+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentInventory+index < -1):
+		if (self.currentInventory+index >= len(self.crews) or self.currentInventory+index < -1):
 			print("No more players in the line of sight")
 			return
 		self.currentInventory += index
