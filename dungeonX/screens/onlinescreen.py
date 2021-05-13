@@ -4,7 +4,7 @@ from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
 from ..constants import TILE_WIDTH
 import ipaddress
-#from PygameUtils import checkbox
+from PygameUtils import checkbox
 
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 100
