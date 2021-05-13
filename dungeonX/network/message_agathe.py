@@ -55,6 +55,7 @@ def extractMessage(message,game) :
         game.dungeon.oplayers.append(otherplayer3)
         game.oplayers = game.dungeon.oplayers
         game.realPlayersList.append(RealPlayer([otherplayer1,otherplayer2,otherplayer3],suppPadding(message[33:43]),message[3:5]))
+    print("Message "+flag+" has been extracted")
 
 
 # pour la reception je ne sais pas trop comment elle s'integrera au code
