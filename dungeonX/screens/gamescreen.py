@@ -298,6 +298,14 @@ class GameScreen(Window):
 	
 	def getCurentInitialTurnNumber(self):
 		return copy(self.turnNumber)
+	
+	def setId(self,playersList):
+		i=0
+		for player in playersList:
+				player.playerId=i
+				i += 1
+				print("Id : "+str(player.playerId))
+	
 
 	def update(self, events):
 		""" Main update method
@@ -348,7 +356,7 @@ class GameScreen(Window):
 			#self.realPlayerCreation = True
 		
 			# test create_msg welcome
-			extractMessage("wlc01xF00780032M00770032M0076003200Lorenzza",self)
+			extractMessage("new01xF00780032M00770032M0076003200Lorenzza",self)
 			
 			if (self.id==0) :
 				self.id=random.randint(1,99)
@@ -356,7 +364,14 @@ class GameScreen(Window):
 					if (self.id==player.id) :
 						self.id=random.randint(1,99)
 
-			createMessage("wlc",self.players,self.id,myEnnemies=None,myUsername=self.playerName)
+			createMessage("new",self.players,self.id,myEnnemies=None,myUsername=self.playerName)
+
+			createMessage("pos",self.players,self.id,playerSelected=self.selectedPlayer)
+
+			#extractMessage("pos01000800032",self)
+
+			# player id attribution in fonction of their indice in the players list of THIS player
+			self.setId(self.players)
 
 			self.realPlayerCreation = True
 		

@@ -27,6 +27,8 @@ class PlayerEnum(Enum):
 
 class Player(Character) :
     ID=0
+    #test agathe
+    playerId=0
     RealPlayerID=0
     MyPlayers=[]
     def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : [Skill] =[]):
