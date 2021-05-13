@@ -17,6 +17,7 @@ from ..network.message import check_size
 from dungeonX.items.Item import Item, ItemFactory, ItemList
 # test
 from ..network.message_agathe import *
+import random
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -112,15 +113,19 @@ class GameScreen(Window):
 		This number represent the time elapsed since the camera
 		started moving. It is used to animate camera's movement.
 	"""
-	def __init__(self, game, dungeon=None, saveName=None):
+	def __init__(self, game, dungeon=None, saveName="SansNom"):
 		super().__init__(game)
 		self.__viewport = pygame.Surface((40*TILE_WIDTH, 40*TILE_WIDTH/game.RATIO))
 		self.game.particleSystem.attachScreen(self.__viewport)
 		self.game=game
 
+		# all informations of THIS RealPlayers ! Yes, this "gamescreen" is a RealPlayer, it's YOU who's reading this !
+		self.id = 0
+		self.playerName = "SansNom"
+
 		self.saveName = saveName
 		if dungeon==None:
-			self.dungeon = Dungeon(self)
+			self.dungeon = Dungeon(self) #à déplacer dans la boucle de jeu pour recevoir la seed avant + faire en sorte que cette ligne ne s'applique qu'une seule fois
 		else:
 			self.dungeon = dungeon
 			self.dungeon.game = self
@@ -190,7 +195,6 @@ class GameScreen(Window):
 		self.oplayersCreation = False
 		self.realPlayerCreation = False
 
-		self.playerName = ""
 
 	def __getstate__(self):
 		return None
@@ -350,10 +354,19 @@ class GameScreen(Window):
 			#self.realPlayerCreation = True
 		
 			# test create_msg welcome
-			createMessage("wlc",self.players,1,myEnnemies=None,myUsername="First") #self.playerName
-			extractMessage("wlc01xF00740028M00880028M00760032000Fabrice",self)
+			extractMessage("wlc01xF00780032M00770032M0076003200Lorenzza",self)
+			
+			if (self.id==0) :
+				self.id=random.randint(1,99)
+				for player in (realPlayersList) :
+					if (self.id==player.id) :
+						self.id=random.randint(1,99)
+
+			createMessage("wlc",self.players,self.id,myEnnemies=None,myUsername=self.playerName)
 
 			self.realPlayerCreation = True
+		
+
 		
 		# --- Events Handling --- #
 		for event in events:
