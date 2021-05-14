@@ -341,6 +341,7 @@ class GameScreen(Window):
 
 		# test RealPlayer 1 : initialization of 1 Real player
 		if(not self.realPlayerCreation):
+			#self.dungeon.oplayers=[]
 			realPlayersList=[]
 			self.realPlayersList=realPlayersList
 			#creation of every players of the real player we want to create
@@ -381,7 +382,7 @@ class GameScreen(Window):
 
 			#self.oplayers[2].playAction(self.game.dt,(80,32))
 
-			# player id attribution in fonction of their indice in the players list of THIS player
+			# player id attribution in fonction of their indice in the players list of THIS player (YOU THERE)
 			self.setId(self.players)
 
 			self.realPlayerCreation = True
@@ -618,7 +619,6 @@ class GameScreen(Window):
 				if visiblePlayer.name==realPlayer.username and (realPlayer not in self.visibleRealPlayersList) :
 					self.visibleRealPlayersList.append(realPlayer)
 
-
 		if self.state == 'paused':
 			self.pausemenu.update(events)
 			self.blit(self.pausemenu, (0,0))
@@ -634,12 +634,12 @@ class GameScreen(Window):
 					self.blit(self.nextButton.image,self.nextButton.rect)
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
-				if not (self.currentInventory == -1):
-					if self.visibleRealPlayersList==[]:
-						self.currentInventory=-1
-					self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
-					self.blit(self.inventorywindow, (0,0))
+					if not (self.currentInventory == -1):
+						self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
+						self.blit(self.inventorywindow, (0,0))
 				else :
+					if not (self.currentInventory == -1):
+						self.currentInventory=-1
 					self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
 			elif self.state=='skillwindow_opened':	
