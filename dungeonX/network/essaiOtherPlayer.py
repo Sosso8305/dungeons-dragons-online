@@ -24,7 +24,7 @@ class OtherPlayer2(Character):
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
         print("Player created")
         super().__init__(game,read_position(liste_str[1],liste_str[2]), actionPointMax,100, 5, 6, 11, 3, 12, 8, 9) #( HP, armor, strength, dex, con, intell, wis, cha )
-
+        
         self.type = read_type(liste_str[0])
         self.mod = read_mod(liste_str[0])
         self.pos = read_position(liste_str[1],liste_str[2])
@@ -174,3 +174,18 @@ class OtherPlayer2(Character):
     
     def getName(self) :
         return self.name
+    
+    # for a test
+    def teleport(self, pos):
+        # Stop everything
+        self.finalTarget = None
+        self.currentTarget = None
+        self.stepsToTarget = None
+        self.targetObject = None
+        self.positions = None
+        self.state = 'idle'
+
+        # Set position
+        self.pos = pos
+        self.rect.midbottom = posToVect(pos) + (TILE_WIDTH/2, TILE_WIDTH)
+    

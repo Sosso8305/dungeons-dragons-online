@@ -24,6 +24,7 @@ def check_size(string : str,n : int):
 def searchRealPlayer(id,RealPlayersList):
     for realPlayer in RealPlayersList:
         if id == realPlayer.id:
+            print("RealPlayer found !")
             return RealPlayersList.index(realPlayer)
     print("No RealPlayer found with id "+str(id))
 
@@ -40,7 +41,7 @@ def get_initial(ptype):
         return 'M'
     
 
-def createMessage(flag,myPlayersList,myId,myEnnemies=None,myUsername="Test",seed=None,playerSelected=None) :
+def createMessage(flag,myPlayersList=None,myId=None,myEnnemies=None,myUsername="Test",seed=None,playerSelected=None) :
     'automatization of the message creation. We suppose that messages creation is always from the players that have the information he send on HIS game'
     message_str = flag 
     if (flag == "wlc"or flag == "new"):
@@ -71,14 +72,18 @@ def extractMessage(message,game) :
         otherplayer3=OtherPlayer2([message[24:25],message[25:29],message[29:33]],game)
         game.dungeon.oplayers.append(otherplayer3)
         game.oplayers = game.dungeon.oplayers
-        game.realPlayersList.append(RealPlayer([otherplayer1,otherplayer2,otherplayer3],suppPadding(message[33:43]),message[3:5]))
+        game.realPlayersList.append(RealPlayer([otherplayer1,otherplayer2,otherplayer3],suppPadding(message[33:43]),int(message[3:5])))
     if (flag == "pos"):
         # message form : pos01000800032
-        #realPlayer=game.realPlayersList[searchRealPlayer(int(message[3:5]),game.realPlayersList)]
-        realPlayer=game.realPlayersList[0]
-        #player=realPlayer.playersList[int(message[5:6])]
-        player=realPlayer.playersList[0]
-        player.playAction(game.game.dt,player._move_zone())
+        realPlayer=game.realPlayersList[searchRealPlayer(int(message[3:5]),game.realPlayersList)]
+        player=realPlayer.playersList[int(message[5:6])]
+        #player.teleport((int(message[6:10]),int(message[10:14])))
+        print("Message pos target : ("+str(int(message[6:10]))+","+str(int(message[10:14]))+")")
+        player.setTarget((int(message[6:10]),int(message[10:14])))
+        player.playAction(game.game.dt,(int(message[6:10]),int(message[10:14])))
+        #print(player.stepsToTarget)
+        #player.setTarget((int(message[6:10]),int(message[10:14])))
+
     print("Message "+flag+" has been extracted")
 
 
