@@ -2,6 +2,7 @@ from dungeonX.characters.players.player import Player, PlayerEnum
 from dungeonX.characters.enemies.enemy import Enemy
 
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5]}
+MESSAGE_EXTRACTION = {"wlc" : 4, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3}
 
 def get_character(List, ID):
     for character in List:
@@ -45,13 +46,14 @@ def check_size(string: str, n: int):
 
     return modified_str
 
-def extract(message, n:int):
+def extract(message):
     """ 
         This function is going to take as an argument a string and returns a list of other players' infos in string format.
         This infos will be converted into the right format in other functions.
         n : nombre d'elts a extraire
     """
     flag = message[0:3]
+    n = MESSAGE_EXTRACTION[flag]
     if (flag == "wlc" or flag == "new"):
         l = [message[3:5]]+[message[5:15]]+[[] for k in range(3)]
         info = ""

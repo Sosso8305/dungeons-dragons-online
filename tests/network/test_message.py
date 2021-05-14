@@ -65,12 +65,12 @@ def testMessageReadAndExtract():
     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
     n = str(enemy.ID)
     zerosm = "00" if len(n) == 3 else "000"
-    liste = extract(message.create_message(),4)
-    liste1 = extract(message1.create_message(ID = int(n1)),4)
-    liste2 = extract(message2.create_message(ID = int(n1), IDenemy = int(n)),5)
-    liste3 = extract(message3.create_message(),2)
-    liste4 = extract(message4.create_message(),3)
-    liste5 = extract(message5.create_message(ID = int(n1), IDItem= swordItem.id),3)
+    liste = extract(message.create_message())
+    liste1 = extract(message1.create_message(ID = int(n1)))
+    liste2 = extract(message2.create_message(ID = int(n1), IDenemy = int(n)))
+    liste3 = extract(message3.create_message())
+    liste4 = extract(message4.create_message())
+    liste5 = extract(message5.create_message(ID = int(n1), IDItem= swordItem.id))
     assert liste == ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
     assert liste1 == ["01",n1,"0000","0000"]
     assert liste2 == ["01",n1,"100",zerosm+n,"100"]
