@@ -21,7 +21,7 @@ def distanceBetween(xA, yA, xB, yB):
 
 class OtherPlayer2(Character):
 
-    def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT,name=OTHERPLAYERNAME):
+    def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
         print("Player created")
         super().__init__(game,read_position(liste_str[1],liste_str[2]), actionPointMax,100, 5, 6, 11, 3, 12, 8, 9) #( HP, armor, strength, dex, con, intell, wis, cha )
 
@@ -31,8 +31,7 @@ class OtherPlayer2(Character):
         self.exp = 0 #we have to modify this later if we create a message type for exp
         #self.att = read_attributes(liste_str[2])
 
-        # bag initialization : empty at the beginning, no weight, no money, no equipment
-        self.bag = Bag(500)
+        self.parent = None
 
         self.timeToMove = 300
         self.animationSpeed = {'idle': 120, 'run': 100}
@@ -65,7 +64,7 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
-        self.name = name
+        self.name = ""
         self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
 
@@ -171,18 +170,10 @@ class OtherPlayer2(Character):
 
     def getLevel(self) :
         return self.level
-
-    def getCrew(self,players):
-        crew = [self]
-        for player in players:
-            if (player.name == self.name and player != self):
-                crew.append(player)
-        return crew
-
+        
     def checkPresence(self,crews):
         """
         This function is made to avoid repeating the same crew in the list crews
         """
-        for crew in crews:
-            if self in crew: return True
+        if self.parent.persos in crews: return True
         return False

@@ -12,6 +12,7 @@ from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
+from ..network.realPlayer import RealPlayer
 from ..network.message import check_size, Message, extract, read_name
 
 class GameScreen(Window):
@@ -187,6 +188,7 @@ class GameScreen(Window):
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
 		self.oplayers = self.dungeon.oplayers
+		self.realPlayers = []
 		self.oplayersCreation = False
 
 		self.playerName = ""
@@ -319,8 +321,10 @@ class GameScreen(Window):
 			check_size(str(self.players[0].pos[1]+2),4)+"2R"+check_size(str(self.players[2].pos[0]+2),4)+check_size(str(self.players[2].pos[1]+2),4)
 		liste = extract(messageTest) #la sortie serait de la forme: ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
 		if(not self.oplayersCreation):
-			self.dungeon.oplayers = [OtherPlayer2([liste[2][1],liste[2][2],liste[2][3]],self,name=read_name(liste[1])),\
-				OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self,name=read_name(liste[1])),OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self,name=read_name(liste[1]))]
+			otherPlayers = [OtherPlayer2([liste[2][1],liste[2][2],liste[2][3]],self),OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self)\
+				,OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self)]
+			self.realPlayers.append(RealPlayer(otherPlayers,"alice"))
+			self.dungeon.oplayers = otherPlayers
 			self.oplayers = self.dungeon.oplayers
 			self.oplayersCreation = True
 		
@@ -558,7 +562,7 @@ class GameScreen(Window):
 					self.crews=[]
 					for visiblePlayer in self.visiblePlayersList:
 						if not (visiblePlayer.checkPresence(self.crews)):
-							self.crews.append(visiblePlayer.getCrew(self.oplayers))
+							self.crews.append(visiblePlayer.parent.persos)
 					self.nextButton.update(events)
 					self.blit(self.nextButton.image,self.nextButton.rect)
 					self.prevButton.update(events)
