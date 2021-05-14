@@ -362,7 +362,7 @@ class GameScreen(Window):
 			#self.realPlayerCreation = True
 		
 			# test create_msg welcome
-			extractMessage("new01xF00780032M00770032M0076003200Lorenzza",self)
+			extractMessage("new01xF00800033M00770032M0076003200Lorenzza",self)
 			
 			if (self.id==0) :
 				self.id=random.randint(1,99)
@@ -370,11 +370,13 @@ class GameScreen(Window):
 					if (self.id==player.id) :
 						self.id=random.randint(1,99)
 
-			createMessage("new",self.players,self.id,myEnnemies=None,myUsername=self.playerName)
+			createMessage("new",myPlayersList=self.players,myId=self.id,myEnnemies=None,myUsername=self.playerName)
 
-			createMessage("pos",self.players,self.id,playerSelected=self.selectedPlayer)
+			createMessage("pos",myPlayersList=self.players,myId=self.id,playerSelected=self.selectedPlayer)
 
-			#extractMessage("pos01000800032",self)
+			extractMessage("pos01000800032",self)
+
+			#self.oplayers[2].playAction(self.game.dt,(80,32))
 
 			# player id attribution in fonction of their indice in the players list of THIS player
 			self.setId(self.players)
