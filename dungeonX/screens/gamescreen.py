@@ -373,11 +373,11 @@ class GameScreen(Window):
 			#test ajout abojet sac autre RealPlayer
 			sword = ItemFactory(ItemList.Sword)
 			realPlayersList[0].bag.addItem(sword)
-
+			# these two lines should have the same result : the creation of a message
 			createMessage("new",myPlayersList=self.players,myId=self.id,myEnnemies=None,myUsername=self.playerName)
-
+			extractMessage("con",self)
+			# "pos" type message test
 			createMessage("pos",myPlayersList=self.players,myId=self.id,playerSelected=self.selectedPlayer)
-
 			extractMessage("pos01000800032",self)
 
 			#self.oplayers[2].playAction(self.game.dt,(80,32))

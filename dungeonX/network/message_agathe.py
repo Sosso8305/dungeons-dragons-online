@@ -50,7 +50,6 @@ def createMessage(flag,myPlayersList=None,myId=None,myEnnemies=None,myUsername="
         #message form : new01xF00780032M00770032M0076003200Lorenzza
         message_str += check_size(str(myId),2)+'x'
         for player in (myPlayersList) :
-            print("Position :"+str(player.pos))
             message_str += get_initial(player.PlayerType)+check_size(str(player.pos[0]),4)+check_size(str(player.pos[1]),4)
         message_str += check_size(myUsername,10)
     if (flag == "pos"):
@@ -83,7 +82,9 @@ def extractMessage(message,game) :
         player.playAction(game.game.dt,(int(message[6:10]),int(message[10:14])))
         #print(player.stepsToTarget)
         #player.setTarget((int(message[6:10]),int(message[10:14])))
-
+    if (flag == "con"):
+        # when a message "con" is received, all players send their "new" message (or "wlc", i should ask lucas)
+        createMessage("new",myPlayersList=game.players,myId=game.id,myEnnemies=None,myUsername=game.playerName)
     print("Message "+flag+" has been extracted")
 
 
