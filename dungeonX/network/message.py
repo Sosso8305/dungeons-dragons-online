@@ -45,13 +45,13 @@ def check_size(string: str, n: int):
 
     return modified_str
 
-def extract(message, flag: str, n:int):
+def extract(message, n:int):
     """ 
         This function is going to take as an argument a string and returns a list of other players' infos in string format.
         This infos will be converted into the right format in other functions.
         n : nombre d'elts a extraire
     """
-
+    flag = message[0:3]
     if (flag == "wlc" or flag == "new"):
         l = [message[3:5]]+[message[5:15]]+[[] for k in range(3)]
         info = ""
