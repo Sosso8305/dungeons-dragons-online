@@ -86,9 +86,6 @@ def extract(message, flag: str, n:int):
 
     return l
 
-def read_id(id_str):
-    return int(id_str)
-
 def read_position(position_str0, position_str1):
     """
         since we receive the position as a string this function's goal is simply to convert the first string to u tuple and replace it in the list
@@ -124,9 +121,6 @@ def read_attributes(att_str):
     attributes_list[len(attributes_list)-1] = attributes_list[len(attributes_list)-1][:len(attributes_list[len(attributes_list)-1])-1]
     return int(attributes_list[0]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
         ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7]) 
-
-def read_int(int_str):
-    return int(int_str) 
 
 def read_IP(IP_str):
     liste_nb = IP_str.split(".")
