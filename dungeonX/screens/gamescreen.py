@@ -12,7 +12,7 @@ from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
-from ..network.message import check_size
+from ..network.message import check_size, Message, extract, read_name
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -315,9 +315,12 @@ class GameScreen(Window):
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
 		#Just for testing to remove later
+		messageTest = "wlc0100000Alice0R"+check_size(str(self.players[0].pos[0]+2),4)+check_size(str(self.players[0].pos[1]+2),4)+"1M"+check_size(str(self.players[1].pos[0]+2),4)+\
+			check_size(str(self.players[0].pos[1]+2),4)+"2R"+check_size(str(self.players[2].pos[0]+2),4)+check_size(str(self.players[2].pos[1]+2),4)
+		liste = extract(messageTest,"wlc",4) #la sortie serait de la forme: ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
 		if(not self.oplayersCreation):
-			self.dungeon.oplayers = [OtherPlayer2(['R',str(self.players[0].pos[0]+2),str(self.players[0].pos[1]+2)],self),\
-				OtherPlayer2(['F',str(self.players[1].pos[0]+2),str(self.players[1].pos[1]+2)],self),OtherPlayer2(['F',str(self.players[1].pos[0]+4),str(self.players[1].pos[1]+4)],self)]
+			self.dungeon.oplayers = [OtherPlayer2([liste[2][1],liste[2][2],liste[2][3]],self,name=read_name(liste[1])),\
+				OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self,name=read_name(liste[1])),OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self,name=read_name(liste[1]))]
 			self.oplayers = self.dungeon.oplayers
 			self.oplayersCreation = True
 		
@@ -630,9 +633,4 @@ class GameScreen(Window):
 	
 	def changePlayerName(self, name):
 		self.playerName = name
-		
-
-
-		
-		
 		
