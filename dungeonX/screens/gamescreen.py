@@ -349,8 +349,7 @@ class GameScreen(Window):
 			# now we can create the Real Player ! its parameters are its 3 players and its username
 			#realPlayer1=RealPlayer([otherplayer1,otherplayer2,otherplayer3],"Fabrice",2)
 			# test d'ajout d'un objet dans son sac
-			#sword = ItemFactory(ItemList.Sword)
-			#realPlayer1.bag.addItem(sword)
+			
 			# all the RealPlayers are added to the realPlayersList list (list of every little players on the map)
 			#self.realPlayersList.append(realPlayer1)
 			#self.realPlayerCreation = True
@@ -363,6 +362,10 @@ class GameScreen(Window):
 				for player in (realPlayersList) :
 					if (self.id==player.id) :
 						self.id=random.randint(1,99)
+
+			#test ajout abojet sac autre RealPlayer
+			sword = ItemFactory(ItemList.Sword)
+			realPlayersList[0].bag.addItem(sword)
 
 			createMessage("new",myPlayersList=self.players,myId=self.id,myEnnemies=None,myUsername=self.playerName)
 
