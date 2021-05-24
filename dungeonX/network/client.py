@@ -69,9 +69,8 @@ class Network(threading.Thread):
         while (not self.stopped):
             try:
                 data = self.s.recv(sizeMESSAGE).decode(encodage)
-                if self.debug==True and data != self.file[-1] :
-                    print(f"recv : {data}")
-                self.file.append(data)
+                if data != '':
+                    self.file.append(data)
             except socket.timeout:
                 continue
             except Exception as e:
@@ -79,6 +78,8 @@ class Network(threading.Thread):
                     print(f"Network issue : {e}")
                     self.stop()
                     raise e
+            if self.debug==True and len(data)>10:
+                print(f"recv : {data}")
 
     def connexion(self, ip, port):
         """Initiate the connexion between this game and the other games
@@ -90,9 +91,8 @@ class Network(threading.Thread):
         """
         self.send(f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
                   )  # message spécial a destination uniquement du C
-        sleep(2)
-        for msg in self.getAllMessages():
-            pass
+        
+
 
     def getMessage(self):
         """Pop the oldest message from the queue (FIFO)
