@@ -713,15 +713,17 @@ int main(int argc, char *argv[])
 
     if (argc < 4)
     {
-        argument arg;
-        arg.data = &data;
-        sleep(0.5);
-        if (pthread_create(&threads[2], NULL, SendStructMyPlayerInit, &arg) != 0)
-            stop("thread_init_Send_shell");
+        // argument arg;
+        // arg.data = &data;
+        // sleep(0.5);
+        // if (pthread_create(&threads[2], NULL, SendStructMyPlayerInit, &arg) != 0)
+        //     stop("thread_init_Send_shell");
+        puts("Shell desactiveted");
+        
     }
     else
     {
-
+        
         char *delim = ":";
         char *ptr = strtok(argv[3], delim);
         char ip[16];
