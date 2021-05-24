@@ -67,10 +67,12 @@ void *RecvPython(void *StructArg)
         {
         case -1:
             pthread_exit(NULL);
+            break;
 
         case 0:
             printf("End connection by python Interface \n");
             pthread_exit(NULL);
+            break;
 
         default:
             break;
@@ -88,26 +90,36 @@ void *RecvPython(void *StructArg)
             {
                 puts("\n new connexion via Python");
 
-                char IP[16];
-                char char_port[5];
+                char IP[16] = "";
+                char char_port[6] ="";
 
+
+                
                 for (int i = 6; i < 21; i++)
                 {
                     strncat(IP, &NewSocket[i], 1);
                 }
 
+                
+                strncat(IP, "\0", 1);
+
                 for (int i = 21; i < 26; i++)
                 {
                     strncat(char_port, &NewSocket[i], 1);
                 }
-
+                strncat(char_port, "\0", 1);
+                
                 int port;
                 sscanf(char_port, "%d", &port);
+                
+                printf("%s\n",IP);
 
-                strncpy(arg1.ip, IP, 16 * sizeof(char));
+                arg1.ip=malloc(16*sizeof(char));
+                strncpy(arg1.ip, IP, 16);
+                
                 arg1.port_dest = port;
-                arg->data = (*arg).data;
-                arg->init = 1;
+                arg1.data = (*arg).data;
+                arg1.init = 1;
 
                 if (pthread_create(&ID_threads[0], NULL, SendSructMyPlayer, &arg1) != 0)
                     OneConnection = 1;
@@ -146,7 +158,7 @@ void *SendPython(void *StructArg)
                 memcpy(&((*arg).data->MemoryOtherPlayers[i].dataPython), &((*arg).data->OtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char));
 
                 
-                int n = send((*arg).sockfd, &((*arg).data->MemoryOtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char), 0);
+                int n = send((*arg).sockfd, &((*arg).data->MemoryOtherPlayers[i].dataPython), strlen((*arg).data->MemoryOtherPlayers[i].dataPython) * sizeof(char), 0);
 
                 if (n == -1)
                 {
@@ -311,9 +323,12 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
             pthread_exit(NULL);
 
         case 0:
-            printf("End connection by peer \n");
-            pthread_exit(NULL);
-            
+            // printf("End connection by peer \n");
+            // pthread_exit(NULL);
+            //Somebody disconnected , get his details and print
+            // getpeername((*arg).sockfd , (struct sockaddr*)&serv_addr , (socklen_t *)&len);
+            // printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(serv_addr.sin_addr) , ntohs(serv_addr.sin_port));    
+            // close( (*arg).sockfd );
 
         default:
             break;
