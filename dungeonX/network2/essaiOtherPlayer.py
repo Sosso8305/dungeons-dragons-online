@@ -24,13 +24,14 @@ class OtherPlayer2(Character):
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
         print("Player created")
         super().__init__(game,read_position(liste_str[1],liste_str[2]), actionPointMax,100, 5, 6, 11, 3, 12, 8, 9) #( HP, armor, strength, dex, con, intell, wis, cha )
-        
+
         self.type = read_type(liste_str[0])
         self.mod = read_mod(liste_str[0])
         self.pos = read_position(liste_str[1],liste_str[2])
         self.exp = 0 #we have to modify this later if we create a message type for exp
-        self.name=OTHERPLAYERNAME # default name before realPlayer's username assignment 
-        self.equipment=[]
+        #self.att = read_attributes(liste_str[2])
+
+        self.parent = None
 
         self.timeToMove = 300
         self.animationSpeed = {'idle': 120, 'run': 100}
@@ -63,7 +64,7 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
-        
+        self.name = ""
         self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
 
@@ -72,9 +73,6 @@ class OtherPlayer2(Character):
         del d["positions"]
         del d["frames"]
         return d
-    
-    def updateName(self,name):
-        self.name=name
 
     def __setstate__(self, state):
         state["positions"] = None
@@ -172,20 +170,10 @@ class OtherPlayer2(Character):
 
     def getLevel(self) :
         return self.level
-    
-    def getName(self) :
-        return self.name
-    
-    # for a test
-    def teleport(self, pos):
-        # Stop everything
-        self.finalTarget = None
-        self.currentTarget = None
-        self.stepsToTarget = None
-        self.targetObject = None
-        self.positions = None
-        self.state = 'idle'
-
-        # Set position
-        self.pos = pos
-        self.rect.midbottom = posToVect(pos) + (TILE_WIDTH/2, TILE_WIDTH)
+        
+    def checkPresence(self,crews):
+        """
+        This function is made to avoid repeating the same crew in the list crews
+        """
+        if self.parent.persos in crews: return True
+        return False

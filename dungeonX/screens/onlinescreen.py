@@ -61,8 +61,8 @@ class OnlineScreen(Window):
     def saveIPaddress(self):
         if self.IPAddressInput.text!='':
             self.IPaddress= self.IPAddressInput.text
-            self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
-            self.dialogState = "save_confirmed"
+ #           self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
+ #           self.dialogState = "save_confirmed"
             self.IPAddressInput.unfocus()
             self.IPSaved = True
         if self.AddPortInInput.text!='':
@@ -163,7 +163,3 @@ class OnlineScreen(Window):
             self.isPressed = False
         self.backbutton.update(events)
         self.blit(self.backbutton.image,self.backbutton.rect)
-
-
-
-
