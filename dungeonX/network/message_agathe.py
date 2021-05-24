@@ -88,26 +88,3 @@ def extractMessage(message,game) :
     print("Message "+flag+" has been extracted")
 
 
-# pour la reception je ne sais pas trop comment elle s'integrera au code
-def recvMessage(chaine) :
-    id=int(chaine[0:1])
-    perso=int(chaine[1:2])
-    type=chaine[2:5]
-    donnee=chaine[5:] # il faudra definir une taille max des donnees et ajouter du padding
-    if type=='pos' :
-        print("Le message est un message position, il va etre traite comme tel.")
-        print("Le joueur d'id ",id," veut faire bouger son personnage ",perso,"a la position [",donnee[0],"x ;",donnee[1],"y] .")
-        # il ne reste plus qu'a aller chercher l'otherplayer correspondant a l'id
-        # et a update ses champs position avec une methode d'OtherPlayer
-        # tableau_otherplayer[id].updatePosition(la position)
-        # aled christine 
-    elif type=="ini" :
-        print("Le message est un message d'initialisation.")
-        print("Le joueur vient d'arriver en jeu !")
-        # c'est a ce moment qu'on cree un otherPlayer
-        # en remplissant avec les stats de base 
-        # (on verra apres pour revenir en jeu avec les memes stats apres l'avoir quitte)
-    else :
-        print("Type de message inconnu pour le moment.")
-
-#### TEST ####
