@@ -1,7 +1,7 @@
 import pygame, io, os
 from . import Window
 from ..graphics import Button, TextInput,TextInputOnline
-from ..map import Map
+from ..map import Map, SEED
 from ..constants import TILE_WIDTH
 import ipaddress
 from PygameUtils import checkbox
@@ -145,6 +145,7 @@ class OnlineScreen(Window):
                 Networker = Network(self.IPC, int(self.Port), True)
                 Networker.start()
                 if not self.checkFirstPlayer.isChecked():
+                    print(f"{SEED} c'est la seed")
                     Networker.connexion(self.IPaddress,int(self.PortIn))
                 
             else : # Blit Real visual WARNING 
