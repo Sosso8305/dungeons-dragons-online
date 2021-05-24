@@ -39,7 +39,7 @@ class Player(Character) :
         self.exp = 0
         self._bag = self.game.inventorywindow.bag
         #self.packetBag=self._bag
-        self.name = PLAYERNAME
+        self.name = game.playerName
         self._playerType = playerType
         self.PlayerType= self._playerType
         self.lineOfSightRadius = lineOfSightRadius
@@ -57,6 +57,8 @@ class Player(Character) :
             Player.ID+=1
         self.ID=Player.ID
         
+    def getName(self):
+            return self.name
     def getVisibility(self):
         userSkill: Skill = self._searchSkill(SkillEnum.Stealth)
         if userSkill == None:

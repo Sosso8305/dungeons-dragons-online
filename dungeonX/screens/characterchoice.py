@@ -1,9 +1,9 @@
 import pygame
 from . import Window
-from ..graphics import Button, TextInput
+from ..graphics import Button,TextInput
 from ..map import Map
 from dungeonX.characters.players.classes import PlayerEnum
-from ..constants import TILE_WIDTH
+from ..constants import TILE_WIDTH ,PLAYERNAME
 from enum import Enum, auto
 
 CHARACTER_HEIGHT = 128
@@ -49,24 +49,34 @@ class CharacterChoice(Window):
     def __init__(self, game):
         super().__init__(game)
         self.rect= self.get_rect()
-        
         self.background = pygame.image.load("dungeonX/assets/menu/background.png")
         self.background = pygame.transform.scale(self.background, (self.rect.width, self.rect.height))
         self.playersButtons = [[], [], []]
         for i in range(3):
             for player in PlayerImages:
-                self.playersButtons[i] += Button(game,(self.get_width()*(1+i)//4-CHARACTER_WIDTH//2, (self.get_height()-CHARACTER_HEIGHT)//2), "", imgPath=player.value, size=(CHARACTER_WIDTH,CHARACTER_HEIGHT)),
+                self.playersButtons[i] += Button(game,(self.get_width()*(1+i)//4-CHARACTER_WIDTH//2, (self.get_height()-CHARACTER_HEIGHT)//2-50), "", imgPath=player.value, size=(CHARACTER_WIDTH,CHARACTER_HEIGHT)),
+        
+        self.name = ""
 
         self.indexes = [0,1,2]
 
         self.backbutton = Button(game,(20,20), "",size=(50,50),imgPath="dungeonX/assets/menu/back_arrow.png", textScale=0.3, action=lambda: self.game.setScreen('map_selector'))
+        
+        self.AddPseudo = TextInput(game, (self.get_width()//2-160, (self.get_height()//2)+110),width=8,textScale=0.5)
 
-        self.startButton = Button(game,(self.get_width()//2-START_BUTTON_WIDTH//2,5*self.get_height()//6-START_BUTTON_HEIGHT//2),"Start",(START_BUTTON_WIDTH, START_BUTTON_HEIGHT))
+        self.startButton = Button(game,(self.get_width()//2-START_BUTTON_WIDTH//2,5*self.get_height()//6-START_BUTTON_HEIGHT//2),"Start",(START_BUTTON_WIDTH, START_BUTTON_HEIGHT),action=self.savePseudo)
         self.currentscreen = 'character_choice'
+
+
+    def savePseudo(self): 
+        if self.AddPseudo.text!='':
+            self.name = self.AddPseudo.text
 
     def update(self,events):
         self.blit(self.background, (0,0))
         self.game.textDisplayer.print("Choose your Characters",(0,50), rectSize=(self.get_width(),200), center=True, scale=0.5)
+        
+        self.game.textDisplayer.print("Choose your nickname",(0,(self.get_height()//2-30)), rectSize=(self.get_width(),200), center=True, scale=0.5)
 
         for i in range(3):
             button = self.playersButtons[i][self.indexes[i]]
@@ -75,9 +85,15 @@ class CharacterChoice(Window):
             if button.isPressed():
                 self.indexes[i] = (self.indexes[i]+1)%3
 
+        
+        self.blit(self.AddPseudo,self.AddPseudo.rect)
+        self.AddPseudo.update(events)
+
         self.blit(self.startButton.image,self.startButton.rect)
         self.startButton.update(events)
         if self.startButton.isPressed():
+            #print(f"Self.name?: {self.name}")
+            self.game.screens["game"].changePlayerName(self.name)
             self.game.screens["game"].selectDefaultPlayers(self._retrievePlayerTypes())
             self.game.screens["game"].setState('walk')
             self.game.screens["game"].dungeon.loadFloor()

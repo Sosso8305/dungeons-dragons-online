@@ -2,11 +2,14 @@ from dungeonX.characters.players.player import Player, PlayerEnum
 from dungeonX.characters.enemies.enemy import Enemy
 
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5]}
+MESSAGE_EXTRACTION = {"wlc" : 4, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3}
 
 def get_character(List, ID):
     for character in List:
         if character.ID == ID:
             return character
+
+
 
 def get_initial(ptype):
     if ptype == PlayerEnum.Rogue:
@@ -43,20 +46,21 @@ def check_size(string: str, n: int):
 
     return modified_str
 
-def extract(message, flag: str, n:int):
+def extract(message):
     """ 
         This function is going to take as an argument a string and returns a list of other players' infos in string format.
         This infos will be converted into the right format in other functions.
         n : nombre d'elts a extraire
     """
-
+    flag = message[0:3]
+    n = MESSAGE_EXTRACTION[flag]
     if (flag == "wlc" or flag == "new"):
-        l = [message[3:5]]+[[] for k in range(3)]
+        l = [message[3:5]]+[message[5:15]]+[[] for k in range(3)]
         info = ""
         i = 0
-        message = message[5:]
+        message = message[15:]
         
-        for liste in l[1:]:
+        for liste in l[2:]:
             j = 0
             while j < n: 
                 k = 0
@@ -80,12 +84,9 @@ def extract(message, flag: str, n:int):
                 k += 1
             l.append(info)
             info = ""
-            j += 1
+            j += 1  
 
     return l
-
-def read_id(id_str):
-    return int(id_str)
 
 def read_position(position_str0, position_str1):
     """
@@ -123,13 +124,15 @@ def read_attributes(att_str):
     return int(attributes_list[0]),int(attributes_list[1]),int(attributes_list[2]),int(attributes_list[3]),int(attributes_list[4]) \
         ,int(attributes_list[5]) ,int(attributes_list[6]) ,int(attributes_list[7]) 
 
-def read_int(int_str):
-    return int(int_str) 
-
 def read_IP(IP_str):
     liste_nb = IP_str.split(".")
     liste_nb[0] = str(int(liste_nb[0]))
     return ".".join(liste_nb)
+
+def read_name(namePadd):
+    i = 0
+    while namePadd[i] == '0': i += 1
+    return namePadd[i:]
 
 class Message:
     def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag="", IP=0,port=0):
@@ -162,6 +165,8 @@ class Message:
         self.list1 = [self.id1,self.type1,self.pos1[0],self.pos1[1]]
         self.list2 = [self.id2,self.type2,self.pos2[0],self.pos2[1]]
         self.list3 = [self.id3,self.type3,self.pos3[0],self.pos3[1]]
+        
+        #self.name = PlayerList[0].name if PlayerList[0] != None else ""
         #TODO : add bag to the last list and add equiment message 
 
     def create_message(self, ID = 0, IDenemy = 0, IDItem = 0):
@@ -171,6 +176,7 @@ class Message:
         """
         message_str = self.flag + check_size(str(self.playerID),2) if(self.flag != "con") else self.flag
         if (self.flag == "wlc"): 
+            message_str += check_size(self.Player1Type1.getName(),10)
             liste = [self.list1,self.list2,self.list3]
             for i in range(3):
                 for j in range(len(liste[i])):
@@ -180,6 +186,7 @@ class Message:
                         part = str(liste[i][j])
                     message_str += check_size(part,MESSAGE_SIZE_MAX[self.flag][j+1])
         elif (self.flag == "new"): 
+            message_str += check_size(self.Player1Type1.getName(),10)
             liste = [self.list1[1:],self.list2[1:],self.list3[1:]]
             for i in range(3):
                 for j in range(len(liste[i])):
@@ -208,5 +215,6 @@ class Message:
             
             elif (self.flag == "ite"):
                 message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(IDItem),MESSAGE_SIZE_MAX[self.flag][2])
+            
         return message_str
         

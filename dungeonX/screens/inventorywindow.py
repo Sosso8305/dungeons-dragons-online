@@ -32,14 +32,15 @@ class InventoryWindow(Window):
 
 	
 
-	def update(self, events):
+	def update(self, events, plyr=None):
 		mousePos = pygame.mouse.get_pos()
 		allItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, self.bag.getAllItems()))
+		players = self.parentScreen.players if plyr == None else plyr
 
 		for event in events:
 			if event.type==pygame.MOUSEBUTTONDOWN and event.button==1:
 				for i,rect in enumerate(self.itemRects):
-					if rect.collidepoint(event.pos) and ((i<15 and i//5<len(self.parentScreen.players) and self.parentScreen.players[i//5].equipment[i%5]!=None) or (i>=15 and i-15<len(allItems) and allItems[i-15]!=None)):
+					if rect.collidepoint(event.pos) and ((i<15 and i//5<len(players) and players[i//5].equipment[i%5]!=None) or (i>=15 and i-15<len(allItems) and allItems[i-15]!=None)):
 						self.selectedItemIndex = i
 						self.grabPos = event.pos
 						break
@@ -48,14 +49,14 @@ class InventoryWindow(Window):
 					for i, rect in enumerate(self.itemRects):
 						if rect.collidepoint(event.pos):
 							if self.selectedItemIndex<15:
-								item = self.parentScreen.players[self.selectedItemIndex//5].equipment[self.selectedItemIndex%5]
+								item = players[self.selectedItemIndex//5].equipment[self.selectedItemIndex%5]
 							else:
 								item = allItems[self.selectedItemIndex-15]
 
-							if i<15 and self.selectedItemIndex>=15 and i//5<len(self.parentScreen.players):
-								self.parentScreen.players[i//5].equip(item, index=i%5)
+							if i<15 and self.selectedItemIndex>=15 and i//5<len(players):
+								players[i//5].equip(item, index=i%5)
 							elif i>=15 and self.selectedItemIndex<15:
-									self.parentScreen.players[self.selectedItemIndex//5].unequip(item)
+									players[self.selectedItemIndex//5].unequip(item)
 							break
 				self.selectedItemIndex = None
 				self.grabPos = None
@@ -68,7 +69,7 @@ class InventoryWindow(Window):
 		self.blit(self.background, self.rect)
 		self.game.textDisplayer.print(str(self.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
 
-		for i,player in enumerate(self.parentScreen.players):
+		for i,player in enumerate(players):
 			self.blit(pygame.transform.scale(player.image, (16*INVENTORY_SCALE, 24*INVENTORY_SCALE)), (9*INVENTORY_SCALE+self.rect.left, (23+31*i)*INVENTORY_SCALE+self.rect.top))
 			for j,item in enumerate(player.equipment):
 				if item!=None:
@@ -89,7 +90,7 @@ class InventoryWindow(Window):
 		if self.selectedItemIndex!=None:
 			rect = self.itemRects[self.selectedItemIndex].move(pygame.Vector2(mousePos)-self.itemRects[self.selectedItemIndex].center)
 			if self.selectedItemIndex<15:
-				item = self.parentScreen.players[self.selectedItemIndex//5].equipment[self.selectedItemIndex%5]
+				item = players[self.selectedItemIndex//5].equipment[self.selectedItemIndex%5]
 			else:
 				item = allItems[self.selectedItemIndex-15]
 			self.blit(ITEMS_IMAGES[item.getItemType()], rect)

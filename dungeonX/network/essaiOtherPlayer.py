@@ -3,7 +3,7 @@ from dungeonX.network.message import read_position, read_attributes,read_type, r
 from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT,OTHERPLAYERNAME
 from dungeonX.characters.character import Character
 from ..map import Map
-
+from dungeonX.characters import Bag
 
 def vectToPos(vect):
     if type(vect) in (tuple, list):
@@ -31,9 +31,7 @@ class OtherPlayer2(Character):
         self.exp = 0 #we have to modify this later if we create a message type for exp
         #self.att = read_attributes(liste_str[2])
 
-        self.equipment = [None, None, None, None, None]
-
-
+        self.parent = None
 
         self.timeToMove = 300
         self.animationSpeed = {'idle': 120, 'run': 100}
@@ -44,6 +42,7 @@ class OtherPlayer2(Character):
         self.currentTarget = None
         self.finalTarget    = None
         self.stepsToTarget  = None
+        self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring
 
          # Load all frames
         self.images = dict()
@@ -65,7 +64,7 @@ class OtherPlayer2(Character):
         self.image = next(self.frames)
         self.game = game
         self.actionPoint = actionPointMax
-        self.name = OTHERPLAYERNAME
+        self.name = ""
         self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
 
@@ -171,3 +170,10 @@ class OtherPlayer2(Character):
 
     def getLevel(self) :
         return self.level
+        
+    def checkPresence(self,crews):
+        """
+        This function is made to avoid repeating the same crew in the list crews
+        """
+        if self.parent.persos in crews: return True
+        return False
