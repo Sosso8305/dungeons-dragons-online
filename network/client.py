@@ -47,14 +47,16 @@ def ipPadding(ip):
 
 
 class Network(threading.Thread):
-    def __init__(self, ipc=ipC, portc=portC):
+    def __init__(self, ipc=ipC, portc=portC, debug= False):
         """The global network class, made to ensure the connection between the C and the python. Must be started with self.start() after initialization
 
         Args:
             ipc (str, optional): The ip address of the LOCAL C server. Defaults to ipC (127.0.0.1).
             portc (int, optional): The port address of the LOCAL C server. Defaults to portC (5133).
+            debug (bool, optional) : activate debug mode (terminal logs) or not. Defaults to True
         """
         threading.Thread.__init__(self)
+        self.debug=debug
         self.file = []
         self._stop_event = threading.Event()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -67,7 +69,8 @@ class Network(threading.Thread):
         while (not self.stopped):
             try:
                 data = self.s.recv(sizeMESSAGE).decode(encodage)
-                print(f"recv : {data}")
+                if self.debug==True :
+                    print(f"recv : {data}")
                 self.file.append(data)
             except socket.timeout:
                 continue
