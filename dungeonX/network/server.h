@@ -1,11 +1,18 @@
-#define SIZE_DATA_PY 27
+#define SIZE_DATA_PY 38
 
-typedef struct   // struct for one player  
+
+typedef struct   // struct for one player
 {
     int id;   //essential element 
     char dataPython[SIZE_DATA_PY];
 
 }data_player;
+
+typedef struct 
+{
+    char * ip;
+    int port;
+} socketBSD;
 
 
 typedef struct 
@@ -13,7 +20,8 @@ typedef struct
     data_player MyPlayer;       //struct data myplayer
     int numberOtherPlayers;     //number other Player for tab dynamique
     data_player * OtherPlayers; //tab data of all player
-    data_player * MemoryOtherPlayers;
+    data_player * MemoryOtherPlayers; //tampon
+    socketBSD * AllSocketInNetwork;
     int InterfaceConnected;
     int port_Server;
     int port_Interface;
@@ -26,19 +34,15 @@ typedef struct
     int sockfd;
     char * ip;
     int init;
-    int port_dest;  
-    
+    int port_dest;
+
 }argument;
 
-typedef struct 
-{
-    char * ip;
-    int port;
-} socketBSD;
 
 
 void display_data_player (data_player player);
 void stop(char *msg);
+void sendSocketPlayerInNetwork(int sockfd,all_data * data);
 
 void * RecvPython(void * StructArg);
 void * SendPython(void * StructArg);

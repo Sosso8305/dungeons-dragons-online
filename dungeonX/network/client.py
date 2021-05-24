@@ -6,7 +6,7 @@ from time import sleep
 networkFPS = 60
 ipC = "127.0.0.1"
 portC = 5133
-sizeMESSAGE = 20
+sizeMESSAGE = 38
 encodage = "ascii"
 
 
@@ -47,14 +47,16 @@ def ipPadding(ip):
 
 
 class Network(threading.Thread):
-    def __init__(self, ipc=ipC, portc=portC):
+    def __init__(self, ipc=ipC, portc=portC, debug= False):
         """The global network class, made to ensure the connection between the C and the python. Must be started with self.start() after initialization
 
         Args:
             ipc (str, optional): The ip address of the LOCAL C server. Defaults to ipC (127.0.0.1).
             portc (int, optional): The port address of the LOCAL C server. Defaults to portC (5133).
+            debug (bool, optional) : activate debug mode (terminal logs) or not. Defaults to True
         """
         threading.Thread.__init__(self)
+        self.debug=debug
         self.file = []
         self._stop_event = threading.Event()
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -67,14 +69,16 @@ class Network(threading.Thread):
         while (not self.stopped):
             try:
                 data = self.s.recv(sizeMESSAGE).decode(encodage)
-                print(f"recv : {data}")
+                if self.debug==True and data != self.file[-1] :
+                    print(f"recv : {data}")
                 self.file.append(data)
             except socket.timeout:
                 continue
-            except:
+            except Exception as e:
                 if not self.stopped:
-                    print("Network issue")
+                    print(f"Network issue : {e}")
                     self.stop()
+                    raise e
 
     def connexion(self, ip, port):
         """Initiate the connexion between this game and the other games
@@ -84,7 +88,7 @@ class Network(threading.Thread):
             ip (str): the ip address of the other player
             port (int): the external port of the C of the other player
         """
-        self.send(f"conxxx{ipPadding(ip)}{padding(port,5)}"
+        self.send(f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
                   )  # message spécial a destination uniquement du C
         sleep(2)
         for msg in self.getAllMessages():
@@ -94,7 +98,7 @@ class Network(threading.Thread):
         """Pop the oldest message from the queue (FIFO)
 
         Returns:
-            str: the oldest message from the queue
+            str: the oldest message from the queue. If the queue is empty, returns the empty string
         """
         if self.file:
             return self.file.pop(0)  #FIFO
@@ -136,14 +140,19 @@ class Network(threading.Thread):
 
 
 if __name__ == "__main__":
-    ipC = input("Adresse IP du C ? ")
+    #ipC = input("Adresse IP du C ? ")
     portC = int(input("Port du C ? "))
-    Networker = Network(ipC, portC)
+    Networker = Network("127.0.0.1", portC)
     Networker.start()
-    sleep(1)
-    Networker.send("Je suis un message de test !")
-    sleep(1)
+    i = int(input())
+    if i ==1:
+        Networker.connexion("127.0.0.1",7777)
+        input()
+    else:
+        input()
+        Networker.send("Je suis un message de test !")
+    
+
     print(Networker.getAllMessages())
-    sleep(1)
     Networker.stop()
     Networker.join()
