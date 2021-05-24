@@ -1,4 +1,4 @@
-import pygame, io
+import pygame, io, os
 from . import Window
 from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
@@ -44,12 +44,12 @@ class OnlineScreen(Window):
         self.AddIPInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-120),width=15,text="127.0.0.1",IP=True)
         self.AddPortInput = TextInputOnline(game, (self.get_width()//2-120, (self.get_height()+self.choiceBackground.get_height())//2-64-160),width=8,text="5133")
 
-        self.IPaddress=""
-        self.PortIn=""
-        self.Port=""
-        self.PortC=""
-        self.IPC=""
-        self.checkHost = checkbox((0,0,0),200,200,25,25,text="First player")
+        self.IPaddress="" #Ip du joueur auquel on veut se connecter 
+        self.PortIn="" #port distant auquel on veut se connecter
+        self.Port=""  #Port interne de l'interface python
+        self.PortC="" #Port distant du C de se jeu
+        self.IPC="" #IP ou se trouve le C
+        self.checkFirstPlayer = checkbox((0,0,0),200,200,25,25,text="First player")
 
         self.currentscreen = 'online_screen'
     
@@ -61,8 +61,8 @@ class OnlineScreen(Window):
     def saveIPaddress(self):
         if self.IPAddressInput.text!='':
             self.IPaddress= self.IPAddressInput.text
-            self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
-            self.dialogState = "save_confirmed"
+ #           self.dungeon.save('dungeonX/saves/'+self.IPAddressInput.text.replace(' ', '_')+'.txt')
+ #           self.dialogState = "save_confirmed"
             self.IPAddressInput.unfocus()
             self.IPSaved = True
         if self.AddPortInInput.text!='':
@@ -104,11 +104,11 @@ class OnlineScreen(Window):
             self.blit(self.AddPortInInput, self.AddPortInInput.rect)
             
             for event in events:  
-                if self.checkHost.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                    self.checkHost.convert()
+                if self.checkFirstPlayer.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
+                    self.checkFirstPlayer.convert()
                     print("Clicked")
-                print(self.checkHost.isChecked())
-        self.checkHost.draw(self.background)
+                print(self.checkFirstPlayer.isChecked())
+        self.checkFirstPlayer.draw(self.background)
                 
         self.OptionalButton.update(events)
         if self.OptionalButton.isPressed() or self.isPressed:
@@ -138,7 +138,15 @@ class OnlineScreen(Window):
         if self.nextButton.isPressed() or self.isPressedN:
             #TODO : Condition si c'est le tout premier joueur qui lance le jeu if not then : character choice directly with map already in check !!!
             if self.isvalidIPFormat(self.IPaddress) and self.isvalidIPFormat(self.IPC):
-                self.game.setScreen('map_selector')        
+                self.game.setScreen('map_selector') 
+                os.system("cd ./dungeonX/network/ && make && cd ../..")
+                os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
+                from ..network.client import Network
+                Networker = Network(self.IPC, int(self.Port), True)
+                Networker.start()
+                if not self.checkFirstPlayer.isChecked():
+                    Networker.connexion(self.IPaddress,int(self.PortIn))
+                
             else : # Blit Real visual WARNING 
                 self.isPressedN = True
                 self.blit(self.infoBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2)
@@ -155,7 +163,3 @@ class OnlineScreen(Window):
             self.isPressed = False
         self.backbutton.update(events)
         self.blit(self.backbutton.image,self.backbutton.rect)
-
-
-
-

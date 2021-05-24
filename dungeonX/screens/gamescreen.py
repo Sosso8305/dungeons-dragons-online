@@ -305,6 +305,7 @@ class GameScreen(Window):
 				player.playerId=i
 				i += 1
 				print("Id : "+str(player.playerId))
+				
 	
 
 	def update(self, events):
@@ -356,7 +357,9 @@ class GameScreen(Window):
 			#self.realPlayerCreation = True
 		
 			# test create_msg welcome
-			extractMessage("new01xF00800033M00770032M0076003200Lorenzza",self)
+			extractMessage("new01xF00780032M00770032M0076003200Lorenzza",self)
+			
+			
 			
 			if (self.id==0) :
 				self.id=random.randint(1,99)
@@ -372,7 +375,7 @@ class GameScreen(Window):
 			extractMessage("con",self)
 			# "pos" type message test
 			createMessage("pos",myPlayersList=self.players,myId=self.id,playerSelected=self.selectedPlayer)
-			extractMessage("pos01000800032",self)
+			extractMessage("pos01000790033",self)
 
 			#self.oplayers[2].playAction(self.game.dt,(80,32))
 

@@ -1,6 +1,6 @@
 from dungeonX.characters.players import Player, Fighter, Mage, Rogue, PlayerEnum
 from dungeonX.characters.skills import Skill, SkillFactory, SkillEnum
-from dungeonX.network.message import Message,extract, read_id, read_type, read_position, read_attributes, read_int, read_IP
+from dungeonX.network.message import *
 from dungeonX.characters.enemies import Enemy, Zombie, Dragon, Goblin
 from dungeonX.items.Item import ItemList, ItemFactory
 from dungeonX import Game
