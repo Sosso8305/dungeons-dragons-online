@@ -30,8 +30,8 @@ class Player(Character) :
     RealPlayerID=0
     MyPlayers=[]
     def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : [Skill] =[]):
-        print("stat", stats)
-        print("lineOfSightRadius",lineOfSightRadius)
+        #print("stat", stats)
+        #print("lineOfSightRadius",lineOfSightRadius)
         super().__init__(game, pos, actionPointMax,*stats) #( HP, armor, strength, dex, con, intell, wis, cha )
         self._skills = skills
         self._skillScore = 0

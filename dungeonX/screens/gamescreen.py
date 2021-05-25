@@ -217,7 +217,7 @@ class GameScreen(Window):
 		defaultSkillfighter2=[SkillFactory(SkillEnum.Stealth),SkillFactory(SkillEnum.DisableDevice),SkillFactory(SkillEnum.Perception)]
 		defaultSkillfighter3=[SkillFactory(SkillEnum.Stealth),SkillFactory(SkillEnum.DisableDevice),SkillFactory(SkillEnum.Perception)]
 		defaultSkillmage=[SkillFactory(SkillEnum.Stealth),SkillFactory(SkillEnum.DisableDevice),SkillFactory(SkillEnum.Perception)]
-		print(f"Here: {self.playerName}")
+		#print(f"Here: {self.playerName}")
 		for playerType in playerTypes:
 			if playerType == PlayerEnum.Rogue:
 				self.dungeon.players.append( Rogue(self, (0,0), defaultSkills=defaultSkillrogue))
