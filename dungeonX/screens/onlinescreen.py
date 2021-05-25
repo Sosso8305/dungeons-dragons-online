@@ -94,7 +94,7 @@ class OnlineScreen(Window):
         # --- Render --- #
         if not self.isPressed and not self.isPressedN:
             self.blit(self.background, (0,0))
-            self.game.textDisplayer.print("Enter your IP address To login",(0,50), rectSize=(self.get_width(),200), center=True, scale=0.55)
+            self.game.textDisplayer.print("Enter The Network End  To login",(0,50), rectSize=(self.get_width(),200), center=True, scale=0.55)
             self.blit(self.nextButton.image,self.nextButton.rect)
             self.blit(self.OptionalButton.image,self.OptionalButton.rect)
             self.IPAddressInput.update(events)
@@ -105,11 +105,9 @@ class OnlineScreen(Window):
             
             for event in events:  
                 if self.checkFirstPlayer.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
-                    self.checkFirstPlayer.convert()
-                    print("Clicked")
-                #print(self.checkFirstPlayer.isChecked())
-        self.checkFirstPlayer.draw(self.background)
-                
+                    self.checkFirstPlayer.convert()            
+        self.checkFirstPlayer.draw(self)
+
         self.OptionalButton.update(events)
         if self.OptionalButton.isPressed() or self.isPressed:
             self.isPressed = True
