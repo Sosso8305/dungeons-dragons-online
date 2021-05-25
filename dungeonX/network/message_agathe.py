@@ -62,6 +62,7 @@ def createMessage(flag,game,myPlayersList=None,myId=None,myEnnemies=None,myUsern
         message_str += check_size(str(port),5)
     print("Message cree :\n"+message_str)
     game.network.send(message_str)
+    print("Message envoyé sur "+str(game.network))
 
 def extractMessage(message,game) :
     flag=message[0:3]
@@ -94,7 +95,9 @@ def extractMessage(message,game) :
         # test player.playAction(game.game.dt,(player.pos[0]-1,player.pos[1]+0))
     if (flag == "con"):
         # when a message "con" is received, all players send their "new" message (or "wlc", i should ask lucas)
+        game.game.addToLog("A new player joined the quest !")
         createMessage("new",game,myPlayersList=game.players,myId=game.id,myEnnemies=None,myUsername=game.playerName)
     print("Message "+flag+" has been extracted")
+    print("The message was : "+message)
 
 

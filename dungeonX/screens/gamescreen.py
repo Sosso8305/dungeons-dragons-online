@@ -333,20 +333,20 @@ class GameScreen(Window):
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
 		#Just for testing to remove later
-		messageTest = "wlc0100000Alice0R"+check_size(str(self.players[0].pos[0]+2),4)+check_size(str(self.players[0].pos[1]+2),4)+"1M"+check_size(str(self.players[1].pos[0]+2),4)+\
-			check_size(str(self.players[0].pos[1]+2),4)+"2R"+check_size(str(self.players[2].pos[0]+2),4)+check_size(str(self.players[2].pos[1]+2),4)
-		liste = extract(messageTest) #la sortie serait de la forme: ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
-		if(not self.oplayersCreation):
-			otherPlayers = [OtherPlayer2([liste[2][1],liste[2][2],liste[2][3]],self),OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self)\
-				,OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self)]
-			self.realPlayers.append(RealPlayer(otherPlayers,"alice"))
-			self.dungeon.oplayers = otherPlayers
-			self.oplayers = self.dungeon.oplayers
-			self.oplayersCreation = True
+		#messageTest = "wlc0100000Alice0R"+check_size(str(self.players[0].pos[0]+2),4)+check_size(str(self.players[0].pos[1]+2),4)+"1M"+check_size(str(self.players[1].pos[0]+2),4)+\
+			#check_size(str(self.players[0].pos[1]+2),4)+"2R"+check_size(str(self.players[2].pos[0]+2),4)+check_size(str(self.players[2].pos[1]+2),4)
+		#liste = extract(messageTest) #la sortie serait de la forme: ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
+		#if(not self.oplayersCreation):
+			#otherPlayers = [OtherPlayer2([liste[2][1],liste[2][2],liste[2][3]],self),OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self)\
+				#,OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self)]
+			#self.realPlayers.append(RealPlayer(otherPlayers,"alice"))
+			#self.dungeon.oplayers = otherPlayers
+			#self.oplayers = self.dungeon.oplayers
+			#self.oplayersCreation = True
 
 		# test RealPlayer 1 : initialization of 1 Real player
 		if(not self.realPlayerCreation):
-			#self.dungeon.oplayers=[]
+			self.dungeon.oplayers=[]
 			realPlayersList=[]
 			self.realPlayersList=realPlayersList
 			#creation of every players of the real player we want to create
@@ -455,8 +455,13 @@ class GameScreen(Window):
 									self.selectedPlayer.setTarget(Map.vectToPos(absoluteMousePosition), targetObject=tEnts)
 							
 		# TEST NETWORK
-		while (self.network.getAllMessages() != []):
-			extractMessage(self.network.getMessage())
+		if (self.network != None):
+			while True:
+				message=(self.network.getMessage())
+				if (message != ""):
+					extractMessage(message,self)
+				else :
+					break
 
 		# --- Camera update --- #
 		if self.__cameraDestination:

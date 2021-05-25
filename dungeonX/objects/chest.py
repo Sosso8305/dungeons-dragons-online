@@ -154,6 +154,7 @@ class Chest(GameObject):
 			else:
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
+					#player.game.network.send("A player added and object to its bag !")
 				player.game.game.addToLog(" Item(s) retreived ")
 
 
