@@ -135,26 +135,25 @@ class OnlineScreen(Window):
         self.nextButton.update(events)
         if self.nextButton.isPressed() or self.isPressedN:
             #TODO : Condition si c'est le tout premier joueur qui lance le jeu if not then : character choice directly with map already in check !!!
-            if self.isvalidIPFormat(self.IPaddress) and self.isvalidIPFormat(self.IPC):
-                self.saveOptionalParam()
+            if (self.isvalidIPFormat(self.IPaddress) and self.isvalidIPFormat(self.IPC) and not self.checkFirstPlayer.isChecked()) or (self.isvalidIPFormat(self.IPC) and self.checkFirstPlayer.isChecked()):
+                #self.saveOptionalParam()
                 self.game.setScreen('map_selector') 
-                # os.system("cd ./dungeonX/network/ && make && cd ../..")
-                # os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
-                # from ..network.client import Network
-                # Networker = Network(self.IPC, int(self.Port), True)
-                # Networker.start()
-                # if not self.checkFirstPlayer.isChecked():
-                #     Networker.connexion(self.IPaddress,int(self.PortIn))
+                os.system("cd ./dungeonX/network/ && make && cd ../..")
+                os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
+                from ..network.client import Network
+                Networker = Network(self.IPC, int(self.Port), True)
+                Networker.start()
+                if not self.checkFirstPlayer.isChecked():
+                    Networker.connexion(self.IPaddress,int(self.PortIn))
                 
             else :
                 self.isPressedN = True
                 self.blit(self.infoBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2)
-                self.game.textDisplayer.print("Invalid IP address Format or Optional Parameters Unsaved ", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2, rectSize=(600,80), center=True, scale=0.3)
+                self.game.textDisplayer.print("Invalid IP address Format for network end or in Optional Parameters", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2, rectSize=(600,80), center=True, scale=0.3)
                 self.okayButton.update(events)
                 self.blit(self.okayButton.image, self.okayButton.rect)
                 if self.okayButton.isPressed():
                     self.isPressedN = False
-            #TODO: take off the fact that you always need to save OptionalParamaters 
 
         
         if self.backbutton.isPressed():
