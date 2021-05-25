@@ -17,8 +17,7 @@ class OnlineScreen(Window):
         self.OpParamSaved = False
         self.__viewport = pygame.Surface((40*TILE_WIDTH, 40*TILE_WIDTH/game.RATIO))
         self.isPressed = False
-        self.isPressedN = False        
-
+        self.isPressedN = False   
 
         self.rect = self.get_rect()
         self.background = pygame.image.load("dungeonX/assets/menu/background.png")
@@ -143,6 +142,8 @@ class OnlineScreen(Window):
                 os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
                 from ..network.client import Network
                 Networker = Network(self.IPC, int(self.Port), True)
+                self.game.network = Networker
+                print("Game.network after online screen : "+str(self.game.network))
                 Networker.start()
                 if not self.checkFirstPlayer.isChecked():
                     Networker.connexion(self.IPaddress,int(self.PortIn))

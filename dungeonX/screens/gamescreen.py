@@ -17,6 +17,7 @@ from ..network.message import check_size
 from dungeonX.items.Item import Item, ItemFactory, ItemList
 # test
 from ..network.message_agathe import *
+from ..network.client import Network
 import random
 
 class GameScreen(Window):
@@ -118,6 +119,9 @@ class GameScreen(Window):
 		self.__viewport = pygame.Surface((40*TILE_WIDTH, 40*TILE_WIDTH/game.RATIO))
 		self.game.particleSystem.attachScreen(self.__viewport)
 		self.game=game
+		# test network     
+		self.network=None
+		print("Gamescreen.network : "+ str(self.network))
 
 		# all informations of THIS RealPlayers ! Yes, this "gamescreen" is a RealPlayer, it's YOU who's reading this !
 		self.id = 0
@@ -361,7 +365,8 @@ class GameScreen(Window):
 			# all the RealPlayers are added to the realPlayersList list (list of every little players on the map)
 			#self.realPlayersList.append(realPlayer1)
 			#self.realPlayerCreation = True
-		
+			self.network = self.game.network
+			print("Gamescreen.network after characterchoice : "+str(self.network))
 			# test create_msg welcome
 			extractMessage("new01xF00780032M00770032M0076003200Lorenzza",self)
 			
@@ -377,11 +382,13 @@ class GameScreen(Window):
 			sword = ItemFactory(ItemList.Sword)
 			realPlayersList[0].bag.addItem(sword)
 			# these two lines should have the same result : the creation of a message
-			createMessage("new",myPlayersList=self.players,myId=self.id,myEnnemies=None,myUsername=self.playerName)
-			extractMessage("con",self)
+			
+			#createMessage("new",self,myPlayersList=self.players,myId=self.id,myEnnemies=None,myUsername=self.playerName)
+			#extractMessage("con",self)
+			
 			# "pos" type message test
-			createMessage("pos",myPlayersList=self.players,myId=self.id,playerSelected=self.selectedPlayer)
-			extractMessage("pos01000790033",self)
+			#createMessage("pos",self,myPlayersList=self.players,myId=self.id,playerSelected=self.selectedPlayer)
+			#extractMessage("pos01000790033",self)
 
 			#self.oplayers[2].playAction(self.game.dt,(80,32))
 
@@ -447,7 +454,9 @@ class GameScreen(Window):
 									tEnts = [ent for ent in self.objects+self.enemies if ent.rect.collidepoint(absoluteMousePosition)]
 									self.selectedPlayer.setTarget(Map.vectToPos(absoluteMousePosition), targetObject=tEnts)
 							
-
+		# TEST NETWORK
+		while (self.network.getAllMessages() != []):
+			extractMessage(self.network.getMessage())
 
 		# --- Camera update --- #
 		if self.__cameraDestination:
@@ -708,4 +717,11 @@ class GameScreen(Window):
 	
 	def changePlayerName(self, name):
 		self.playerName = name
+	
+
+		
+
+
+		
+		
 		
