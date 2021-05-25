@@ -53,7 +53,7 @@ class OnlineScreen(Window):
         self.checkFirstPlayer = checkbox((0,0,0),200,200,25,25,text="First player")
 
         self.currentscreen = 'online_screen'
-    
+        self.online = False
 
     def saveall(self):
         self.saveIPaddress()
@@ -139,6 +139,7 @@ class OnlineScreen(Window):
             if (self.isvalidIPFormat(self.IPaddress) and self.isvalidIPFormat(self.IPC) and not self.checkFirstPlayer.isChecked()) or (self.isvalidIPFormat(self.IPC) and self.checkFirstPlayer.isChecked()):
                 #self.saveOptionalParam()
                 self.game.setScreen('map_selector') 
+                self.online = True
                 os.system("cd ./dungeonX/network/ && make && cd ../..")
                 os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
                 from ..network.client import Network

@@ -1,4 +1,4 @@
-import pygame, os
+import pygame, os, random
 from . import Window
 from ..graphics import Button, TextInput, TextDisplayer
 from ..map import Dungeon
@@ -39,6 +39,10 @@ class MapSelectorScreen(Window):
         self.files = []
 
     def createGame(self):
+        #################### TO CHANGE LATER ####################
+        SEED = 123
+        random.seed(SEED)
+
         self.game.screens["game"].dungeon = Dungeon(self.game.screens["game"])
 
         self.game.screens["game"].enemies = self.game.screens["game"].dungeon.currentFloor.enemies

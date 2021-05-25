@@ -622,7 +622,7 @@ class GameScreen(Window):
 			self.skillwindow.update(events)
 			self.npcwindow.update(events)
 		#network handling
-		self.networkUpdate()
+		#self.networkUpdate()
 		
 	def nextInventory(self,index):
 		if (self.currentInventory+index >= len(self.crews) or self.currentInventory+index < -1):
