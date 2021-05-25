@@ -72,6 +72,9 @@ class Game:
 		self.display = pygame.display.set_mode(self.DISPLAY_SIZE, flags=pygame.HWSURFACE)
 		self.running = False
 		self.dt = 0
+		# test network
+		self.network = None
+		print("Game.network : "+str(self.network))
 		self.clock = pygame.time.Clock()
 		self.textDisplayer = TextDisplayer(self)
 		self.particleSystem = ParticleSystem(self)

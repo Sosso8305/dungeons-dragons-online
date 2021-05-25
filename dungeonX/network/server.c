@@ -182,6 +182,12 @@ void *interfacePython(void *Structdata)
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         stop("socket");
 
+    int enable =1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0)
+    {
+        stop("socket_REUSEADDR");
+    }
+
     struct sockaddr_in serv_addr;
     bzero(&serv_addr, sizeof(serv_addr));
 
@@ -378,6 +384,12 @@ void *SendSructMyPlayer(void *StructArg)
     if (sockfd == -1)
         pthread_exit(NULL);
 
+    int enable =1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0)
+    {
+        pthread_exit(NULL);
+    }
+
     struct sockaddr_in serv_OtherPlayer;
     int len = sizeof(serv_OtherPlayer);
 
@@ -430,7 +442,7 @@ void *serverPeer(void *StrucData)
     if ((main_sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         stop("socket");
 
-    if (setsockopt(main_sockfd, SOL_SOCKET, SO_REUSEADDR, (char *)&enable, sizeof(enable)) < 0)
+    if (setsockopt(main_sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0)
     {
         pthread_exit(NULL);
     }
@@ -701,15 +713,17 @@ int main(int argc, char *argv[])
 
     if (argc < 4)
     {
-        argument arg;
-        arg.data = &data;
-        sleep(0.5);
-        if (pthread_create(&threads[2], NULL, SendStructMyPlayerInit, &arg) != 0)
-            stop("thread_init_Send_shell");
+        // argument arg;
+        // arg.data = &data;
+        // sleep(0.5);
+        // if (pthread_create(&threads[2], NULL, SendStructMyPlayerInit, &arg) != 0)
+        //     stop("thread_init_Send_shell");
+        puts("Shell desactiveted");
+        
     }
     else
     {
-
+        
         char *delim = ":";
         char *ptr = strtok(argv[3], delim);
         char ip[16];

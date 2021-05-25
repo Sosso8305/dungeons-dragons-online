@@ -78,7 +78,7 @@ class Network(threading.Thread):
                     print(f"Network issue : {e}")
                     self.stop()
                     raise e
-            if self.debug==True and len(data)>10:
+            if self.debug==True and len(data) >5:
                 print(f"recv : {data}")
 
     def connexion(self, ip, port):

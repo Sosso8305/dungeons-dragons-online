@@ -1,6 +1,7 @@
 from dungeonX.characters.players.player import Player, PlayerEnum
 from .essaiOtherPlayer import *
 from .realPlayer import *
+from .client import Network
 
 'Un debut de message qui va plus correspondre au niveau type de message. '
 'Il faudra y integrer le code de christine (ou l inverse) car les deux sont complementaires !'
@@ -41,7 +42,7 @@ def get_initial(ptype):
         return 'M'
     
 
-def createMessage(flag,myPlayersList=None,myId=None,myEnnemies=None,myUsername="Test",seed=None,playerSelected=None,ip=None,port=None) :
+def createMessage(flag,game,myPlayersList=None,myId=None,myEnnemies=None,myUsername="Test",seed=None,playerSelected=None,ip=None,port=None) :
     'automatization of the message creation. We suppose that messages creation is always from the players that have the information he send on HIS game'
     message_str = flag 
     if (flag == "wlc"or flag == "new"):
@@ -60,6 +61,7 @@ def createMessage(flag,myPlayersList=None,myId=None,myEnnemies=None,myUsername="
         message_str += check_size(str(ip),15)
         message_str += check_size(str(port),5)
     print("Message cree :\n"+message_str)
+    game.network.send(message_str)
 
 def extractMessage(message,game) :
     flag=message[0:3]
@@ -92,7 +94,7 @@ def extractMessage(message,game) :
         # test player.playAction(game.game.dt,(player.pos[0]-1,player.pos[1]+0))
     if (flag == "con"):
         # when a message "con" is received, all players send their "new" message (or "wlc", i should ask lucas)
-        createMessage("new",myPlayersList=game.players,myId=game.id,myEnnemies=None,myUsername=game.playerName)
+        createMessage("new",game,myPlayersList=game.players,myId=game.id,myEnnemies=None,myUsername=game.playerName)
     print("Message "+flag+" has been extracted")
 
 
