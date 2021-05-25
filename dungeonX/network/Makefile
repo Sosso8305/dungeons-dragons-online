@@ -7,9 +7,9 @@ CFLAGS  += -pthread
 CIBLES	=	
 
 
-all: $(CIBLES) server
+all: $(CIBLES) server.out
 
-server: server.o 
+server.out: server.o 
 	$(CC) -o server.out server.o $(CFLAGS)
 
 server.o: server.c server.h
