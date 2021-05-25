@@ -46,9 +46,9 @@ class OnlineScreen(Window):
 
         self.IPaddress="" #Ip du joueur auquel on veut se connecter 
         self.PortIn="" #port distant auquel on veut se connecter
-        self.Port=""  #Port interne de l'interface python
-        self.PortC="" #Port distant du C de se jeu
-        self.IPC="" #IP ou se trouve le C
+        self.Port="5133"  #Port interne de l'interface python
+        self.PortC="5555" #Port distant du C de se jeu
+        self.IPC="127.0.0.1" #IP ou se trouve le C
         self.checkFirstPlayer = checkbox((0,0,0),200,200,25,25,text="First player")
 
         self.currentscreen = 'online_screen'
@@ -136,20 +136,20 @@ class OnlineScreen(Window):
         if self.nextButton.isPressed() or self.isPressedN:
             #TODO : Condition si c'est le tout premier joueur qui lance le jeu if not then : character choice directly with map already in check !!!
             if self.isvalidIPFormat(self.IPaddress) and self.isvalidIPFormat(self.IPC):
+                self.saveOptionalParam()
                 self.game.setScreen('map_selector') 
-                os.system("cd ./dungeonX/network/ && make && cd ../..")
-                os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
-                from ..network.client import Network
-                Networker = Network(self.IPC, int(self.Port), True)
-                Networker.start()
-                if not self.checkFirstPlayer.isChecked():
-                    Networker.connexion(self.IPaddress,int(self.PortIn))
+                # os.system("cd ./dungeonX/network/ && make && cd ../..")
+                # os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
+                # from ..network.client import Network
+                # Networker = Network(self.IPC, int(self.Port), True)
+                # Networker.start()
+                # if not self.checkFirstPlayer.isChecked():
+                #     Networker.connexion(self.IPaddress,int(self.PortIn))
                 
-            else : # Blit Real visual WARNING 
+            else :
                 self.isPressedN = True
                 self.blit(self.infoBackground, (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2)
-                self.game.textDisplayer.print("Invalid IP address Format : example 127.0.0.1", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2, rectSize=(600,80), center=True, scale=0.3)
-                #print("IP adress format Invalid : example 127.0.0.1")    
+                self.game.textDisplayer.print("Invalid IP address Format or Optional Parameters Unsaved ", (pygame.Vector2(self.game.DISPLAY_SIZE)-self.infoBackground.get_size())//2, rectSize=(600,80), center=True, scale=0.3)
                 self.okayButton.update(events)
                 self.blit(self.okayButton.image, self.okayButton.rect)
                 if self.okayButton.isPressed():
