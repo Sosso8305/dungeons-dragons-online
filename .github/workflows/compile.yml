@@ -13,4 +13,4 @@ jobs :
         shell : bash
         run : |
           cd dungeonX/network 
-          make all
+          make
