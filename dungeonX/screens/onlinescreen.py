@@ -5,6 +5,7 @@ from ..map import Map
 from ..constants import TILE_WIDTH
 import ipaddress
 from PygameUtils import checkbox
+from dungeonX.network.message import Message
 
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 100
@@ -141,10 +142,14 @@ class OnlineScreen(Window):
                 os.system("cd ./dungeonX/network/ && make && cd ../..")
                 os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
                 from ..network.client import Network
-                Networker = Network(self.IPC, int(self.Port), True)
-                Networker.start()
+                self.networker = Network(self.IPC, int(self.Port), True)
+                self.networker.start()
+                ############# JUST FOR TESTING #############
+                message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)
+                self.networker.file.append(message3.create_message())
+		        #############################################
                 if not self.checkFirstPlayer.isChecked():
-                    Networker.connexion(self.IPaddress,int(self.PortIn))
+                    self.networker.connexion(self.IPaddress,int(self.PortIn))
                 
             else :
                 self.isPressedN = True

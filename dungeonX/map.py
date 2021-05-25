@@ -227,6 +227,9 @@ class Map:
 		7. Spawn some objects on the dead ends.
 		"""
 
+		#temporary for testing
+		SEED = 123
+		random.seed(SEED)
 		# Fill the map with void (' ')
 		self._data = [[' ' for _ in range(self.width)] for _ in range(self.height)]
 		centers = []

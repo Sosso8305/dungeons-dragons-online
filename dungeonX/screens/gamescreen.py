@@ -317,12 +317,12 @@ class GameScreen(Window):
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
 		#Just for testing to remove later
-		messageTest = "wlc0100000Alice0R"+check_size(str(self.players[0].pos[0]+2),4)+check_size(str(self.players[0].pos[1]+2),4)+"1M"+check_size(str(self.players[1].pos[0]+2),4)+\
+		messageTest = "wlc010012300000Alice0R"+check_size(str(self.players[0].pos[0]+2),4)+check_size(str(self.players[0].pos[1]+2),4)+"1M"+check_size(str(self.players[1].pos[0]+2),4)+\
 			check_size(str(self.players[0].pos[1]+2),4)+"2R"+check_size(str(self.players[2].pos[0]+2),4)+check_size(str(self.players[2].pos[1]+2),4)
 		liste = extract(messageTest) #la sortie serait de la forme: ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
 		if(not self.oplayersCreation):
-			otherPlayers = [OtherPlayer2([liste[2][1],liste[2][2],liste[2][3]],self),OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self)\
-				,OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self)]
+			otherPlayers = [OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self),OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self)\
+				,OtherPlayer2([liste[5][1],liste[5][2],liste[5][3]],self)]
 			self.realPlayers.append(RealPlayer(otherPlayers,"alice"))
 			self.dungeon.oplayers = otherPlayers
 			self.oplayers = self.dungeon.oplayers
@@ -617,11 +617,12 @@ class GameScreen(Window):
 					self.blit(self.statuswindow, self.statuswindow.rect)
 
 
-
 			self.bottombarwindow.update(events)
 			self.blit(self.bottombarwindow, (0,0))
 			self.skillwindow.update(events)
 			self.npcwindow.update(events)
+		#network handling
+		self.networkUpdate()
 		
 	def nextInventory(self,index):
 		if (self.currentInventory+index >= len(self.crews) or self.currentInventory+index < -1):
@@ -637,4 +638,13 @@ class GameScreen(Window):
 	
 	def changePlayerName(self, name):
 		self.playerName = name
-		
+
+	def networkUpdate(self):
+		message = self.game.screens['online_screen'].networker.getMessage()
+		if message != "" :
+			print(message) #Attention a remodifier car en cas de offline y a pas de networker
+		if message[:3] == "con":
+			msg_to_send = Message(self.players,flag="wlc").create_message()
+			print("Message to send: ",msg_to_send)
+			#self.game.screens['online_screen'].networker.send()
+				
