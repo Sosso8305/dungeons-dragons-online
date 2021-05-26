@@ -41,11 +41,12 @@ class MapSelectorScreen(Window):
 
     def createGame(self):
         #################### TO CHANGE LATER ####################
-        message = self.game.screens['online_screen'].networker.getMessage()
-        if message[:3] == "wlc":
-            infos = extract(message)
-            SEED = int(infos[1])
-            random.seed(SEED)
+        if self.game.screens['online_screen'].online:
+            message = self.game.screens['online_screen'].networker.getMessage()
+            if message[:3] == "wlc":
+                infos = extract(message)
+                SEED = int(infos[1])
+                random.seed(SEED)
 
         self.game.screens["game"].dungeon = Dungeon(self.game.screens["game"])
 
