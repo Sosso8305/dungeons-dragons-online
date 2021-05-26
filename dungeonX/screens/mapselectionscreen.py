@@ -1,3 +1,4 @@
+from dungeonX.network.message import extract
 import pygame, os, random
 from . import Window
 from ..graphics import Button, TextInput, TextDisplayer
@@ -40,8 +41,11 @@ class MapSelectorScreen(Window):
 
     def createGame(self):
         #################### TO CHANGE LATER ####################
-        SEED = 123
-        random.seed(SEED)
+        message = self.game.screens['online_screen'].networker.getMessage()
+        if message[:3] == "wlc":
+            infos = extract(message)
+            SEED = int(infos[1])
+            random.seed(SEED)
 
         self.game.screens["game"].dungeon = Dungeon(self.game.screens["game"])
 
