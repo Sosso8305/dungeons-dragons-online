@@ -22,7 +22,7 @@ def distanceBetween(xA, yA, xB, yB):
 class OtherPlayer2(Character):
 
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
-        print("Player created")
+        #print("Player created")
         super().__init__(game,read_position(liste_str[1],liste_str[2]), actionPointMax,100, 5, 6, 11, 3, 12, 8, 9) #( HP, armor, strength, dex, con, intell, wis, cha )
 
         self.type = read_type(liste_str[0])
@@ -103,10 +103,10 @@ class OtherPlayer2(Character):
         """
         elapsedTime = 0
         while (elapsedTime < self.timeToMove):
-            print("Elapsed time\n",elapsedTime,self._dt)
+            #print("Elapsed time\n",elapsedTime,self._dt)
             yield pygame.Vector2(self.rect.midbottom).lerp(self.currentTarget, elapsedTime / self.timeToMove)
             elapsedTime += self._dt
-            print("Elapsed time 1\n",elapsedTime)
+            #print("Elapsed time 1\n",elapsedTime)
         yield self.currentTarget
 
 
@@ -114,7 +114,7 @@ class OtherPlayer2(Character):
         """ This iterator go througn every frames that may be rendered,
         based on current state and animationSpeed.
         """
-        print("frameIter")
+        #print("frameIter")
         elapsedTime = 0
         frame = random.randint(0, len(self.images[self.state][self.direction])-1)
         while True:
@@ -131,7 +131,7 @@ class OtherPlayer2(Character):
     def setTarget(self, target:tuple):
         """ Setter for finalTarget """
         self.stepsToTarget = self.pathfind(target)
-        print("self.steps\n",self.stepsToTarget)
+        #print("self.steps\n",self.stepsToTarget)
         if self.stepsToTarget:
             self.finalTarget = target            
             if not self.currentTarget:

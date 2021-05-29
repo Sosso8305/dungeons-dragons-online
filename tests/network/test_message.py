@@ -47,7 +47,7 @@ def testMessageCreation():
     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
     n = str(enemy.ID)
     zerosm = "00" if len(n) == 3 else "000"
-    assert message.create_message() == "wlc0100000Alice"+n1+"R00000000"+n2+"M00010002"+n3+"F00030004" 
+    assert message.create_message() == "wlc010012300000Alice"+n1+"R00000000"+n2+"M00010002"+n3+"F00030004" 
     assert message1.create_message(ID = int(n1)) == "pos01"+n1+"00000000" 
     assert message2.create_message(ID = int(n1), IDenemy = int(n))  == "hps01"+n1+"100"+zerosm+n+"100"
     assert message3.create_message() == "con000000121.0.0.708000" 
@@ -71,20 +71,21 @@ def testMessageReadAndExtract():
     liste3 = extract(message3.create_message())
     liste4 = extract(message4.create_message())
     liste5 = extract(message5.create_message(ID = int(n1), IDItem= swordItem.id))
-    assert liste == ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
+    assert liste == ["01","00123","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
     assert liste1 == ["01",n1,"0000","0000"]
     assert liste2 == ["01",n1,"100",zerosm+n,"100"]
     assert liste3 == ["000000121.0.0.7","08000"]
     assert liste4 == ["01","00000Alice",["R","0000","0000"],["M","0001","0002"],["F","0003","0004"]]
     assert liste5 == ["01",n1,"0"+str(swordItem.id)]
 
-    assert int(liste[2][0]) == int(n1)
-    assert read_type(liste[2][1]) == PlayerEnum.Rogue
-    assert read_position(liste[2][2],liste[2][3]) == (0,0)
-    assert type(read_position(liste[2][2],liste[2][3])) == tuple
+    assert int(liste[3][0]) == int(n1)
+    assert read_type(liste[3][1]) == PlayerEnum.Rogue
+    assert read_position(liste[3][2],liste[3][3]) == (0,0)
+    assert type(read_position(liste[3][2],liste[3][3])) == tuple
     assert int(liste2[2]) == 100
     assert int(liste2[4]) == 100
     assert read_IP(liste3[0]) == "121.0.0.7"
     assert int(liste3[1]) == 8000
-    assert read_name(liste[1]) == "Alice"
+    assert read_name(liste[2]) == "Alice"
+    assert int(liste[1]) == 123
 

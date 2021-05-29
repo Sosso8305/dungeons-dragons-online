@@ -55,12 +55,12 @@ def extract(message):
     flag = message[0:3]
     n = MESSAGE_EXTRACTION[flag]
     if (flag == "wlc" or flag == "new"):
-        l = [message[3:5]]+[message[5:15]]+[[] for k in range(3)]
+        l = [message[3:5]]+[message[5:10]]+[message[10:20]]+[[] for k in range(3)] if flag == "wlc" else [message[3:5]] + [message[5:15]]+[[] for k in range(3)]
         info = ""
-        i = 0
-        message = message[15:]
+        i, m = 0, l[3:] if flag=="wlc" else l[2:]
+        message = message[15:] if flag == "new" else message[20:]
         
-        for liste in l[2:]:
+        for liste in m:
             j = 0
             while j < n: 
                 k = 0
@@ -176,7 +176,7 @@ class Message:
         """
         message_str = self.flag + check_size(str(self.playerID),2) if(self.flag != "con") else self.flag
         if (self.flag == "wlc"): 
-            message_str += check_size(self.Player1Type1.getName(),10)
+            message_str += "00123" + check_size(self.Player1Type1.getName(),10) #I am supposing that the seed = 123
             liste = [self.list1,self.list2,self.list3]
             for i in range(3):
                 for j in range(len(liste[i])):
