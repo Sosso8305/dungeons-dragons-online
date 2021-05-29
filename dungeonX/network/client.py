@@ -6,7 +6,7 @@ from time import sleep
 networkFPS = 60
 ipC = "127.0.0.1"
 portC = 5133
-sizeMESSAGE = 43
+sizeMESSAGE = 38
 encodage = "ascii"
 
 
@@ -15,7 +15,7 @@ def padding(msg, n, orientation="left"):
 
     Args:
         msg (str): the message to be padded
-        n (int): total lenght the message should be
+        n (int): total length the message should be
         orientation (str, optional): The orientation of the padding. Can be "left" or "right". Defaults to "left".
 
     Returns:
@@ -53,7 +53,7 @@ class Network(threading.Thread):
         Args:
             ipc (str, optional): The ip address of the LOCAL C server. Defaults to ipC (127.0.0.1).
             portc (int, optional): The port address of the LOCAL C server. Defaults to portC (5133).
-            debug (bool, optional) : activate debug mode (terminal logs) or not. Defaults to True
+            debug (bool, optional) : activate debug mode (terminal logs) or not. Defaults to False.
         """
         threading.Thread.__init__(self)
         self.debug=debug
@@ -68,7 +68,12 @@ class Network(threading.Thread):
         self.stopped = False
         while (not self.stopped):
             try:
-                data = self.s.recv(sizeMESSAGE).decode(encodage)
+                data = self.s.recv(sizeMESSAGE)
+                try :
+                    data= data.decode(encodage)
+                except UnicodeDecodeError :
+                    print("Sorry, couldn't decode that")
+                    continue
                 if data != '':
                     self.file.append(data)
             except socket.timeout:
@@ -83,7 +88,6 @@ class Network(threading.Thread):
 
     def connexion(self, ip, port):
         """Initiate the connexion between this game and the other games
-            IMPORTANT NOTE : for now, it only sends the CON, waits 2 sec, and throw away all the answers received for the last 2 seconds
 
         Args:
             ip (str): the ip address of the other player
@@ -121,7 +125,14 @@ class Network(threading.Thread):
         Args:
             msg (str): the message to send
         """
-        self.s.send(msg.encode(encodage))
+        try :
+            self.s.send(msg.encode(encodage))
+        except Exception as e :
+            print(f"Couldn't send message {msg} : {e}")
+            return
+        if self.debug==True :
+            print(f"successfully sent {msg}")
+
 
     def sendList(self, msgList):
         """Sends a queue of messages (FIFO)
