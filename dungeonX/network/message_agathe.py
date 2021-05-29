@@ -22,6 +22,14 @@ def check_size(string : str,n : int):
             i+=1
     return zero_str+string
 
+def padding_max_size(string: str,n:int):
+    padding_str=""
+    if len(string)!=n :
+        for i in range (n-len(string)) :
+            padding_str+='0'
+            i+=1
+    return string+padding_str
+
 def searchRealPlayer(id,RealPlayersList):
     for realPlayer in RealPlayersList:
         if id == realPlayer.id:
@@ -60,8 +68,8 @@ def createMessage(flag,game,myPlayersList=None,myId=None,myEnnemies=None,myUsern
         message_str += "xxx"
         message_str += check_size(str(ip),15)
         message_str += check_size(str(port),5)
-    print("Message cree :\n"+message_str)
-    game.network.send(message_str)
+    print("Message cree :\n"+padding_max_size(message_str,43))
+    game.network.send(padding_max_size(message_str,43))
     print("Message envoyé sur "+str(game.network))
 
 def extractMessage(message,game) :
