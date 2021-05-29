@@ -121,7 +121,13 @@ class Network(threading.Thread):
         Args:
             msg (str): the message to send
         """
-        self.s.send(msg.encode(encodage))
+        try :
+            self.s.send(msg.encode(encodage))
+        except Exception as e :
+            print(f"Couldn't send message {msg} : {e}")
+            return
+        if self.debug==True :
+            print(f"successfully sent {msg}")
 
     def sendList(self, msgList):
         """Sends a queue of messages (FIFO)
