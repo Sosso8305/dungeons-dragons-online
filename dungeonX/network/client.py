@@ -15,7 +15,7 @@ def padding(msg, n, orientation="left"):
 
     Args:
         msg (str): the message to be padded
-        n (int): total lenght the message should be
+        n (int): total length the message should be
         orientation (str, optional): The orientation of the padding. Can be "left" or "right". Defaults to "left".
 
     Returns:
@@ -68,7 +68,12 @@ class Network(threading.Thread):
         self.stopped = False
         while (not self.stopped):
             try:
-                data = self.s.recv(sizeMESSAGE).decode(encodage)
+                data = self.s.recv(sizeMESSAGE)
+                try :
+                    data= data.decode(encodage)
+                except UnicodeDecodeError :
+                    print("Sorry, couldn't decode that")
+                    continue
                 if data != '':
                     self.file.append(data)
             except socket.timeout:
@@ -127,6 +132,7 @@ class Network(threading.Thread):
             return
         if self.debug==True :
             print(f"successfully sent {msg}")
+
 
     def sendList(self, msgList):
         """Sends a queue of messages (FIFO)
