@@ -53,7 +53,7 @@ class Network(threading.Thread):
         Args:
             ipc (str, optional): The ip address of the LOCAL C server. Defaults to ipC (127.0.0.1).
             portc (int, optional): The port address of the LOCAL C server. Defaults to portC (5133).
-            debug (bool, optional) : activate debug mode (terminal logs) or not. Defaults to True
+            debug (bool, optional) : activate debug mode (terminal logs) or not. Defaults to False.
         """
         threading.Thread.__init__(self)
         self.debug=debug
@@ -83,7 +83,6 @@ class Network(threading.Thread):
 
     def connexion(self, ip, port):
         """Initiate the connexion between this game and the other games
-            IMPORTANT NOTE : for now, it only sends the CON, waits 2 sec, and throw away all the answers received for the last 2 seconds
 
         Args:
             ip (str): the ip address of the other player
