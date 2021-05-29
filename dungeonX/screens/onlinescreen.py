@@ -106,6 +106,7 @@ class OnlineScreen(Window):
                 if self.checkFirstPlayer.isOver(pygame.mouse.get_pos()) and event.type == pygame.MOUSEBUTTONDOWN:
                     self.checkFirstPlayer.convert()
                     print("Clicked")
+                    self.game.firstPlayer = 1
                 #print(self.checkFirstPlayer.isChecked())
         self.checkFirstPlayer.draw(self.background)
                 

@@ -152,9 +152,11 @@ class Chest(GameObject):
 			if not self._content:
 				player.game.game.addToLog(" The chest is empty !")
 			else:
+				sending_list=[]
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
-					#player.game.network.send("A player added and object to its bag !")
+					sending_list.append("A player added and object to its bag !")
+				player.game.network.sendList(sending_list)
 				player.game.game.addToLog(" Item(s) retreived ")
 
 

@@ -126,6 +126,9 @@ class GameScreen(Window):
 		# all informations of THIS RealPlayers ! Yes, this "gamescreen" is a RealPlayer, it's YOU who's reading this !
 		self.id = 0
 		self.playerName = "SansNom"
+		# other realPlayers stuffs
+		realPlayersList=[]
+		self.realPlayersList=realPlayersList
 
 		self.saveName = saveName
 		if dungeon==None:
@@ -139,6 +142,7 @@ class GameScreen(Window):
 			lst += self.dungeon.players if self.dungeon.players!=None else []
 			for ent in lst:
 				ent.game = self
+		
 
 
 
@@ -346,9 +350,7 @@ class GameScreen(Window):
 
 		# test RealPlayer 1 : initialization of 1 Real player
 		if(not self.realPlayerCreation):
-			self.dungeon.oplayers=[]
-			realPlayersList=[]
-			self.realPlayersList=realPlayersList
+			
 			#creation of every players of the real player we want to create
 			# all these players are added to the otherPlayer list (list of every little players on the map)
 			#otherplayer1=OtherPlayer2(['R',str(self.players[0].pos[0]+3),str(self.players[0].pos[1]+2)],self)
@@ -362,6 +364,10 @@ class GameScreen(Window):
 			#realPlayer1=RealPlayer([otherplayer1,otherplayer2,otherplayer3],"Fabrice",2)
 			# test d'ajout d'un objet dans son sac
 			
+			# initialization of realPlayers Stuffs
+			self.dungeon.oplayers=[]
+			
+			
 			# all the RealPlayers are added to the realPlayersList list (list of every little players on the map)
 			#self.realPlayersList.append(realPlayer1)
 			#self.realPlayerCreation = True
@@ -370,21 +376,16 @@ class GameScreen(Window):
 			# test create_msg welcome
 			extractMessage("new01xF00780032M00770032M0076003200Lorenzza",self)
 			
-			
-			
-			if (self.id==0) :
-				self.id=random.randint(1,99)
-				for player in (realPlayersList) :
-					if (self.id==player.id) :
-						self.id=random.randint(1,99)
 
 			#test ajout abojet sac autre RealPlayer
-			sword = ItemFactory(ItemList.Sword)
-			realPlayersList[0].bag.addItem(sword)
+			#sword = ItemFactory(ItemList.Sword)
+			#realPlayersList[0].bag.addItem(sword)
 			# these two lines should have the same result : the creation of a message
-			
-			#createMessage("new",self,myPlayersList=self.players,myId=self.id,myEnnemies=None,myUsername=self.playerName)
+			if (self.game.firstPlayer==0):
+				createMessage("new",self,myPlayersList=self.players,myId=self.id,myUsername=self.playerName)
 			#extractMessage("con",self)
+			for player in (self.players):
+				print("Pos : "+str(player.pos))
 			
 			# "pos" type message test
 			#createMessage("pos",self,myPlayersList=self.players,myId=self.id,playerSelected=self.selectedPlayer)
@@ -394,6 +395,7 @@ class GameScreen(Window):
 
 			# player id attribution in fonction of their indice in the players list of THIS player (YOU THERE)
 			self.setId(self.players)
+
 
 			self.realPlayerCreation = True
 		
@@ -454,7 +456,7 @@ class GameScreen(Window):
 									tEnts = [ent for ent in self.objects+self.enemies if ent.rect.collidepoint(absoluteMousePosition)]
 									self.selectedPlayer.setTarget(Map.vectToPos(absoluteMousePosition), targetObject=tEnts)
 							
-		# TEST NETWORK
+		# --- TEST NETWORK ---#
 		if (self.network != None):
 			while True:
 				message=(self.network.getMessage())
@@ -462,6 +464,18 @@ class GameScreen(Window):
 					extractMessage(message,self)
 				else :
 					break
+		
+		# set de l'id unique du joueur (devra être déplacé pour être lu après)
+			if (self.id==0) :
+				if (self.game.firstPlayer==1):
+					self.id=random.randint(1,99)
+				else :
+					if (self.realPlayersList!=[]):
+						for player in (self.realPlayersList) :
+							if (self.id==player.id) :
+								self.id=random.randint(1,99)
+		
+						
 
 		# --- Camera update --- #
 		if self.__cameraDestination:
@@ -594,21 +608,22 @@ class GameScreen(Window):
 		except TypeError as e:
 			print(str(e))
 
-		for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
-		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
-			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
-				ent.updateAnim(self.game.dt)
-				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
-				if ent==self.selectedPlayer:
-					pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
-				# if ent==self.currentEnemy:
-				# 	pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
-				if isinstance(ent, Enemy):
-					self.__viewport.blit(self.lifebar_background, pygame.Vector2(ent.rect.topleft) - self.camera.topleft - (8,5))
-					w = math.floor(self.lifebar_foreground.get_width()*ent.getHP()/ent.maxHP)
-					if w>0:
-						fg = pygame.transform.scale(self.lifebar_foreground, (math.floor(self.lifebar_foreground.get_width()*ent.getHP()/ent.maxHP), self.lifebar_foreground.get_height()))
-						self.__viewport.blit(fg, pygame.Vector2(ent.rect.topleft) - self.camera.topleft - (8,5))
+		if self.oplayers!=None:
+			for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
+			#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
+				if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
+					ent.updateAnim(self.game.dt)
+					self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
+					if ent==self.selectedPlayer:
+						pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
+					# if ent==self.currentEnemy:
+					# 	pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
+					if isinstance(ent, Enemy):
+						self.__viewport.blit(self.lifebar_background, pygame.Vector2(ent.rect.topleft) - self.camera.topleft - (8,5))
+						w = math.floor(self.lifebar_foreground.get_width()*ent.getHP()/ent.maxHP)
+						if w>0:
+							fg = pygame.transform.scale(self.lifebar_foreground, (math.floor(self.lifebar_foreground.get_width()*ent.getHP()/ent.maxHP), self.lifebar_foreground.get_height()))
+							self.__viewport.blit(fg, pygame.Vector2(ent.rect.topleft) - self.camera.topleft - (8,5))
 
 		# ---- Walls rendering ---- #
 		self.__viewport.blit(self.dungeon.currentFloor.layers["walls"], (-self.camera.left, -self.camera.top))
