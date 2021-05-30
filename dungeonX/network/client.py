@@ -6,7 +6,7 @@ from time import sleep
 networkFPS = 60
 ipC = "127.0.0.1"
 portC = 5133
-sizeMESSAGE = 38
+sizeMESSAGE = 50
 encodage = "ascii"
 
 

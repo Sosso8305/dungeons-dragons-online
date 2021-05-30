@@ -169,14 +169,14 @@ class Message:
         #self.name = PlayerList[0].name if PlayerList[0] != None else ""
         #TODO : add bag to the last list and add equiment message 
 
-    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0):
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123"):
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
         """
         message_str = self.flag + check_size(str(self.playerID),2) if(self.flag != "con") else self.flag
         if (self.flag == "wlc"): 
-            message_str += "00123" + check_size(self.Player1Type1.getName(),10) #I am supposing that the seed = 123
+            message_str += check_size(str(seed),5) + check_size(self.Player1Type1.getName(),10) #I am supposing that the seed = 123
             liste = [self.list1,self.list2,self.list3]
             for i in range(3):
                 for j in range(len(liste[i])):

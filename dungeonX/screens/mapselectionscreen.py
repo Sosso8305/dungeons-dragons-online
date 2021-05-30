@@ -38,15 +38,21 @@ class MapSelectorScreen(Window):
         self.offsetY = 0
         self.selectedIndex = None
         self.files = []
+        self.seed =""
 
     def createGame(self):
-        #################### TO CHANGE LATER ####################
         if self.game.screens['online_screen'].online:
-            message = self.game.screens['online_screen'].networker.getMessage()
-            if message[:3] == "wlc":
-                infos = extract(message)
-                SEED = int(infos[1])
-                random.seed(SEED)
+            print("ONLINE")
+            if not self.game.screens['online_screen'].checkFirstPlayer.isChecked():
+                message = self.game.screens['online_screen'].networker.getMessage()
+                if message[:3] == "wlc":
+                    infos = extract(message)
+                    self.seed = int(infos[1])
+                    print("seed received for second player",self.seed)
+                    random.seed(self.seed)
+            else:
+                print("First player seed",self.seed) 
+                random.seed(self.seed)
 
         self.game.screens["game"].dungeon = Dungeon(self.game.screens["game"])
 
