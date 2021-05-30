@@ -6,7 +6,7 @@ from .characters import Bag
 from .items import ItemFactory
 from dungeonX.characters.enemies.enemies import Zombie, Goblin, Dragon
 
-SEED = 1
+SEED = random.randint(0,10000)
 
 class Map:
 	"""
@@ -208,12 +208,18 @@ class Map:
 		""" Returns the distance between A and B """
 		return math.sqrt((xB-xA)*(xB-xA) + (yB-yA)*(yB-yA))
 
-	def recupseed(self):
+	def initializeseed(self):
+		global SEED
 		SEED = random.randint(0,10000)
-		self.setseed(SEED)
+		return SEED
+
+	def recupseed(self):
+		""" Uses and saves a random number as a seed to generate the map """
+		global SEED
 		return SEED
 
 	def setseed(self, SEED):
+		""" Sets seed from the first player's master seed """
 		random.seed(SEED)
 
 	def generate(self):
