@@ -6,6 +6,8 @@ from .characters import Bag
 from .items import ItemFactory
 from dungeonX.characters.enemies.enemies import Zombie, Goblin, Dragon
 
+SEED = 1
+
 class Map:
 	"""
 	This class is used to represent the map of the game
@@ -206,7 +208,13 @@ class Map:
 		""" Returns the distance between A and B """
 		return math.sqrt((xB-xA)*(xB-xA) + (yB-yA)*(yB-yA))
 
+	def recupseed(self):
+		SEED = random.randint(0,10000)
+		self.setseed(SEED)
+		return SEED
 
+	def setseed(self, SEED):
+		random.seed(SEED)
 
 	def generate(self):
 		""" Generate a fully randomized dungeon
@@ -226,9 +234,7 @@ class Map:
 		6. Add walls around all the map
 		7. Spawn some objects on the dead ends.
 		"""
-
-		SEED = random.randint(0,10000) # bougera plus tard dans la partie de création de game multijoueur
-		random.seed(SEED)
+		
 
 		# Fill the map with void (' ')
 		self._data = [[' ' for _ in range(self.width)] for _ in range(self.height)]

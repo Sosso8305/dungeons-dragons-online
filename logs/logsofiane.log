@@ -1,0 +1,9 @@
+bind: Address already in use
+Start network Interface Python
+Interface Python Connected  -->  ip : 127.0.0.1 & port : 39688
+
+
+ new connexion via Python
+127.000.000.001
+Testing connection with ip:127.000.000.001 and port:8888 
+This connection is success 
