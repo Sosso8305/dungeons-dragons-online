@@ -72,7 +72,7 @@ class Network(threading.Thread):
                 try :
                     data= data.decode(encodage)
                 except UnicodeDecodeError :
-                    print("Sorry, couldn't decode that")
+                    print(f"Sorry, couldn't decode that :{data}")
                     continue
                 if data != '':
                     self.file.append(data)
@@ -94,7 +94,7 @@ class Network(threading.Thread):
             port (int): the external port of the C of the other player
         """
         self.send(f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
-                  )  # message spécial a destination uniquement du C
+                  )  # message spécial a destination du C et des autres joueurs
         
 
 
@@ -155,15 +155,16 @@ if __name__ == "__main__":
     portC = int(input("Port du C ? "))
     Networker = Network("127.0.0.1", portC)
     Networker.start()
-    i = int(input())
-    if i ==1:
-        Networker.connexion("127.0.0.1",7777)
-        input()
-    else:
-        input()
-        Networker.send("Je suis un message de test !")
-    
-
+    # i = int(input())
+    # if i ==1:
+    #     Networker.connexion("127.0.0.1",7777)
+    #     input()
+    # else:
+    #     input()
+    #     Networker.send("Je suis un message de test !")
+    sleep(3)
+    a = ["waow "," trop ", "dur ", "ca ","valait ","le coup ", "de me deranger"]
+    Networker.sendList(a)
     print(Networker.getAllMessages())
     Networker.stop()
     Networker.join()
