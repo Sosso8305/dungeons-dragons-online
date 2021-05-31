@@ -1,4 +1,4 @@
-import pygame, io, os
+import pygame, io, os, random
 from . import Window
 from ..graphics import Button, TextInput,TextInputOnline
 from ..map import Map
@@ -146,12 +146,13 @@ class OnlineScreen(Window):
                 self.networker = Network(self.IPC, int(self.Port), True)
                 self.networker.start()
                 ############# JUST FOR TESTING #############
-                self.networker.file.append("wlc010012300000000001F008100222R008200213M00830022")
-                message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)
-                self.networker.file.append(message3.create_message())
+                #self.networker.file.append("wlc010012300000000001F008100222R008200213M00830022")
+                #message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)
+                #self.networker.file.append(message3.create_message())
 		        #############################################
                 if not self.checkFirstPlayer.isChecked():
                     self.networker.connexion(self.IPaddress,int(self.PortIn))
+                else: self.game.screens['map_selector'].seed = random.randint(1,1000)
                 
             else :
                 self.isPressedN = True

@@ -643,9 +643,9 @@ class GameScreen(Window):
 	def networkUpdate(self):
 		message = self.game.screens['online_screen'].networker.getMessage()
 		if message != "" :
-			print(message) #Attention a remodifier car en cas de offline y a pas de networker
+			print(message)
 		if message[:3] == "con":
-			msg_to_send = Message(self.players,flag="wlc").create_message()
+			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed)
 			print("Message to send: ",msg_to_send)
-			#self.game.screens['online_screen'].networker.send()
+			self.game.screens['online_screen'].networker.send(msg_to_send)
 				
