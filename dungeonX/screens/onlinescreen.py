@@ -147,10 +147,12 @@ class OnlineScreen(Window):
                 self.online = True
                 os.system("cd ./dungeonX/network/ && make && cd ../..")
                 subprocess.Popen(["./dungeonX/network/server.out",self.Port,self.PortC])
-                
+                from time import sleep
+                sleep(0.1)
                 from ..network.client import Network
                 self.networker = Network(self.IPC, int(self.Port), True)
                 self.networker.start()
+                
                 ############# JUST FOR TESTING #############
                 #self.networker.file.append("wlc010012300000000001F008100222R008200213M00830022")
                 #message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)
