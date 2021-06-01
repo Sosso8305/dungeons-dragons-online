@@ -35,6 +35,27 @@ void stop(char *msg)
     exit(EXIT_FAILURE);
 }
 
+int lenData(char * flag){
+    if(!strncmp(flag,"con",3))
+        return CON;
+    else if(!strncmp(flag,"pos",3))
+        return POS;
+    else if(!strncmp(flag,"wlc",3))
+        return WLC;
+    else if(!strncmp(flag,"new",3))
+        return NEW;
+    else if(!strncmp(flag,"hps",3))
+        return HPS;
+    else if(!strncmp(flag,"ite",3))
+        return ITE;
+    else if(!strncmp(flag,"nam",3))
+        return NAM;
+    else if(!strncmp(flag,"che",3))
+        return CHE;
+    else
+        return 0;
+}
+
 void sendSocketPlayerInNetwork(int sockfd,all_data * data){
 
     int numberPlayer = (*data).numberOtherPlayers;
@@ -57,10 +78,11 @@ void *RecvPython(void *StructArg)
     char NewSocket[SIZE_DATA_PY];
     int OneConnection = 0; // flag pour déterminer si la le python a envoyer une deamnde de connection
 
-    while (1)
+    while (1) 
     {
+        
+        int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char), MSG_WAITALL);
 
-        int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char), 0);
 
 
         switch (n)
@@ -77,6 +99,10 @@ void *RecvPython(void *StructArg)
         default:
             break;
         }
+
+   
+
+
 
         if (!OneConnection)
         {
@@ -320,7 +346,7 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
     while (1)
     {
 
-        int n = recv((*arg).sockfd, &new_player, sizeof(data_player), 0);
+        int n = recv((*arg).sockfd, &new_player, sizeof(data_player), MSG_WAITALL);
 
 
         switch (n)
@@ -484,7 +510,7 @@ void *serverPeer(void *StrucData)
         //int numberSocket;
        
 
-        int n = recv(new_playerFD, &init, sizeof(int), 0);
+        int n = recv(new_playerFD, &init, sizeof(int), MSG_WAITALL);
         if (DEBUG)
             printf("the value init is %i \n", init);
 
@@ -501,7 +527,7 @@ void *serverPeer(void *StrucData)
             break;
         }
 
-        n = recv(new_playerFD, &otherPort, sizeof(int), 0);
+        n = recv(new_playerFD, &otherPort, sizeof(int), MSG_WAITALL);
         if (DEBUG)
             printf("the new port for new is %i \n", otherPort);
 
