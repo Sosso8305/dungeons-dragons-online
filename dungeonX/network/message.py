@@ -1,5 +1,4 @@
-from dungeonX.characters.players.player import Player, PlayerEnum
-from dungeonX.characters.enemies.enemy import Enemy
+from dungeonX.characters.players.player import PlayerEnum
 
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5]}
 MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3, "ini":6}
@@ -137,7 +136,7 @@ def read_name(namePadd):
     return namePadd[i:]
 
 class Message:
-    def __init__(self, PlayerList = [Player], EnemyList = [Enemy], flag="", IP=0,port=0,ID = 0):
+    def __init__(self, PlayerList= [], EnemyList = [], flag="", IP=0,port=0,ID = 0):
         
         self.flag = flag
         self.players = PlayerList

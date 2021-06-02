@@ -1,7 +1,7 @@
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
-#from dungeonX.network.message import Message,extract, read_type, read_position, read_attributes, read_IP, read_name
+#from dungeonX.network.message import Message
 from ..objects.object import GameObject
 import random
 
@@ -182,6 +182,9 @@ class Chest(GameObject):
 			else:
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
+					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
+					#messagePerItem=Message(player,flag="ite",ID=1).create_message(player.getidMsg(),IDItem=item.id)
 				player.game.game.addToLog(" Item(s) retreived ")
+
 
 
