@@ -550,6 +550,13 @@ class GameScreen(Window):
 		# liste des joueurs visibles pour afficher en fonction 
 		visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
 		self.visiblePlayersList=visiblePlayersList
+		visibleRealPlayersList=[]
+		self.visibleRealPlayersList=visibleRealPlayersList
+
+		for visiblePlayer in (visiblePlayersList) :
+			for realPlayer in (self.realPlayers) :
+				if  (visiblePlayer.parent not in self.visibleRealPlayersList) :
+					self.visibleRealPlayersList.append(realPlayer)
 
 		if self.state == 'paused':
 			self.pausemenu.update(events)
@@ -560,16 +567,13 @@ class GameScreen(Window):
 				self.blit(self.mapwindow, (0,0))
 			elif self.state == 'inventory_opened': 
 				if self.visiblePlayersList != []:
-					self.crews=[]
-					for visiblePlayer in self.visiblePlayersList:
-						if not (visiblePlayer.checkPresence(self.crews)):
-							self.crews.append(visiblePlayer.parent.persos)
 					self.nextButton.update(events)
 					self.blit(self.nextButton.image,self.nextButton.rect)
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 					if not (self.currentInventory == -1):
-						self.inventorywindow.update(events,plyr=self.crews[self.currentInventory])
+						self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
+						self.blit(self.inventorywindow, (0,0))
 					else:
 						self.inventorywindow.update(events)
 				else:
@@ -627,7 +631,7 @@ class GameScreen(Window):
 			self.networkUpdate()
 		
 	def nextInventory(self,index):
-		if (self.currentInventory+index >= len(self.crews) or self.currentInventory+index < -1):
+		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
 			print("No more players in the line of sight")
 			return
 		self.currentInventory += index

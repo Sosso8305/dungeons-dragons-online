@@ -1,5 +1,15 @@
 #define SIZE_DATA_PY 50
 
+#define POS 14
+#define CON 26
+#define WLC 38
+#define NEW 33
+#define HPS 17
+#define ITE 11
+#define NAM 16
+#define CHE 16
+
+
 
 typedef struct   // struct for one player
 {
@@ -43,6 +53,7 @@ typedef struct
 void display_data_player (data_player player);
 void stop(char *msg);
 void sendSocketPlayerInNetwork(int sockfd,all_data * data);
+int lenData(char *flag);
 
 void * RecvPython(void * StructArg);
 void * SendPython(void * StructArg);
