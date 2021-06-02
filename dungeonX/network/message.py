@@ -169,7 +169,7 @@ class Message:
         self.list3 = [self.type3,self.pos3[0],self.pos3[1]]
         
 
-    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[]):
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[],pos=(0,0)):
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
@@ -200,8 +200,7 @@ class Message:
             ID_str = str(ID)
 
             if self.flag == "pos":
-                player = get_character(self.players, ID)
-                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(player.pos[0]),MESSAGE_SIZE_MAX[self.flag][2]) + check_size(str(player.pos[1]),MESSAGE_SIZE_MAX[self.flag][3])
+                message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(pos[0]),MESSAGE_SIZE_MAX[self.flag][2]) + check_size(str(pos[1]),MESSAGE_SIZE_MAX[self.flag][3])
 
             elif (self.flag == "hps"):
                 IDE_str = str(IDenemy)

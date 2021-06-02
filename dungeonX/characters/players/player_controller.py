@@ -8,6 +8,7 @@ from ..skills import Skill
 from ...screens import LogWindow
 from dungeonX.characters.players.player import Player, PlayerEnum
 from ..enemies import Enemy
+from dungeonX.network.message import Message, check_size
 
 ### Map functions ###
 # they are here to avoid a circular import with the map file,
@@ -214,6 +215,7 @@ class PlayerController(Player):
 
     def setTarget(self, target:tuple, targetObject=None):
         """ Setter for finalTarget """
+        print("id ->", self.ID,"Target: ",target)
         path = None
         if targetObject:
             targetObject = targetObject[-1]
@@ -235,6 +237,10 @@ class PlayerController(Player):
             
             if not self.currentTarget:
                 self.nextTarget()
+
+        if self.game.game.screens['online_screen'].online:
+            msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
+            self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
 
 
     def updateAnim(self, dt:int):
