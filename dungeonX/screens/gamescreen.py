@@ -1,3 +1,4 @@
+from numpy.lib.function_base import append
 import pygame, math
 from ..map import Dungeon, Map
 from ..constants import TILE_WIDTH, State, ItemList, SKILLS_INFO, cellsrange
@@ -640,6 +641,30 @@ class GameScreen(Window):
 	def changePlayerName(self, name):
 		self.playerName = name
 
+	def retrieveChestFromObjects(self,list):
+		"""
+		retreives only Chest items from the Object List
+		"""
+		listOfChests=[]
+		for i in len(list):
+			if type(list[i]) == Chest :
+				listOfChests.append(list[i])
+		return listOfChests
+
+	def UpdateChestList(self,list:[Chest],ID):
+		"""
+		serves into finding items from all Chests in the game
+		"""
+		for i in len(list): #for all chests in the game
+			for j in len(list[i]):# for each chest 
+				if list[i].getItemByID()== None: 
+					print(f'For Chest n {i} : Item not found')
+			if list[i].getItemByID()!= None:
+				itemToSubstract=list[i].getItemByID()
+				list[i].UpdateChest(itemToSubstract)
+				return list[i].getPosition()
+				
+		
 	def networkUpdate(self):
 		message = self.game.screens['online_screen'].networker.getMessage()
 		if message != "" :
@@ -648,4 +673,12 @@ class GameScreen(Window):
 			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed)
 			print("Message to send: ",msg_to_send)
 			self.game.screens['online_screen'].networker.send(msg_to_send)
-				
+		elif message[:3]=="ite":
+			info = extract(message)
+			ListOfChests= self.retrieveChestFromObjects(self.objects)
+			print(f'{ListOfChests}')
+			#self.UpdateChestList(ListOfChests,)
+
+			
+			#self.inventorywindow.bag.content +
+			

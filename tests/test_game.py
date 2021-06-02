@@ -1,8 +1,11 @@
 import math, pygame
 from dungeonX import Game
+from dungeonX.screens import GameScreen
 from dungeonX.graphics import TextDisplayer, ParticleSystem
 
 game = Game()
+gameScreen=GameScreen(game)
+
 
 # def testGameCreation():
 # 	assert math.isclose(game.RATIO, game.DISPLAY_SIZE[0]/game.DISPLAY_SIZE[1])
