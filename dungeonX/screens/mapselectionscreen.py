@@ -1,9 +1,11 @@
-from dungeonX.network.message import extract
+from dungeonX.network.message import extract, read_name
 import pygame, os, random
 from . import Window
 from ..graphics import Button, TextInput, TextDisplayer
 from ..map import Dungeon
 from ..constants import TILE_WIDTH
+from dungeonX.network.essaiOtherPlayer import OtherPlayer2
+from dungeonX.network.realPlayer import RealPlayer
 
 SCALE = 3
 MOUSE_SENSIBILITY = 4
@@ -44,16 +46,22 @@ class MapSelectorScreen(Window):
         if self.game.screens['online_screen'].online:
             print("ONLINE")
             if not self.game.screens['online_screen'].checkFirstPlayer.isChecked():
-                while True :
+                while True:
                     message = self.game.screens['online_screen'].networker.getMessage()
-                    if message[0:3] == "wlc":
+                    if message[:3] == "wlc":
                         infos = extract(message)
+                        self.game.screens['online_screen'].networker.file.append(message[47:])
+                        print("First player characters created")
+                        otherPlayers = [OtherPlayer2([infos[3][0],infos[3][1],infos[3][2]],self.game.screens["game"]),OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self.game.screens["game"])\
+                        ,OtherPlayer2([infos[5][0],infos[5][1],infos[5][2]],self.game.screens["game"])]
+                        self.game.screens["game"].realPlayers[infos[0]]=RealPlayer(otherPlayers,read_name(infos[2]))
+                        print("Dictionnary of players: ",self.game.screens["game"].realPlayers)
+                        self.game.screens["game"].dungeon.oplayers = otherPlayers
+                        self.game.screens["game"].oplayers = self.game.screens["game"].dungeon.oplayers
                         self.seed = int(infos[1])
                         print("seed received for second player",self.seed)
                         random.seed(self.seed)
                         break
-                    else : 
-                        print("Waiting for wlc ...")
             else:
                 print("First player seed",self.seed) 
                 random.seed(self.seed)

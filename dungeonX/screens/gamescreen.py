@@ -1,3 +1,5 @@
+from dungeonX.characters.enemies.enemy_controller import distanceBetween
+import dungeonX
 from numpy.lib.function_base import append
 import pygame, math
 from ..map import Dungeon, Map
@@ -145,10 +147,6 @@ class GameScreen(Window):
 		self.bottombarwindow = BottomBarWindow(self)
 		self.inventorywindow = InventoryWindow(game, self)
 		
-		#additions for the multi-inventory blitting
-		# self.inventorywindow2 = InventoryWindow(game, self) # A 2nd inventory for test
-		# self.nbPlayers = 2 # will be the size of the real player list later
-		# self.id_current_inventory = 0 # necessary var
 		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
@@ -189,8 +187,7 @@ class GameScreen(Window):
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
 		self.oplayers = self.dungeon.oplayers
-		self.realPlayers = []
-		self.oplayersCreation = False
+		self.realPlayers = {}
 
 		self.playerName = ""
 
@@ -317,17 +314,6 @@ class GameScreen(Window):
 
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
-		#Just for testing to remove later
-		messageTest = "wlc010012300000Alice0R"+check_size(str(self.players[0].pos[0]+2),4)+check_size(str(self.players[0].pos[1]+2),4)+"1M"+check_size(str(self.players[1].pos[0]+2),4)+\
-			check_size(str(self.players[0].pos[1]+2),4)+"2R"+check_size(str(self.players[2].pos[0]+2),4)+check_size(str(self.players[2].pos[1]+2),4)
-		liste = extract(messageTest) #la sortie serait de la forme: ["01","00000Alice",[n1,"R","0000","0000"],[n2,"M","0001","0002"],[n3,"F","0003","0004"]]
-		if(not self.oplayersCreation):
-			otherPlayers = [OtherPlayer2([liste[3][1],liste[3][2],liste[3][3]],self),OtherPlayer2([liste[4][1],liste[4][2],liste[4][3]],self)\
-				,OtherPlayer2([liste[5][1],liste[5][2],liste[5][3]],self)]
-			self.realPlayers.append(RealPlayer(otherPlayers,"alice"))
-			self.dungeon.oplayers = otherPlayers
-			self.oplayers = self.dungeon.oplayers
-			self.oplayersCreation = True
 		
 		# --- Events Handling --- #
 		for event in events:
@@ -505,19 +491,21 @@ class GameScreen(Window):
 		
 		# ---- Entity rendering ---- #
 		#to remove later just for test
-		try:
-			if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
-				(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
-				l = self.oplayers[0]._move_zone()
-				l1 = self.oplayers[1]._move_zone()
-				if len(l):
-					self.oplayers[0].playAction(self.game.dt,l[0])
-				if len(l1) > 1:
-					self.oplayers[1].playAction(self.game.dt,l1[1])
-		except TypeError as e:
-			print(str(e))
+		# try:
+		# 	if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
+		# 		(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
+		# 		l = self.oplayers[0]._move_zone()
+		# 		l1 = self.oplayers[1]._move_zone()
+		# 		if len(l):
+		# 			self.oplayers[0].playAction(self.game.dt,l[0])
+		# 		if len(l1) > 1:
+		# 			self.oplayers[1].playAction(self.game.dt,l1[1])
+		# except TypeError as e:
+		# 	print(str(e))
 
-		for ent in sorted(self.players+self.enemies+self.objects+self.oplayers, key=lambda x:x.rect.top):
+		entities = self.players+self.enemies+self.objects+self.oplayers if self.oplayers != None else self.players+self.enemies+self.objects
+
+		for ent in sorted(entities, key=lambda x:x.rect.top):
 		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
 				ent.updateAnim(self.game.dt)
@@ -548,15 +536,17 @@ class GameScreen(Window):
 		self.blit(pygame.transform.scale(self.__viewport, (self.get_width(), self.get_height())), (0,0))
 		
 		# liste des joueurs visibles pour afficher en fonction 
-		visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
-		self.visiblePlayersList=visiblePlayersList
-		visibleRealPlayersList=[]
-		self.visibleRealPlayersList=visibleRealPlayersList
+		if self.oplayers != None:
+			visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+			self.visiblePlayersList=visiblePlayersList
 
-		for visiblePlayer in (visiblePlayersList) :
-			for realPlayer in (self.realPlayers) :
-				if  (visiblePlayer.parent not in self.visibleRealPlayersList) :
-					self.visibleRealPlayersList.append(realPlayer)
+			visibleRealPlayersList=[]
+			self.visibleRealPlayersList=visibleRealPlayersList
+
+			for visiblePlayer in (visiblePlayersList) :
+				for realPlayer in (self.realPlayers) :
+					if  (visiblePlayer.parent not in self.visibleRealPlayersList) :
+						self.visibleRealPlayersList.append(realPlayer)
 
 		if self.state == 'paused':
 			self.pausemenu.update(events)
@@ -673,13 +663,25 @@ class GameScreen(Window):
 					
 		
 	def networkUpdate(self):
+		#print(self.players[0].pos)
 		message = self.game.screens['online_screen'].networker.getMessage()
 		if message != "" :
-			print(message)
+			print("MESSAGE: ",message)
 		if message[:3] == "con":
-			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed)
-			print("Message to send: ",msg_to_send)
+			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed) + \
+				Message([None,None,None],flag="ini",ID=1 if self.oplayers ==None else len(self.oplayers)+1).create_message(positions=self.getValidLocations())
+			print("Messages to send: ",msg_to_send)
 			self.game.screens['online_screen'].networker.send(msg_to_send)
+		elif message[34:37] == "new":
+			infos = extract(message[34:])
+			print("Second player characters created")
+			otherPlayers = [OtherPlayer2([infos[2][0],infos[2][1],infos[2][2]],self),OtherPlayer2([infos[3][0],infos[3][1],infos[3][2]],self)\
+				    ,OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self)]
+			self.realPlayers[infos[0]] = RealPlayer(otherPlayers,read_name(infos[1]))
+			print("Real Players Dictionnary: ",self.realPlayers)
+			self.dungeon.oplayers= otherPlayers
+			self.oplayers = self.dungeon.oplayers
+			
 		elif message[:3]=="ite":
 			info = extract(message)
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
@@ -688,4 +690,19 @@ class GameScreen(Window):
 
 			
 			#self.inventorywindow.bag.content +
-			
+	
+	def getValidLocations(self):
+		found = False
+	
+		while not found:
+			pos = self.dungeon.currentFloor.getRandomValidLocation()
+			positions = [pos]
+			l = [(pos[0]+1,pos[1]),(pos[0]+1,pos[1]+1),(pos[0]-1,pos[1]),(pos[0],pos[1]-1),(pos[0]+2,pos[1]),(pos[0]-2,pos[1])]
+			for position in l:
+				if self.dungeon.currentFloor.isValidLocation(*position):
+					positions.append(position)
+				if len(positions) == 3:
+					found = True
+					break
+		print("Available positions: ",positions)
+		return positions
