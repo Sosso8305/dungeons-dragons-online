@@ -645,29 +645,32 @@ class GameScreen(Window):
 	def changePlayerName(self, name):
 		self.playerName = name
 
-	def retrieveChestFromObjects(self,list):
+	def retrieveChestsFromObjects(self,list):
 		"""
 		retreives only Chest items from the Object List
 		"""
 		listOfChests=[]
-		for i in len(list):
-			if type(list[i]) == Chest :
-				listOfChests.append(list[i])
+		for el in list:
+			if type(el) == Chest :
+				listOfChests.append(el)
 		return listOfChests
 
-	def UpdateChestList(self,list:[Chest],ID):
+	def UpdateChestContent(self,list:[Chest],ID):
 		"""
-		serves into finding items from all Chests in the game
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
 		"""
-		for i in len(list): #for all chests in the game
-			for j in len(list[i]):# for each chest 
-				if list[i].getItemByID()== None: 
-					print(f'For Chest n {i} : Item not found')
-			if list[i].getItemByID()!= None:
-				itemToSubstract=list[i].getItemByID()
-				list[i].UpdateChest(itemToSubstract)
-				return list[i].getPosition()
-				
+		for el in list: #for all chests in the game
+			for ch in el.getContent() :# for each chest 
+				if el.getItemByID(ID)== None: 
+					print(f'For Chest n {el} : Item with ID {ID}not found')
+				else:
+					itemToSubstract=el.getItemByID(ID)
+					#el.UpdateChest(el,itemToSubstract)
+					print(f'For Chest n {el} : Item {el.getItemByID(ID)} was taken from Chest by Another Player')
+					print(f'POSITION FOUND & RETURNED {el.getPosition()}')
+					return el.getPosition()
+	
+					
 		
 	def networkUpdate(self):
 		message = self.game.screens['online_screen'].networker.getMessage()
@@ -679,7 +682,7 @@ class GameScreen(Window):
 			self.game.screens['online_screen'].networker.send(msg_to_send)
 		elif message[:3]=="ite":
 			info = extract(message)
-			ListOfChests= self.retrieveChestFromObjects(self.objects)
+			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			print(f'{ListOfChests}')
 			#self.UpdateChestList(ListOfChests,)
 

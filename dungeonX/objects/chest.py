@@ -133,13 +133,15 @@ class Chest(GameObject):
 		if(self._state == State.unlocked):
 			self.__animState = 'empty'
 			if self._content is not None:
-				for i in len(self._content): 
-					if self._content[i].getID() == ID :
-						itemToReturn = self._content[i]
-						self._content -= self._content[i]
+				for i in self._content:
+					#print(f'ID I HAVE {i.getID()}')
+					#print(f'ID LOOKING FOR {ID}') 
+					if i.getID() == ID :
+						itemToReturn = i
+						self._content.remove(i)
 						return itemToReturn
 				if itemToReturn == None :
-				 	print(f'The item with the specified {ID} is unavailable')
+				  	print(f'The item with the specified {ID} is unavailable')
 			else: print('The chest is empty !'); return []
 		else: print('Please unlock chest before retrieving items'); return False
 
