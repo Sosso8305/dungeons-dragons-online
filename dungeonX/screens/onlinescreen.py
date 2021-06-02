@@ -6,6 +6,8 @@ from ..constants import TILE_WIDTH
 import ipaddress
 from PygameUtils import checkbox
 from dungeonX.network.message import Message
+import subprocess
+
 
 START_BUTTON_WIDTH = 200
 START_BUTTON_HEIGHT = 100
@@ -89,7 +91,10 @@ class OnlineScreen(Window):
         if IP.count(".") == 3 and all(isIPv4(i) for i in IP.split(".")):
             return True
         return False
-        
+
+    
+         
+
 
     def update(self, events):
         # --- Render --- #
@@ -141,10 +146,13 @@ class OnlineScreen(Window):
                 self.game.setScreen('map_selector') 
                 self.online = True
                 os.system("cd ./dungeonX/network/ && make && cd ../..")
-                os.system("./dungeonX/network/server.out "+self.Port+" "+self.PortC+"> ./logs/logsofiane.log 2>&1 &")       
+                subprocess.Popen(["./dungeonX/network/server.out",self.Port,self.PortC])
+                from time import sleep
+                sleep(0.1)
                 from ..network.client import Network
                 self.networker = Network(self.IPC, int(self.Port), True)
                 self.networker.start()
+                
                 ############# JUST FOR TESTING #############
                 #self.networker.file.append("wlc010012300000000001F008100222R008200213M00830022")
                 #message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)

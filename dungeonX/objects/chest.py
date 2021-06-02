@@ -87,8 +87,14 @@ class Chest(GameObject):
 		"""
 		return random.randint(1,20) < 3 or alwaysSuccess
 		
+	def getContent(self):
+		return self._content
 	
-
+	def UpdateChest(self,item:Item):
+		"""
+		Substract item from chest Only #for now
+		"""
+		self._content-= item
 
 
 	def getState(self):
@@ -119,6 +125,23 @@ class Chest(GameObject):
 			else: print('The chest is empty !'); return []
 		else: print('Please unlock chest before retrieving items'); return False
 		
+	def getItemByID(self,ID:int):
+		"""
+		retreive item with ID number 
+		"""
+		itemToReturn = None
+		if(self._state == State.unlocked):
+			self.__animState = 'empty'
+			if self._content is not None:
+				for i in len(self._content): 
+					if self._content[i].getID() == ID :
+						itemToReturn = self._content[i]
+						self._content -= self._content[i]
+						return itemToReturn
+				if itemToReturn == None :
+				 	print(f'The item with the specified {ID} is unavailable')
+			else: print('The chest is empty !'); return []
+		else: print('Please unlock chest before retrieving items'); return False
 
 	def animsIterator(self):
 		i = 0

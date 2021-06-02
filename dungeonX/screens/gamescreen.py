@@ -1,5 +1,6 @@
 from dungeonX.characters.enemies.enemy_controller import distanceBetween
 import dungeonX
+from numpy.lib.function_base import append
 import pygame, math
 from ..map import Dungeon, Map
 from ..constants import TILE_WIDTH, State, ItemList, SKILLS_INFO, cellsrange
@@ -539,6 +540,14 @@ class GameScreen(Window):
 			visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
 			self.visiblePlayersList=visiblePlayersList
 
+			visibleRealPlayersList=[]
+			self.visibleRealPlayersList=visibleRealPlayersList
+
+			for visiblePlayer in (visiblePlayersList) :
+				for realPlayer in (self.realPlayers) :
+					if  (visiblePlayer.parent not in self.visibleRealPlayersList) :
+						self.visibleRealPlayersList.append(realPlayer)
+
 		if self.state == 'paused':
 			self.pausemenu.update(events)
 			self.blit(self.pausemenu, (0,0))
@@ -548,16 +557,13 @@ class GameScreen(Window):
 				self.blit(self.mapwindow, (0,0))
 			elif self.state == 'inventory_opened': 
 				if self.visiblePlayersList != []:
-					self.crews=[]
-					for visiblePlayer in self.visiblePlayersList:
-						if not (visiblePlayer.checkPresence(self.crews)):
-							self.crews.append(visiblePlayer.parent.persos)
 					self.nextButton.update(events)
 					self.blit(self.nextButton.image,self.nextButton.rect)
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 					if not (self.currentInventory == -1):
-						self.inventorywindow.update(events,plyr=self.crews[self.currentInventory])
+						self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
+						self.blit(self.inventorywindow, (0,0))
 					else:
 						self.inventorywindow.update(events)
 				else:
@@ -615,7 +621,7 @@ class GameScreen(Window):
 			self.networkUpdate()
 		
 	def nextInventory(self,index):
-		if (self.currentInventory+index >= len(self.crews) or self.currentInventory+index < -1):
+		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
 			print("No more players in the line of sight")
 			return
 		self.currentInventory += index
@@ -629,6 +635,30 @@ class GameScreen(Window):
 	def changePlayerName(self, name):
 		self.playerName = name
 
+	def retrieveChestFromObjects(self,list):
+		"""
+		retreives only Chest items from the Object List
+		"""
+		listOfChests=[]
+		for i in len(list):
+			if type(list[i]) == Chest :
+				listOfChests.append(list[i])
+		return listOfChests
+
+	def UpdateChestList(self,list:[Chest],ID):
+		"""
+		serves into finding items from all Chests in the game
+		"""
+		for i in len(list): #for all chests in the game
+			for j in len(list[i]):# for each chest 
+				if list[i].getItemByID()== None: 
+					print(f'For Chest n {i} : Item not found')
+			if list[i].getItemByID()!= None:
+				itemToSubstract=list[i].getItemByID()
+				list[i].UpdateChest(itemToSubstract)
+				return list[i].getPosition()
+				
+		
 	def networkUpdate(self):
 		#print(self.players[0].pos)
 		message = self.game.screens['online_screen'].networker.getMessage()
@@ -648,6 +678,15 @@ class GameScreen(Window):
 			print("Real Players Dictionnary: ",self.realPlayers)
 			self.dungeon.oplayers= otherPlayers
 			self.oplayers = self.dungeon.oplayers
+			
+		elif message[:3]=="ite":
+			info = extract(message)
+			ListOfChests= self.retrieveChestFromObjects(self.objects)
+			print(f'{ListOfChests}')
+			#self.UpdateChestList(ListOfChests,)
+
+			
+			#self.inventorywindow.bag.content +
 	
 	def getValidLocations(self):
 		found = False
