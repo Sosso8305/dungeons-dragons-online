@@ -6,7 +6,7 @@ from time import sleep
 networkFPS = 60
 ipC = "127.0.0.1"
 portC = 5133
-sizeMESSAGE = 50
+sizeMESSAGE = 76
 encodage = "ascii"
 
 
@@ -142,6 +142,8 @@ class Network(threading.Thread):
         """
         for msg in msgList:
             self.s.send(msg.encode(encodage))
+        if self.debug==True :
+            print(f"successfully sent {msgList}")
 
     def stop(self):
         """Kills properly the networking thread
