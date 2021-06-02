@@ -91,4 +91,5 @@ def testMessageReadAndExtract():
     assert int(liste3[1]) == 8000
     assert read_name(liste[2]) == "Alice"
     assert int(liste[1]) == 123
+    assert int (liste5[2])== swordItem.id 
 

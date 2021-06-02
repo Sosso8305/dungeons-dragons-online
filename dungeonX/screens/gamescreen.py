@@ -685,11 +685,8 @@ class GameScreen(Window):
 		elif message[:3]=="ite":
 			info = extract(message)
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
-			print(f'{ListOfChests}')
-			#self.UpdateChestList(ListOfChests,)
-
-			
-			#self.inventorywindow.bag.content +
+			ID = int(info[2])
+			self.UpdateChestContent(ListOfChests,ID)
 	
 	def getValidLocations(self):
 		found = False

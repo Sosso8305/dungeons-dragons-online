@@ -1,6 +1,7 @@
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
+#from dungeonX.network.message import Message,extract, read_type, read_position, read_attributes, read_IP, read_name
 from ..objects.object import GameObject
 import random
 
@@ -121,7 +122,9 @@ class Chest(GameObject):
 			if self._content is not None:
 				tmp = self._content
 				self._content = None
-				return tmp 
+				#TODO : create message for each item in content to OPlayers
+				return tmp
+				 
 			else: print('The chest is empty !'); return []
 		else: print('Please unlock chest before retrieving items'); return False
 		
