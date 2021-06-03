@@ -68,7 +68,7 @@ class Network(threading.Thread):
         self.stopped = False
         while (not self.stopped):
             try:
-                data = self.s.recv(sizeMESSAGE)
+                data = self.s.recv(sizeMESSAGE,socket.MSG_WAITALL)
                 try :
                     data= data.decode(encodage)
                 except UnicodeDecodeError :
