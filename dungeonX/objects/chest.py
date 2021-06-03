@@ -1,6 +1,7 @@
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
+#from dungeonX.network.message import Message
 from ..objects.object import GameObject
 import random
 
@@ -87,8 +88,14 @@ class Chest(GameObject):
 		"""
 		return random.randint(1,20) < 3 or alwaysSuccess
 		
+	def getContent(self):
+		return self._content
 	
-
+	def UpdateChest(self,item:Item):
+		"""
+		Substract item from chest Only #for now
+		"""
+		self._content-= item
 
 
 	def getState(self):
@@ -115,10 +122,31 @@ class Chest(GameObject):
 			if self._content is not None:
 				tmp = self._content
 				self._content = None
-				return tmp 
+				#TODO : create message for each item in content to OPlayers
+				return tmp
+				 
 			else: print('The chest is empty !'); return []
 		else: print('Please unlock chest before retrieving items'); return False
 		
+	def getItemByID(self,ID:int):
+		"""
+		retreive item with ID number 
+		"""
+		itemToReturn = None
+		if(self._state == State.unlocked):
+			self.__animState = 'empty'
+			if self._content is not None:
+				for i in self._content:
+					#print(f'ID I HAVE {i.getID()}')
+					#print(f'ID LOOKING FOR {ID}') 
+					if i.getID() == ID :
+						itemToReturn = i
+						self._content.remove(i)
+						return itemToReturn
+				if itemToReturn == None :
+				  	print(f'The item with the specified {ID} is unavailable')
+			else: print('The chest is empty !'); return []
+		else: print('Please unlock chest before retrieving items'); return False
 
 	def animsIterator(self):
 		i = 0
@@ -154,6 +182,9 @@ class Chest(GameObject):
 			else:
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
+					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
+					#messagePerItem=Message(player,flag="ite",ID=1).create_message(player.getidMsg(),IDItem=item.id)
 				player.game.game.addToLog(" Item(s) retreived ")
+
 
 

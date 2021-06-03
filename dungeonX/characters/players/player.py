@@ -29,7 +29,7 @@ class Player(Character) :
     ID=0
     RealPlayerID=0
     MyPlayers=[]
-    def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : [Skill] =[]):
+    def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : list[Skill] =[]):
         #print("stat", stats)
         #print("lineOfSightRadius",lineOfSightRadius)
         super().__init__(game, pos, actionPointMax,*stats) #( HP, armor, strength, dex, con, intell, wis, cha )
@@ -56,7 +56,11 @@ class Player(Character) :
            #  self.MyPlayers.append(self)
             Player.ID+=1
         self.ID=Player.ID
-        
+        self.idMsg = 0 #this is the common id used in certain messages sent from the player to others
+
+    def getIDMsg(self):
+        return self.idMsg
+
     def getName(self):
             return self.name
     def getVisibility(self):

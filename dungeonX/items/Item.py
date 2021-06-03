@@ -89,6 +89,12 @@ class Item(TimeFrame):
         """
         return self._name
 
+    def getID(self):
+        """
+        returns ID of the item
+        """
+        return self.id
+
     def isUsed(self): 
         """
         verifies if name item is used (if useItem method was called )
