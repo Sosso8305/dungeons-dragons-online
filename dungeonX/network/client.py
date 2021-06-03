@@ -96,7 +96,14 @@ class Network(threading.Thread):
         self.send(f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
                   )  # message spécial a destination du C et des autres joueurs
         
+    def addMessage(self,message):
+        """Add a new message from the queue (FIFO) for testing 
 
+        Args:
+            message (str): network message who follow our standard
+        """
+        if message != "":
+            self.file.append(message)
 
     def getMessage(self):
         """Pop the oldest message from the queue (FIFO)
