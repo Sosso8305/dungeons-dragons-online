@@ -1,7 +1,8 @@
 from dungeonX.characters.players import Player, Fighter, Mage, Rogue, PlayerEnum
 from dungeonX.characters.skills import Skill, SkillFactory, SkillEnum
-from dungeonX.network.message import Message,extract, read_type, read_position, read_attributes, read_IP, read_name
+from dungeonX.network.message import Message,extract, read_position, read_attributes, read_IP, read_name
 from dungeonX.characters.enemies import Enemy, Zombie, Dragon, Goblin
+from dungeonX.network.essaiOtherPlayer import read_type
 from dungeonX.items.Item import ItemList, ItemFactory
 from dungeonX import Game
 
@@ -91,4 +92,5 @@ def testMessageReadAndExtract():
     assert int(liste3[1]) == 8000
     assert read_name(liste[2]) == "Alice"
     assert int(liste[1]) == 123
+    assert int (liste5[2])== swordItem.id 
 
