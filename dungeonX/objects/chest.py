@@ -2,7 +2,7 @@
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
-#from dungeonX.network.message import Message
+from dungeonX.network.message import Message
 from ..objects.object import GameObject
 import random
 
