@@ -1,4 +1,4 @@
-#define SIZE_DATA_PY 50
+#define SIZE_DATA_PY 76
 
 #define POS 14
 #define CON 26
