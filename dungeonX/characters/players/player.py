@@ -58,7 +58,7 @@ class Player(Character) :
             Player.ID+=1
         self.ID=Player.ID
         self.idMsg = 0 #this is the common id used in certain messages sent from the player to others
-
+    
     def getIDMsg(self):
         return self.idMsg
 

@@ -645,7 +645,7 @@ class GameScreen(Window):
 				listOfChests.append(el)
 		return listOfChests
 
-	def UpdateChestContent(self,list:[Chest],ID):
+	def UpdateChestContent(self,list:[Chest],ID,oPlayerID=None):
 		"""
 		serves into finding the chest containing item with ID from all Chests in the game and updating it
 		"""
@@ -655,6 +655,8 @@ class GameScreen(Window):
 					print(f'For Chest n {el} : Item with ID {ID}not found')
 				else:
 					itemToSubstract=el.getItemByID(ID)
+					if oPlayerID!=None:
+						self.realPlayers[oPlayerID].getbag().addItem(itemToSubstract)
 					#el.UpdateChest(el,itemToSubstract)
 					print(f'For Chest n {el} : Item {el.getItemByID(ID)} was taken from Chest by Another Player')
 					print(f'POSITION FOUND & RETURNED {el.getPosition()}')
@@ -686,7 +688,9 @@ class GameScreen(Window):
 			info = extract(message)
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			ID = int(info[2])
-			self.UpdateChestContent(ListOfChests,ID)
+			#IDperso= int(info[1])
+			IDofOtherPlayer=int(info[0])
+			self.UpdateChestContent(ListOfChests,ID,IDofOtherPlayer)			
 	
 	def getValidLocations(self):
 		found = False
