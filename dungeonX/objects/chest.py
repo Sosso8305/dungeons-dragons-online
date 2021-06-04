@@ -6,6 +6,18 @@ from dungeonX.network.message import Message
 from ..objects.object import GameObject
 import random
 
+def check_size(string: str, n: int):
+    modified_str = ""
+    size = len(string)
+
+    while n - size > 0:
+        modified_str += '0'
+        size += 1
+
+    modified_str += string
+
+    return modified_str
+
 class Chest(GameObject):
 	"""
 	This is a subclass of object to represent the chest Object 
@@ -184,8 +196,8 @@ class Chest(GameObject):
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
 					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
-					messagePerItem=Message(player,flag="ite",ID=1).create_message(player.getidMsg(),IDItem=item.id)
-					player.game.game.screens['online_screen'].networker.send(messagePerItem)
+					messagePerItem=Message(player.game.game.screens['game'].players,flag="ite",ID=player.ID).create_message(player.getIDMsg(),IDItem=item.id)
+					player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
 
 				player.game.game.addToLog(" Item(s) retreived ")
 

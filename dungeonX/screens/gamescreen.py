@@ -656,7 +656,7 @@ class GameScreen(Window):
 				else:
 					itemToSubstract=el.getItemByID(ID)
 					if oPlayerID!=None:
-						self.realPlayers[oPlayerID].getbag().addItem(itemToSubstract)
+						self.realPlayers[oPlayerID].bag.addItem(itemToSubstract)
 					#el.UpdateChest(el,itemToSubstract)
 					print(f'For Chest n {el} : Item {el.getItemByID(ID)} was taken from Chest by Another Player')
 					print(f'POSITION FOUND & RETURNED {el.getPosition()}')
@@ -684,12 +684,12 @@ class GameScreen(Window):
 			self.dungeon.oplayers= otherPlayers
 			self.oplayers = self.dungeon.oplayers
 			
-		elif message[:3]=="ite":
-			info = extract(message)
+		elif message[65:68]=="ite":
+			info = extract(message[65:])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			ID = int(info[2])
 			#IDperso= int(info[1])
-			IDofOtherPlayer=int(info[0])
+			IDofOtherPlayer= info[0]
 			self.UpdateChestContent(ListOfChests,ID,IDofOtherPlayer)			
 	
 	def getValidLocations(self):
