@@ -4,7 +4,7 @@ CFLAGS  +=      -D_GNU_SOURCE
 CFLAGS  += 	-g
 CFLAGS  += -pthread
 
-CIBLES	=	
+CIBLES	= client_dev interface
 
 
 all: $(CIBLES) server.out

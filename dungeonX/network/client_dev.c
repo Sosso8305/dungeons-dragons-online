@@ -30,7 +30,7 @@ void stop(char* msg,int FD){
 	exit(EXIT_FAILURE);
 	
 }
-#define SIZE_DATA_PY 27
+#define SIZE_DATA_PY 10
 
 typedef struct   // struct for one player  
 {
@@ -92,10 +92,10 @@ int main(int argc, char const *argv[])
         while (1)
         {   
             
-            send(sockfd,&player.dataPython,sizeof(char)*SIZE_DATA_PY,0);
-            sleep(10);
-            send(sockfd,&player2.dataPython,sizeof(char)*SIZE_DATA_PY,0);
-            sleep(10);
+            send(sockfd,&player.dataPython,sizeof(char)*SIZE_DATA_PY-1,0);
+            sleep(5);
+            send(sockfd,&player2.dataPython,sizeof(char)*SIZE_DATA_PY-1,0);
+            sleep(5);
         }
         
 
@@ -106,7 +106,7 @@ int main(int argc, char const *argv[])
         while (1)
         {
         bzero(&recvPlayer.dataPython,sizeof(char)*SIZE_DATA_PY); 
-        int n =recv(sockfd,&recvPlayer.dataPython,sizeof(char)*SIZE_DATA_PY,0);
+        int n =recv(sockfd,&recvPlayer.dataPython,sizeof(char)*SIZE_DATA_PY-1,MSG_WAITALL);
         if (n == -1)  stop("recv",sockfd);
 
         display_data_player(recvPlayer);

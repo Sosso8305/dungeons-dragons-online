@@ -81,7 +81,7 @@ void *RecvPython(void *StructArg)
     while (1) 
     {
         
-        int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char), MSG_WAITALL);
+        int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char)-1, MSG_WAITALL);
 
 
 
@@ -346,7 +346,7 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
     while (1)
     {
 
-        int n = recv((*arg).sockfd, &new_player, sizeof(data_player), MSG_WAITALL);
+        int n = recv((*arg).sockfd, &new_player, sizeof(data_player), 0);
 
 
         switch (n)
@@ -510,7 +510,7 @@ void *serverPeer(void *StrucData)
         //int numberSocket;
        
 
-        int n = recv(new_playerFD, &init, sizeof(int), MSG_WAITALL);
+        int n = recv(new_playerFD, &init, sizeof(int), 0);
         if (DEBUG)
             printf("the value init is %i \n", init);
 
@@ -527,7 +527,7 @@ void *serverPeer(void *StrucData)
             break;
         }
 
-        n = recv(new_playerFD, &otherPort, sizeof(int), MSG_WAITALL);
+        n = recv(new_playerFD, &otherPort, sizeof(int), 0);
         if (DEBUG)
             printf("the new port for new is %i \n", otherPort);
 

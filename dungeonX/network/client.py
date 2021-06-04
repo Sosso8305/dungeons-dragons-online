@@ -93,8 +93,10 @@ class Network(threading.Thread):
             ip (str): the ip address of the other player
             port (int): the external port of the C of the other player
         """
-        self.send(f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
-                  )  # message spécial a destination du C et des autres joueurs
+        # self.send(f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
+        #           )  # message spécial a destination du C et des autres joueurs
+        
+        self.send(f"{padding('conxxx'+ipPadding(ip)+padding(str(port),5),sizeMESSAGE-26,'right')}")
         
     def addMessage(self,message):
         """Add a new message from the queue (FIFO) for testing 

@@ -8,9 +8,9 @@
 #include <arpa/inet.h>
 #include <string.h>
 
-#define PORT 1234
+#define PORT 4321
 #define IP "127.0.0.1"
-#define BUF_SIZE 512
+#define BUF_SIZE 10 
 #define MAXLINE 1024
 
 void stop(char *msg)
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
     printf("New client\nip : %s\nport : %d\n\n", ip_client, ntohs(cli.sin_port));
     while(1)
     {
-        n = recv(client, buffer, BUF_SIZE - 1, 0);
+        n = recv(client, buffer, BUF_SIZE-1, MSG_WAITALL);
         if (n == -1)
         {
             close(sockfd);
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
             break;
         }
         buffer[n] = '\0';
-        printf("%s\n", buffer);
+        printf("msg: %s\n", buffer);
         int s = send(client, buffer, n, 0);
         if (s == -1)
         {
