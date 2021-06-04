@@ -274,7 +274,7 @@ class PlayerController(Player):
                 if isinstance(self.targetObject, Enemy):
                     self.attack(self.targetObject)
                 else:
-                    self.targetObject.interactWithPlayer(self)
+                    self.targetObject.interactWithPlayer(self)                        
                 self.targetObject = None
 
         return self.state

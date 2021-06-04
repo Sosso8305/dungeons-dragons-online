@@ -1,3 +1,4 @@
+#from dungeonX.screens import gamescreen
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
@@ -183,7 +184,9 @@ class Chest(GameObject):
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
 					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
-					#messagePerItem=Message(player,flag="ite",ID=1).create_message(player.getidMsg(),IDItem=item.id)
+					messagePerItem=Message(player,flag="ite",ID=1).create_message(player.getidMsg(),IDItem=item.id)
+					player.game.game.screens['online_screen'].networker.send(messagePerItem)
+
 				player.game.game.addToLog(" Item(s) retreived ")
 
 
