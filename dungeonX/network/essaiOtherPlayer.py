@@ -1,9 +1,10 @@
 import pygame,math,os,random
-from dungeonX.network.message import read_position, read_attributes,read_type, read_mod
+from dungeonX.network.message import read_position, read_attributes, read_mod
 from dungeonX.constants import TILE_WIDTH, MAX_HP, serializeSurf, unserializeSurf,DEFAULT_ACTION_POINT,OTHERPLAYERNAME
 from dungeonX.characters.character import Character
 from ..map import Map
 from dungeonX.characters import Bag
+from dungeonX.characters.players.player import PlayerEnum
 
 def vectToPos(vect):
     if type(vect) in (tuple, list):
@@ -18,6 +19,18 @@ def posToVect(pos):
 def distanceBetween(xA, yA, xB, yB):
     """ Returns the distance between A and B """
     return math.sqrt((xB-xA)*(xB-xA) + (yB-yA)*(yB-yA))
+
+def read_type(type_str):
+    """
+        this function convert the str to the right type
+    """
+
+    if type_str == 'R':
+        return PlayerEnum.Rogue
+    elif type_str == 'F':
+        return PlayerEnum.Fighter
+    elif type_str == 'M':
+        return PlayerEnum.Mage
 
 class OtherPlayer2(Character):
 

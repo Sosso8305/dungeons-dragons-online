@@ -42,6 +42,7 @@ class Player(Character) :
         self.name = game.playerName
         self._playerType = playerType
         self.PlayerType= self._playerType
+        self.initialType = self.get_initial()
         self.lineOfSightRadius = lineOfSightRadius
         self.normalLoSRadius = lineOfSightRadius
         self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring
@@ -393,3 +394,11 @@ class Player(Character) :
                     inLineOfSight.append(oplayer)
                     break
         return inLineOfSight
+
+    def get_initial(self):
+        if self.PlayerType == PlayerEnum.Rogue:
+            return 'R'
+        elif self.PlayerType == PlayerEnum.Fighter:
+            return 'F'
+        elif self.PlayerType == PlayerEnum.Mage:
+            return 'M'
