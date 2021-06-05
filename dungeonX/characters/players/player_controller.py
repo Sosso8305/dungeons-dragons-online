@@ -8,6 +8,7 @@ from ..skills import Skill
 from ...screens import LogWindow
 from dungeonX.characters.players.player import Player, PlayerEnum
 from ..enemies import Enemy
+from dungeonX.network.message import Message, check_size
 
 ### Map functions ###
 # they are here to avoid a circular import with the map file,
@@ -129,12 +130,14 @@ class PlayerController(Player):
 
 
     def __getstate__(self):
+        print("get state")
         d = dict(serializeSurf(self.__dict__))
         del d["positions"]
         del d["frames"]
         return d
 
     def __setstate__(self, state):
+        print("set state")
         state["positions"] = None
         state["frames"] = self.frameIter()
         self.__dict__ = unserializeSurf(state)
@@ -236,6 +239,10 @@ class PlayerController(Player):
             if not self.currentTarget:
                 self.nextTarget()
 
+        if self.game.game.screens['online_screen'].online:
+            msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
+            self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
+
 
     def updateAnim(self, dt:int):
         """ Updates the frame that may be rendered.
@@ -252,7 +259,6 @@ class PlayerController(Player):
         """ Updates the state and current position, and returns the
         current state.
         """
-
         if self.lineOfSightNormalTurn==self.game.turnNumber:
             self.lineOfSightRadius = self.normalLoSRadius
             self.updateLineOfSight()

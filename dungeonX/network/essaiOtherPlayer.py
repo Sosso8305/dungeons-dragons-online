@@ -80,14 +80,17 @@ class OtherPlayer2(Character):
         self.name = ""
         self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
+        self.newPos = self.pos
 
     def __getstate__(self):
+        print("get state")
         d = dict(serializeSurf(self.__dict__))
         del d["positions"]
         del d["frames"]
         return d
 
     def __setstate__(self, state):
+        print("set state")
         state["positions"] = None
         state["frames"] = self.frameIter()
         self.__dict__ = unserializeSurf(state)
@@ -98,14 +101,17 @@ class OtherPlayer2(Character):
         It also computes the direction based on the next movement
         along X.
         """
+        #print("next target ",self.stepsToTarget)
         if self.stepsToTarget:
             t = self.stepsToTarget.pop(0)
+            print("next target 2 ",self.stepsToTarget)
             self.currentTarget = pygame.Vector2(t[0]+0.5, t[1]+1)*TILE_WIDTH
+            print("L current target sar ",self.currentTarget)
             movementX = self.currentTarget.x - posToVect(self.pos).x
             self.direction = 0 if movementX > 0 else 1 if movementX < 0 else self.direction
             self.pos = t
         else:
-            print("ELSE")
+            print("Else next target")
             self.stepsToTarget = None
             self.currentTarget = None
             self.finalTarget = None
@@ -115,11 +121,12 @@ class OtherPlayer2(Character):
         taken by the player.
         """
         elapsedTime = 0
+        print("positions iteration",self._dt,elapsedTime)
         while (elapsedTime < self.timeToMove):
-            #print("Elapsed time\n",elapsedTime,self._dt)
+            print("positions iteration",self._dt)
             yield pygame.Vector2(self.rect.midbottom).lerp(self.currentTarget, elapsedTime / self.timeToMove)
             elapsedTime += self._dt
-            #print("Elapsed time 1\n",elapsedTime)
+        print("positions iteration end ",self.currentTarget)
         yield self.currentTarget
 
 
@@ -146,8 +153,11 @@ class OtherPlayer2(Character):
         self.stepsToTarget = self.pathfind(target)
         #print("self.steps\n",self.stepsToTarget)
         if self.stepsToTarget:
-            self.finalTarget = target            
+            self.finalTarget = target 
+            print(self.finalTarget,self.currentTarget,not self.currentTarget)
+            #print("self.current target: ",not self.currentTarget)           
             if not self.currentTarget:
+                print("Yalla next target")
                 self.nextTarget()
 
 
@@ -165,6 +175,7 @@ class OtherPlayer2(Character):
         self.setTarget(tup)
         if self.currentTarget:
             self.state = 'run'
+            print(self.positions)
 
             if not self.positions:
                 self.positions = self.positionsIter()
@@ -174,7 +185,6 @@ class OtherPlayer2(Character):
 
             except StopIteration:
                 print('erreur playaction')
-                self.state = 'idle'
                 self.positions = None
                 self.nextTarget()
         else:

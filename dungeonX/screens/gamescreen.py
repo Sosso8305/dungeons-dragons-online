@@ -623,6 +623,10 @@ class GameScreen(Window):
 			if (not self.oplayerCreation):
 				self.dungeon.oplayers = self.oplayers
 				self.oplayerCreation = True
+			if self.oplayers != None:
+				for oplayer in self.oplayers:
+					if oplayer.newPos != oplayer.pos:
+						oplayer.playAction(self.game.dt,(oplayer.newPos))	
 		
 	def nextInventory(self,index):
 		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
@@ -687,7 +691,12 @@ class GameScreen(Window):
 			print("Real Players Dictionnary: ",self.realPlayers)
 			self.dungeon.oplayers= otherPlayers
 			self.oplayers = self.dungeon.oplayers
-			
+		elif message[62:65] == "pos":
+			infos = extract(message[62:])
+			playerID, characterID = infos[0], int(infos[1])-1
+			newPos = (int(infos[2]),int(infos[3]))
+			print("Real player Id " + infos[0] +" New position received: ",newPos," Character number "+infos[1])
+			self.realPlayers[playerID].persos[characterID].newPos = newPos
 		elif message[65:68]=="ite":
 			info = extract(message[65:])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
