@@ -188,6 +188,7 @@ class GameScreen(Window):
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
 		self.oplayers = self.dungeon.oplayers
 		self.realPlayers = {}
+		self.oplayerCreation = False
 
 		self.playerName = ""
 
@@ -619,6 +620,9 @@ class GameScreen(Window):
 		#network handling
 		if self.game.screens['online_screen'].online:
 			self.networkUpdate()
+			if (not self.oplayerCreation):
+				self.dungeon.oplayers = self.oplayers
+				self.oplayerCreation = True
 		
 	def nextInventory(self,index):
 		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
