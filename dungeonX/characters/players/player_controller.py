@@ -130,14 +130,12 @@ class PlayerController(Player):
 
 
     def __getstate__(self):
-        print("get state")
         d = dict(serializeSurf(self.__dict__))
         del d["positions"]
         del d["frames"]
         return d
 
     def __setstate__(self, state):
-        print("set state")
         state["positions"] = None
         state["frames"] = self.frameIter()
         self.__dict__ = unserializeSurf(state)

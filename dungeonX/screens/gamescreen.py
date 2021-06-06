@@ -625,8 +625,7 @@ class GameScreen(Window):
 				self.oplayerCreation = True
 			if self.oplayers != None:
 				for oplayer in self.oplayers:
-					if oplayer.newPos != oplayer.pos:
-						oplayer.playAction(self.game.dt,(oplayer.newPos))	
+					oplayer.playAction(self.game.dt,(oplayer.newPos))	
 		
 	def nextInventory(self,index):
 		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):

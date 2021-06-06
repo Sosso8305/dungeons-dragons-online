@@ -160,8 +160,8 @@ class OnlineScreen(Window):
 		        #############################################
                 if not self.checkFirstPlayer.isChecked():
                     self.networker.connexion(self.IPaddress,int(self.PortIn))
-                else: self.game.screens['map_selector'].seed = random.randint(1,1000)
-                #else: self.game.screens['map_selector'].seed = 829
+                #else: self.game.screens['map_selector'].seed = random.randint(1,1000)
+                else: self.game.screens['map_selector'].seed = 829
                 
             else :
                 self.isPressedN = True

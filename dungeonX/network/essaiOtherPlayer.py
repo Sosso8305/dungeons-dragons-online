@@ -35,7 +35,6 @@ def read_type(type_str):
 class OtherPlayer2(Character):
 
     def __init__(self, liste_str,game,actionPointMax=DEFAULT_ACTION_POINT):
-        #print("Player created")
         super().__init__(game,read_position(liste_str[1],liste_str[2]), actionPointMax,100, 5, 6, 11, 3, 12, 8, 9) #( HP, armor, strength, dex, con, intell, wis, cha )
 
         self.type = read_type(liste_str[0])
@@ -46,7 +45,7 @@ class OtherPlayer2(Character):
 
         self.parent = None
 
-        self.timeToMove = 300
+        self.timeToMove = 600
         self.animationSpeed = {'idle': 120, 'run': 100}
         self.rect = pygame.Rect((0,0), (TILE_WIDTH, math.floor(TILE_WIDTH*24/16)))
         self.rect.midbottom = posToVect(self.pos) + (TILE_WIDTH/2, TILE_WIDTH)
@@ -83,14 +82,12 @@ class OtherPlayer2(Character):
         self.newPos = self.pos
 
     def __getstate__(self):
-        print("get state")
         d = dict(serializeSurf(self.__dict__))
         del d["positions"]
         del d["frames"]
         return d
 
     def __setstate__(self, state):
-        print("set state")
         state["positions"] = None
         state["frames"] = self.frameIter()
         self.__dict__ = unserializeSurf(state)
@@ -101,17 +98,13 @@ class OtherPlayer2(Character):
         It also computes the direction based on the next movement
         along X.
         """
-        #print("next target ",self.stepsToTarget)
         if self.stepsToTarget:
             t = self.stepsToTarget.pop(0)
-            print("next target 2 ",self.stepsToTarget)
             self.currentTarget = pygame.Vector2(t[0]+0.5, t[1]+1)*TILE_WIDTH
-            print("L current target sar ",self.currentTarget)
             movementX = self.currentTarget.x - posToVect(self.pos).x
             self.direction = 0 if movementX > 0 else 1 if movementX < 0 else self.direction
             self.pos = t
         else:
-            print("Else next target")
             self.stepsToTarget = None
             self.currentTarget = None
             self.finalTarget = None
@@ -121,12 +114,9 @@ class OtherPlayer2(Character):
         taken by the player.
         """
         elapsedTime = 0
-        print("positions iteration",self._dt,elapsedTime)
         while (elapsedTime < self.timeToMove):
-            print("positions iteration",self._dt)
             yield pygame.Vector2(self.rect.midbottom).lerp(self.currentTarget, elapsedTime / self.timeToMove)
             elapsedTime += self._dt
-        print("positions iteration end ",self.currentTarget)
         yield self.currentTarget
 
 
@@ -134,7 +124,6 @@ class OtherPlayer2(Character):
         """ This iterator go througn every frames that may be rendered,
         based on current state and animationSpeed.
         """
-        #print("frameIter")
         elapsedTime = 0
         frame = random.randint(0, len(self.images[self.state][self.direction])-1)
         while True:
@@ -151,13 +140,9 @@ class OtherPlayer2(Character):
     def setTarget(self, target:tuple):
         """ Setter for finalTarget """
         self.stepsToTarget = self.pathfind(target)
-        #print("self.steps\n",self.stepsToTarget)
         if self.stepsToTarget:
-            self.finalTarget = target 
-            print(self.finalTarget,self.currentTarget,not self.currentTarget)
-            #print("self.current target: ",not self.currentTarget)           
+            self.finalTarget = target         
             if not self.currentTarget:
-                print("Yalla next target")
                 self.nextTarget()
 
 
@@ -173,9 +158,9 @@ class OtherPlayer2(Character):
 
     def playAction(self,dt:int,tup):
         self.setTarget(tup)
+        self.setActionPoint(self.actionPointMax)
         if self.currentTarget:
             self.state = 'run'
-            print(self.positions)
 
             if not self.positions:
                 self.positions = self.positionsIter()
