@@ -169,7 +169,6 @@ class OtherPlayer2(Character):
                 self.rect.midbottom = next(self.positions)
 
             except StopIteration:
-                print('erreur playaction')
                 self.positions = None
                 self.nextTarget()
         else:
