@@ -2,21 +2,23 @@
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
-from dungeonX.network.message import Message
+from dungeonX.network.message import Message, check_size
 from ..objects.object import GameObject
 import random
-
 def check_size(string: str, n: int):
-    modified_str = ""
-    size = len(string)
+    	modified_str = ""
+    	size = len(string)
 
-    while n - size > 0:
-        modified_str += '0'
-        size += 1
+    	while n - size > 0:
+        	modified_str += '0'
+        	size += 1
 
-    modified_str += string
+    	modified_str += string
 
-    return modified_str
+    	return modified_str
+
+
+
 
 class Chest(GameObject):
 	"""
@@ -196,9 +198,9 @@ class Chest(GameObject):
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
 					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
-					messagePerItem=Message(player.game.game.screens['game'].players,flag="ite",ID=player.ID).create_message(player.getIDMsg(),IDItem=item.id)
+					messagePerItem=Message(player,flag="ite",ID=(player.ID).create_message(player.getidMsg(),IDItem=item.id))
 					player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
-
+					print(f'MESSAGE SENT :{MessagePerItem}')
 				player.game.game.addToLog(" Item(s) retreived ")
 
 
