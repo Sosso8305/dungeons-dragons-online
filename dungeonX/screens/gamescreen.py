@@ -652,23 +652,33 @@ class GameScreen(Window):
 				listOfChests.append(el)
 		return listOfChests
 
-	def UpdateChestContent(self,list:[Chest],ID,oPlayerID=None):
+	def UpdateChestContent(self,Chest : Chest,ID,oPlayerID=None):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		# for el in list: #for all chests in the game
+		# 	#for ch in el.getContent() :# for each chest 
+		# 		if el.getItemByID(ID)!= None: 
+		# 			itemToSubstract=el.getItemByID(ID)
+		if oPlayerID!=None:
+			itemToSubstract=Chest.getItemByID(ID)
+			print(itemToSubstract)
+			self.realPlayers[oPlayerID].bag.addItem(itemToSubstract)
+			#el.UpdateChest(el,itemToSubstract)
+			print(f'For Chest n {Chest} : Item {Chest.getItemByID(ID)} was taken from Chest by Another Player')
+			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
+			return Chest.getPosition()	
+				
+	
+	def FindChestWithID(self,list:[Chest],ID):
 		"""
 		serves into finding the chest containing item with ID from all Chests in the game and updating it
 		"""
 		for el in list: #for all chests in the game
 			for ch in el.getContent() :# for each chest 
-				if el.getItemByID(ID)== None: 
-					print(f'For Chest n {el} : Item with ID {ID}not found')
-				else:
-					itemToSubstract=el.getItemByID(ID)
-					if oPlayerID!=None:
-						self.realPlayers[oPlayerID].bag.addItem(itemToSubstract)
-					#el.UpdateChest(el,itemToSubstract)
-					print(f'For Chest n {el} : Item {el.getItemByID(ID)} was taken from Chest by Another Player')
-					print(f'POSITION FOUND & RETURNED {el.getPosition()}')
-					return el.getPosition()
-	
+				if el.getItemByID(ID)!= None: 
+					print(f'For Chest n {el} : Item with ID {ID}')
+					return el
 					
 		
 	def networkUpdate(self):
@@ -702,7 +712,9 @@ class GameScreen(Window):
 			ID = int(info[2])
 			#IDperso= int(info[1])
 			IDofOtherPlayer= info[0]
-			self.UpdateChestContent(ListOfChests,ID,IDofOtherPlayer)			
+			ChestTounlock=self.FindChestWithID(ListOfChests,ID)
+			ChestTounlock.unlock(alwaysSuccess=True)
+			self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)			
 	
 	def getValidLocations(self):
 		found = False

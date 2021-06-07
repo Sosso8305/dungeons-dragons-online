@@ -96,6 +96,8 @@ class Chest(GameObject):
 				print('successful : Luck')
 			else: print('Wrong Key'); return False
 		else: print('Chest already unlocked'); return False
+	
+	
 		
 	def SuccessRateToUnlock(self, alwaysSuccess=False):
 		"""
@@ -152,11 +154,11 @@ class Chest(GameObject):
 			self.__animState = 'empty'
 			if self._content is not None:
 				for i in self._content:
-					#print(f'ID I HAVE {i.getID()}')
-					#print(f'ID LOOKING FOR {ID}') 
+					print(f'ID I HAVE {i.getID()}')
+					print(f'ID LOOKING FOR {ID}') 
 					if i.getID() == ID :
 						itemToReturn = i
-						self._content.remove(i)
+						#self._content.remove(i)
 						return itemToReturn
 				if itemToReturn == None :
 				  	print(f'The item with the specified {ID} is unavailable')
@@ -198,9 +200,9 @@ class Chest(GameObject):
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
 					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
-					messagePerItem=Message(player,flag="ite",ID=(player.ID).create_message(player.getidMsg(),IDItem=item.id))
+					messagePerItem=Message([None,None,None],flag="ite",ID=(player.ID)).create_message(player.getIDMsg(),IDItem=item.id)
 					player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
-					print(f'MESSAGE SENT :{MessagePerItem}')
+					print(f'MESSAGE SENT :{messagePerItem}')
 				player.game.game.addToLog(" Item(s) retreived ")
 
 

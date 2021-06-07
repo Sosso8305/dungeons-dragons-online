@@ -22,11 +22,11 @@ def testReturnChestListOnly():
     print(gameScreen.retrieveChestsFromObjects(list))
     assert gameScreen.retrieveChestsFromObjects(list) == [chest1,chest2]
 
-def testUpdateChestSithItemID():
-    ListOfChests= gameScreen.retrieveChestsFromObjects(list)
-    assert chest1.getContent()==[swordItem,swordItem1]
-    assert gameScreen.UpdateChestContent(ListOfChests,swordItem1.id)==chest1.getPosition()
-    assert chest1.getContent()==[swordItem]
+# def testUpdateChestSithItemID():
+#     ListOfChests= gameScreen.retrieveChestsFromObjects(list)
+#     assert chest1.getContent()==[swordItem,swordItem1]
+#     assert gameScreen.UpdateChestContent(ListOfChests,swordItem1.id)==chest1.getPosition()
+#     assert chest1.getContent()==[swordItem]
 
 
 # def testGameCreation():

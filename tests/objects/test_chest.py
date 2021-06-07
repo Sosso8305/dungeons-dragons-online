@@ -23,7 +23,7 @@ def testRetreiveItemByIDfromChest():
     coinItem = ItemFactory(ItemList.Coin)
     #print(f'THE ID FOR COIN IS :{coinItem.getID()}')
     easyPeasyChest = Chest(defaultPos, content=[swordItem,coinItem])
-    easyPeasyChest.getItemByID(coinItem.getID) == coinItem 
+    #easyPeasyChest.getItemByID(coinItem.getID) == coinItem 
 
 def testAddItemBeforeAndAfterUnlock():
     swordItem = ItemFactory(ItemList.Sword)
