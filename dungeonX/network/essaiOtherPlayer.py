@@ -158,7 +158,7 @@ class OtherPlayer2(Character):
 
     def playAction(self,dt:int,tup):
         self.setTarget(tup)
-        self.setActionPoint(self.actionPointMax)
+        #self.setActionPoint(self.actionPointMax)
         if self.currentTarget:
             self.state = 'run'
 

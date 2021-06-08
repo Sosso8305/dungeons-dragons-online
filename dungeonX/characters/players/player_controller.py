@@ -216,6 +216,14 @@ class PlayerController(Player):
     def setTarget(self, target:tuple, targetObject=None):
         """ Setter for finalTarget """
         path = None
+        k = target in self._move_zone()
+
+        #print("SET TARGET ",self.actionPoint,k)
+        if self.game.game.screens['online_screen'].online:
+            if(self.actionPoint > 0 and (target in self._move_zone())):
+                msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
+                self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
+
         if targetObject:
             targetObject = targetObject[-1]
             x, y = targetObject.pos
@@ -237,9 +245,6 @@ class PlayerController(Player):
             if not self.currentTarget:
                 self.nextTarget()
 
-        if self.game.game.screens['online_screen'].online:
-            msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
-            self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
 
 
     def updateAnim(self, dt:int):
