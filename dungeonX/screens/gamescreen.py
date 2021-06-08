@@ -563,6 +563,7 @@ class GameScreen(Window):
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 					if not (self.currentInventory == -1):
+						print(f"HERE HERE: {self.visibleRealPlayersList[self.currentInventory]}")
 						self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
 						self.blit(self.inventorywindow, (0,0))
 					else:
@@ -685,12 +686,14 @@ class GameScreen(Window):
 		"""
 		serves into finding the chest containing item with ID from all Chests in the game and updating it
 		"""
+		print("UPDATING LOADING HERE ")
+
 		if oPlayerID!=None:
-			print("HERE ")
+			print("UPDATING LOADING  ")
 			for item in Chest.getItemsFromChest():
-				print("HERE 1")
+				print("UPDATING LOADING1")
 				self.realPlayers[oPlayerID].getbag().addItem(item)
-				print("HERE 2")
+				print("UPDATING LOADING 2: DONE ")
 
 			#TODO: content = none 
 			#el.UpdateChest(el,itemToSubstract)
