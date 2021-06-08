@@ -199,11 +199,16 @@ class Chest(GameObject):
 			else:
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
-					#decommenter une fois que l'import de PlayerEnum ne figure Plus dans message.py
-					messagePerItem=Message([None,None,None],flag="ite",ID=(player.ID)).create_message(player.getIDMsg(),IDItem=item.id)
-					player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
-					print(f'MESSAGE SENT :{messagePerItem}')
+					# messagePerItem=Message([None,None,None],flag="ite",ID=(player.ID)).create_message(player.getIDMsg(),IDItem=item.id)
+					# player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
+					# print(f'MESSAGE SENT :{messagePerItem}')
 				player.game.game.addToLog(" Item(s) retreived ")
+			messageforChest=Message([None,None,None],flag="che",ID=(player.ID)).create_message(player.getIDMsg(),ChestPos=self.getPosition())
+			player.game.game.screens['online_screen'].networker.send(check_size(messageforChest,76))
+			print(f'MESSAGE SENT :{messageforChest}')
+
+
+
 
 
 

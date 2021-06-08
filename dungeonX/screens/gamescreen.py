@@ -619,6 +619,7 @@ class GameScreen(Window):
 			self.npcwindow.update(events)
 		#network handling
 		if self.game.screens['online_screen'].online:
+			#print(f'MY CHESTS ARE THESE {self.retrieveChestsFromObjects(self.objects)[0].getContent()[0].id}')
 			self.networkUpdate()
 			if (not self.oplayerCreation):
 				self.dungeon.oplayers = self.oplayers
@@ -652,6 +653,16 @@ class GameScreen(Window):
 				listOfChests.append(el)
 		return listOfChests
 
+	def returnPositionsOfChestsInGame(self,list):
+		"""
+		retreives only Chest items from the Object List
+		"""
+		listOfChestspos=[]
+		for el in list:
+			if type(el) == Chest :
+				listOfChestspos.append(el.getPosition())
+		return listOfChestspos
+
 	def UpdateChestContent(self,Chest : Chest,ID,oPlayerID=None):
 		"""
 		serves into finding the chest containing item with ID from all Chests in the game and updating it
@@ -661,9 +672,26 @@ class GameScreen(Window):
 		# 		if el.getItemByID(ID)!= None: 
 		# 			itemToSubstract=el.getItemByID(ID)
 		if oPlayerID!=None:
-			itemToSubstract=Chest.getItemByID(ID)
-			print(itemToSubstract)
+			# itemToSubstract=Chest.getItemByID(ID)
+			# print(itemToSubstract)
 			self.realPlayers[oPlayerID].bag.addItem(itemToSubstract)
+			#el.UpdateChest(el,itemToSubstract)
+			print(f'For Chest n {Chest} : Item {Chest.getItemByID(ID)} was taken from Chest by Another Player')
+			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
+			return Chest.getPosition()	
+
+	def UpdateChestContentV2(self,Chest : Chest,ID,oPlayerID=None):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		if oPlayerID!=None:
+			print("HERE ")
+			for item in Chest.getItemsFromChest():
+				print("HERE 1")
+				self.realPlayers[oPlayerID].getbag().addItem(item)
+				print("HERE 2")
+
+			#TODO: content = none 
 			#el.UpdateChest(el,itemToSubstract)
 			print(f'For Chest n {Chest} : Item {Chest.getItemByID(ID)} was taken from Chest by Another Player')
 			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
@@ -679,6 +707,15 @@ class GameScreen(Window):
 				if el.getItemByID(ID)!= None: 
 					print(f'For Chest n {el} : Item with ID {ID}')
 					return el
+
+	def FindChestWithPos(self,list:[Chest],Pos:tuple):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		for el in list: #for all chests in the game
+			if el.getPosition() == Pos:
+				return el
+		
 					
 		
 	def networkUpdate(self):
@@ -706,15 +743,27 @@ class GameScreen(Window):
 			newPos = (int(infos[2]),int(infos[3]))
 			print("Real player Id " + infos[0] +" New position received: ",newPos," Character number "+infos[1])
 			self.realPlayers[playerID].persos[characterID].newPos = newPos
-		elif message[65:68]=="ite":
+		# elif message[65:68]=="ite":
+		# 	info = extract(message[65:])
+		# 	ListOfChests= self.retrieveChestsFromObjects(self.objects)
+		 	# print(f'MY OWN CHESTS {ListOfChests}')
+			# ID = int(info[2])
+			# #IDperso= int(info[1])
+			# IDofOtherPlayer= info[0]
+			# ChestTounlock=self.FindChestWithID(ListOfChests,ID)
+			# ChestTounlock.unlock(alwaysSuccess=True)
+			# self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)	
+		elif message [65:68] =="che":
 			info = extract(message[65:])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
-			ID = int(info[2])
-			#IDperso= int(info[1])
 			IDofOtherPlayer= info[0]
-			ChestTounlock=self.FindChestWithID(ListOfChests,ID)
-			ChestTounlock.unlock(alwaysSuccess=True)
-			self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)			
+			PosOfChest=(int(info[1]),int(info[2]))
+			ChestToModify=self.FindChestWithPos(ListOfChests,PosOfChest)
+			self.UpdateChestContentV2(ChestToModify,IDofOtherPlayer)
+			
+
+
+
 	
 	def getValidLocations(self):
 		found = False
