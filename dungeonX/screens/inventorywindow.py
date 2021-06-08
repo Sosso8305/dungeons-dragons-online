@@ -98,7 +98,7 @@ class InventoryWindow(Window):
 		else: 
 			self.fill((0,0,0))
 			self.blit(self.bar_background, (176*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
-			print(f'OTHER PLAYER IS {otherRealPlayer} AND{type(otherRealPlayer)}')
+			#print(f'OTHER PLAYER IS {otherRealPlayer} AND{type(otherRealPlayer)}')
 			self.blit(self.bar_foreground, ((176-(1-otherRealPlayer.bag.getCurrentWeight()/otherRealPlayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 			self.blit(self.background, self.rect)
 			self.game.textDisplayer.print(str(otherRealPlayer.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)

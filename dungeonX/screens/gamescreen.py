@@ -543,9 +543,9 @@ class GameScreen(Window):
 
 			visibleRealPlayersList=[]
 			self.visibleRealPlayersList=visibleRealPlayersList
-
+			
 			for visiblePlayer in (visiblePlayersList) :
-				for realPlayer in (self.realPlayers) :
+				for _,realPlayer in self.realPlayers.items() :
 					if  (visiblePlayer.parent not in self.visibleRealPlayersList) :
 						self.visibleRealPlayersList.append(realPlayer)
 
@@ -563,7 +563,7 @@ class GameScreen(Window):
 					self.prevButton.update(events)
 					self.blit(self.prevButton.image,self.prevButton.rect)
 					if not (self.currentInventory == -1):
-						print(f"HERE HERE: {self.visibleRealPlayersList[self.currentInventory]}")
+						#print(f"HERE HERE: {self.visibleRealPlayersList[self.currentInventory]}")
 						self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
 						self.blit(self.inventorywindow, (0,0))
 					else:
@@ -620,7 +620,6 @@ class GameScreen(Window):
 			self.npcwindow.update(events)
 		#network handling
 		if self.game.screens['online_screen'].online:
-			#print(f'MY CHESTS ARE THESE {self.retrieveChestsFromObjects(self.objects)[0].getContent()[0].id}')
 			self.networkUpdate()
 			if (not self.oplayerCreation):
 				self.dungeon.oplayers = self.oplayers
@@ -682,13 +681,12 @@ class GameScreen(Window):
 			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
 			return Chest.getPosition()	
 
-	def UpdateChestContentV2(self,Chest : Chest,ID,oPlayerID=None):
+	def UpdateChestContentV2(self,Chest : Chest,oPlayerID=None):
 		"""
 		serves into finding the chest containing item with ID from all Chests in the game and updating it
 		"""
 		print("UPDATING LOADING HERE ")
-
-		if oPlayerID!=None:
+		if oPlayerID!=None: # serves Only for testing in file tests 
 			print("UPDATING LOADING  ")
 			for item in Chest.getItemsFromChest():
 				print("UPDATING LOADING1")
@@ -696,9 +694,6 @@ class GameScreen(Window):
 				print("UPDATING LOADING 2: DONE ")
 
 			#TODO: content = none 
-			#el.UpdateChest(el,itemToSubstract)
-			print(f'For Chest n {Chest} : Item {Chest.getItemByID(ID)} was taken from Chest by Another Player')
-			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
 			return Chest.getPosition()	
 				
 	
@@ -763,7 +758,13 @@ class GameScreen(Window):
 			IDofOtherPlayer= info[0]
 			PosOfChest=(int(info[1]),int(info[2]))
 			ChestToModify=self.FindChestWithPos(ListOfChests,PosOfChest)
-			self.UpdateChestContentV2(ChestToModify,IDofOtherPlayer)
+			print(f'Chest to modify is at{ChestToModify.getPosition()} ')
+			print(f'BEFORE{self.realPlayers[IDofOtherPlayer].getbag().getAllItems()}')
+			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer)
+			print(f'AFTER {self.realPlayers[IDofOtherPlayer].getbag().getAllItems()}')
+			print()
+
+
 			
 
 
