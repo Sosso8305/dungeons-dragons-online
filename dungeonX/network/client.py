@@ -10,7 +10,7 @@ sizeMESSAGE = 76
 encodage = "ascii"
 
 
-def padding(msg, n, orientation="left"):
+def padding(msg, n, orientation="right"):
     """A padding function used to ensure the length of network messages (shortcut of rjust and ljust). Does the padding with '0's
 
     Args:
@@ -39,7 +39,7 @@ def ipPadding(ip):
     fragment = ip.split(".")
     res = ""
     for f in fragment:
-        res += padding(f, 3)
+        res += padding(f, 3, 'left')
         res += "."
     return res[
         0:
@@ -95,7 +95,7 @@ class Network(threading.Thread):
             port (int): the external port of the C of the other player
         """
 
-        msg_con= f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
+        msg_con= f"conxxx{ipPadding(ip)}{padding(str(port),5, 'left')}"
         msg_con_with_padding =padding(msg_con,sizeMESSAGE,'right')
         
         self.send(msg_con_with_padding) # message spécial a destination du C et des autres joueurs
