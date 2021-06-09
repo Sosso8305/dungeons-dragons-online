@@ -15,6 +15,7 @@
 #define DEFAUT_PORT_EXTERNE 5555
 #define NUM_THREADS 3 // #0 interface  Python   #1 server Peer2Peer   #3 init to other server
 #define DEBUG 0
+#define FPS 0.001  //1div60 
 
 void display_data_player(data_player player)
 { // fct for help to debug
@@ -82,6 +83,8 @@ void *RecvPython(void *StructArg)
     {
         
         int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char), MSG_WAITALL);
+        puts("recv python");
+        display_data_player((*arg).data->MyPlayer);
 
 
 
@@ -176,7 +179,7 @@ void *SendPython(void *StructArg)
 
         for (int i = 0; i < (*arg).data->numberOtherPlayers; i++)
         {
-            sleep(1);
+            sleep(FPS);
 
             if (!(memcmp(&((*arg).data->OtherPlayers[i].dataPython), &((*arg).data->MemoryOtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char)) == 0))
             {
@@ -185,6 +188,8 @@ void *SendPython(void *StructArg)
 
                 
                 int n = send((*arg).sockfd, &((*arg).data->MemoryOtherPlayers[i].dataPython), strlen((*arg).data->MemoryOtherPlayers[i].dataPython) * sizeof(char), 0);
+                puts("send to python");
+                display_data_player((*arg).data->MemoryOtherPlayers[i]);
 
                 if (n == -1)
                 {
@@ -347,7 +352,8 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
     {
 
         int n = recv((*arg).sockfd, &new_player, sizeof(data_player), MSG_WAITALL);
-
+        puts("recv for otheer player");
+        display_data_player(new_player);
 
         switch (n)
         {
@@ -444,13 +450,15 @@ void *SendSructMyPlayer(void *StructArg)
 
     while (1)
     {
-        sleep(1);
+        sleep(FPS);
 
         if (!(memcmp(&MyPlayer, &((*arg).data->MyPlayer), sizeof(data_player)) == 0))
         {
             
             memcpy(&MyPlayer, &((*arg).data->MyPlayer), sizeof(data_player));
             send(sockfd, &MyPlayer, sizeof(data_player), 0);
+            puts("send data to other player");
+            display_data_player((*arg).data->MyPlayer);
         }
     }
 
