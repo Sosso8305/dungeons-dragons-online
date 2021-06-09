@@ -15,7 +15,7 @@
 #define DEFAUT_PORT_EXTERNE 5555
 #define NUM_THREADS 3 // #0 interface  Python   #1 server Peer2Peer   #3 init to other server
 #define DEBUG 0
-#define FPS 0.001  //1div60 
+#define FPS 0.001 //1div60
 
 void display_data_player(data_player player)
 { // fct for help to debug
@@ -26,8 +26,9 @@ void display_data_player(data_player player)
     printf("=========================\n\n");
 }
 
-void display_socket(socketBSD sock){
-    printf("## IP--> %s     port--> %i ## \n",sock.ip,sock.port);
+void display_socket(socketBSD sock)
+{
+    printf("## IP--> %s     port--> %i ## \n", sock.ip, sock.port);
 }
 
 void stop(char *msg)
@@ -36,37 +37,38 @@ void stop(char *msg)
     exit(EXIT_FAILURE);
 }
 
-int lenData(char * flag){
-    if(!strncmp(flag,"con",3))
+int lenData(char *flag)
+{
+    if (!strncmp(flag, "con", 3))
         return CON;
-    else if(!strncmp(flag,"pos",3))
+    else if (!strncmp(flag, "pos", 3))
         return POS;
-    else if(!strncmp(flag,"wlc",3))
+    else if (!strncmp(flag, "wlc", 3))
         return WLC;
-    else if(!strncmp(flag,"new",3))
+    else if (!strncmp(flag, "new", 3))
         return NEW;
-    else if(!strncmp(flag,"hps",3))
+    else if (!strncmp(flag, "hps", 3))
         return HPS;
-    else if(!strncmp(flag,"ite",3))
+    else if (!strncmp(flag, "ite", 3))
         return ITE;
-    else if(!strncmp(flag,"nam",3))
+    else if (!strncmp(flag, "nam", 3))
         return NAM;
-    else if(!strncmp(flag,"che",3))
+    else if (!strncmp(flag, "che", 3))
         return CHE;
     else
         return 0;
 }
 
-void sendSocketPlayerInNetwork(int sockfd,all_data * data){
+void sendSocketPlayerInNetwork(int sockfd, all_data *data)
+{
 
     int numberPlayer = (*data).numberOtherPlayers;
-    send(sockfd,&numberPlayer,sizeof(int),0);
+    send(sockfd, &numberPlayer, sizeof(int), 0);
 
-    for (int i=0;i< numberPlayer; i++){
-        send(sockfd,&((*data).AllSocketInNetwork[i]),sizeof(socketBSD),0); 
+    for (int i = 0; i < numberPlayer; i++)
+    {
+        send(sockfd, &((*data).AllSocketInNetwork[i]), sizeof(socketBSD), 0);
     }
-
-
 }
 
 void *RecvPython(void *StructArg)
@@ -79,14 +81,10 @@ void *RecvPython(void *StructArg)
     char NewSocket[SIZE_DATA_PY];
     int OneConnection = 0; // flag pour déterminer si la le python a envoyer une deamnde de connection
 
-    while (1) 
+    while (1)
     {
-        
+
         int n = recv((*arg).sockfd, &((*arg).data->MyPlayer.dataPython), SIZE_DATA_PY * sizeof(char), MSG_WAITALL);
-        puts("recv python");
-        display_data_player((*arg).data->MyPlayer);
-
-
 
         switch (n)
         {
@@ -103,10 +101,6 @@ void *RecvPython(void *StructArg)
             break;
         }
 
-   
-
-
-
         if (!OneConnection)
         {
 
@@ -120,16 +114,13 @@ void *RecvPython(void *StructArg)
                 puts("\n new connexion via Python");
 
                 char IP[16] = "";
-                char char_port[6] ="";
+                char char_port[6] = "";
 
-
-                
                 for (int i = 6; i < 21; i++)
                 {
                     strncat(IP, &NewSocket[i], 1);
                 }
 
-                
                 strncat(IP, "\0", 1);
 
                 for (int i = 21; i < 26; i++)
@@ -137,15 +128,15 @@ void *RecvPython(void *StructArg)
                     strncat(char_port, &NewSocket[i], 1);
                 }
                 strncat(char_port, "\0", 1);
-                
+
                 int port;
                 sscanf(char_port, "%d", &port);
-                
-                printf("%s\n",IP);
 
-                arg1.ip=malloc(16*sizeof(char));
+                printf("%s\n", IP);
+
+                arg1.ip = malloc(16 * sizeof(char));
                 strncpy(arg1.ip, IP, 16);
-                
+
                 arg1.port_dest = port;
                 arg1.data = (*arg).data;
                 arg1.init = 1;
@@ -183,13 +174,10 @@ void *SendPython(void *StructArg)
 
             if (!(memcmp(&((*arg).data->OtherPlayers[i].dataPython), &((*arg).data->MemoryOtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char)) == 0))
             {
-                
+
                 memcpy(&((*arg).data->MemoryOtherPlayers[i].dataPython), &((*arg).data->OtherPlayers[i].dataPython), SIZE_DATA_PY * sizeof(char));
 
-                
                 int n = send((*arg).sockfd, &((*arg).data->MemoryOtherPlayers[i].dataPython), strlen((*arg).data->MemoryOtherPlayers[i].dataPython) * sizeof(char), 0);
-                puts("send to python");
-                display_data_player((*arg).data->MemoryOtherPlayers[i]);
 
                 if (n == -1)
                 {
@@ -213,7 +201,7 @@ void *interfacePython(void *Structdata)
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
         stop("socket");
 
-    int enable =1;
+    int enable = 1;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0)
     {
         stop("socket_REUSEADDR");
@@ -352,8 +340,6 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
     {
 
         int n = recv((*arg).sockfd, &new_player, sizeof(data_player), MSG_WAITALL);
-        puts("recv for otheer player");
-        display_data_player(new_player);
 
         switch (n)
         {
@@ -365,7 +351,7 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
             // pthread_exit(NULL);
             //Somebody disconnected , get his details and print
             // getpeername((*arg).sockfd , (struct sockaddr*)&serv_addr , (socklen_t *)&len);
-            // printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(serv_addr.sin_addr) , ntohs(serv_addr.sin_port));    
+            // printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(serv_addr.sin_addr) , ntohs(serv_addr.sin_port));
             // close( (*arg).sockfd );
 
         default:
@@ -392,7 +378,7 @@ void *RecevStuctOneOtherPlayer(void *StructArg)
             {
                 if ((*arg).data->OtherPlayers[i].id == MyID)
                 {
-                    memcpy(&((*arg).data->OtherPlayers[i].dataPython), &new_player.dataPython, SIZE_DATA_PY*sizeof(char));
+                    memcpy(&((*arg).data->OtherPlayers[i].dataPython), &new_player.dataPython, SIZE_DATA_PY * sizeof(char));
                     break;
                 }
             }
@@ -416,7 +402,7 @@ void *SendSructMyPlayer(void *StructArg)
     if (sockfd == -1)
         pthread_exit(NULL);
 
-    int enable =1;
+    int enable = 1;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable)) < 0)
     {
         pthread_exit(NULL);
@@ -440,13 +426,10 @@ void *SendSructMyPlayer(void *StructArg)
     send(sockfd, &init, sizeof(int), 0);
     send(sockfd, &myPort, sizeof(int), 0);
 
-
     //sendSocketPlayerInNetwork(sockfd,(*arg).data); // to communicate all knowed-socket in network for to init new connection.
 
-
     data_player MyPlayer; // variable tempon pour verifier que les donner on changer
-    bzero(&MyPlayer,sizeof(data_player));
-    
+    bzero(&MyPlayer, sizeof(data_player));
 
     while (1)
     {
@@ -454,11 +437,9 @@ void *SendSructMyPlayer(void *StructArg)
 
         if (!(memcmp(&MyPlayer, &((*arg).data->MyPlayer), sizeof(data_player)) == 0))
         {
-            
+
             memcpy(&MyPlayer, &((*arg).data->MyPlayer), sizeof(data_player));
             send(sockfd, &MyPlayer, sizeof(data_player), 0);
-            puts("send data to other player");
-            display_data_player((*arg).data->MyPlayer);
         }
     }
 
@@ -516,7 +497,6 @@ void *serverPeer(void *StrucData)
         int init;
         int otherPort;
         //int numberSocket;
-       
 
         int n = recv(new_playerFD, &init, sizeof(int), MSG_WAITALL);
         if (DEBUG)
@@ -552,7 +532,7 @@ void *serverPeer(void *StrucData)
             break;
         }
 
-       /*n = recv(new_playerFD, &numberSocket, sizeof(int), 0);
+        /*n = recv(new_playerFD, &numberSocket, sizeof(int), 0);
         if (DEBUG)
             printf("number of other player in network --> %i \n", numberSocket);
 
@@ -618,7 +598,6 @@ void *serverPeer(void *StrucData)
 
 */
 
-
         //----------init new size de Otherplayer------------//
 
         // data_player * tempOtherPlayer;
@@ -637,34 +616,33 @@ void *serverPeer(void *StrucData)
 
         // free(tempOtherPlayer);
 
-        
         //------------Memory of new soket----------------//
         socketBSD socket;
-        socket.ip =malloc(16* sizeof(char));
-        strncpy(socket.ip,ip_OtherServer,16* sizeof(char));
+        socket.ip = malloc(16 * sizeof(char));
+        strncpy(socket.ip, ip_OtherServer, 16 * sizeof(char));
         socket.port = otherPort;
-        
 
-        socketBSD * tempAllSocketInNetwork;
-        if((*data).numberOtherPlayers > 1){
+        socketBSD *tempAllSocketInNetwork;
+        if ((*data).numberOtherPlayers > 1)
+        {
             tempAllSocketInNetwork = malloc((*data).numberOtherPlayers * sizeof(socketBSD));
-            memcpy(tempAllSocketInNetwork,(*data).AllSocketInNetwork,((*data).numberOtherPlayers -1)*sizeof(socketBSD));
+            memcpy(tempAllSocketInNetwork, (*data).AllSocketInNetwork, ((*data).numberOtherPlayers - 1) * sizeof(socketBSD));
         }
 
         (*data).AllSocketInNetwork = malloc((*data).numberOtherPlayers * sizeof(socketBSD));
-        
-        if((*data).numberOtherPlayers > 1){
-            memcpy((*data).AllSocketInNetwork,tempAllSocketInNetwork,((*data).numberOtherPlayers -1)*sizeof(socketBSD));
+
+        if ((*data).numberOtherPlayers > 1)
+        {
+            memcpy((*data).AllSocketInNetwork, tempAllSocketInNetwork, ((*data).numberOtherPlayers - 1) * sizeof(socketBSD));
             free(tempAllSocketInNetwork);
         }
 
-        memcpy(&((*data).AllSocketInNetwork[((*data).numberOtherPlayers-1)]),&socket,sizeof(socketBSD));
+        memcpy(&((*data).AllSocketInNetwork[((*data).numberOtherPlayers - 1)]), &socket, sizeof(socketBSD));
 
-
-        for (int i=0; i< (*data).numberOtherPlayers; i++){
-            printf("##%i",i);
+        for (int i = 0; i < (*data).numberOtherPlayers; i++)
+        {
+            printf("##%i", i);
             display_socket((*data).AllSocketInNetwork[i]);
-
         }
 
         argument arg;
@@ -753,11 +731,10 @@ int main(int argc, char *argv[])
         // if (pthread_create(&threads[2], NULL, SendStructMyPlayerInit, &arg) != 0)
         //     stop("thread_init_Send_shell");
         puts("Shell desactiveted");
-        
     }
     else
     {
-        
+
         char *delim = ":";
         char *ptr = strtok(argv[3], delim);
         char ip[16];
