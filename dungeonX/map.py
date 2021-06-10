@@ -473,7 +473,7 @@ class Dungeon:
 					print("id: ",self.game.players[i].idMsg,"charachter number: ",i,"->", self.game.players[i].pos)
 				msg_to_send = Message(self.game.players,flag = "new",ID=int(positions[0])).create_message()
 				print("Message to send after ini: ",msg_to_send)
-				self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
+				self.game.game.screens['online_screen'].networker.send(msg_to_send)
 			else:
 				for i, player in enumerate(self.game.players):
 					a,b = startingPositions[i]

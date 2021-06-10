@@ -727,8 +727,8 @@ class GameScreen(Window):
 				Message([None,None,None],flag="ini",ID=1 if self.oplayers ==None else len(self.oplayers)+1).create_message(positions=self.getValidLocations())
 			print("Messages to send: ",msg_to_send)
 			self.game.screens['online_screen'].networker.send(msg_to_send)
-		elif message[34:37] == "new":
-			infos = extract(message[34:])
+		elif message[:3] == "new":
+			infos = extract(message[:42])
 			print("Second player characters created")
 			otherPlayers = [OtherPlayer2([infos[2][0],infos[2][1],infos[2][2]],self),OtherPlayer2([infos[3][0],infos[3][1],infos[3][2]],self)\
 				    ,OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self)]
@@ -736,8 +736,8 @@ class GameScreen(Window):
 			print("Real Players Dictionnary: ",self.realPlayers)
 			self.dungeon.oplayers= otherPlayers
 			self.oplayers = self.dungeon.oplayers
-		elif message[62:65] == "pos":
-			infos = extract(message[62:])
+		elif message[:3] == "pos":
+			infos = extract(message[:14])
 			playerID, characterID = infos[0], int(infos[1])-1
 			newPos = (int(infos[2]),int(infos[3]))
 			print("Real player Id " + infos[0] +" New position received: ",newPos," Character number "+infos[1])
@@ -752,8 +752,8 @@ class GameScreen(Window):
 			# ChestTounlock=self.FindChestWithID(ListOfChests,ID)
 			# ChestTounlock.unlock(alwaysSuccess=True)
 			# self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)	
-		elif message [65:68] =="che":
-			info = extract(message[65:])
+		elif message [:3] =="che":
+			info = extract(message[:13])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			IDofOtherPlayer= info[0]
 			PosOfChest=(int(info[1]),int(info[2]))

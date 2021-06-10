@@ -2,12 +2,12 @@
 
 #define POS 14
 #define CON 26
-#define WLC 38
-#define NEW 33
+#define WLC 76
+#define NEW 43
 #define HPS 17
 #define ITE 11
 #define NAM 16
-#define CHE 16
+#define CHE 13
 
 
 

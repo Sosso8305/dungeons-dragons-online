@@ -222,7 +222,7 @@ class PlayerController(Player):
         if self.game.game.screens['online_screen'].online:
             if(self.actionPoint > 0 and (target in self._move_zone())):
                 msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
-                self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
+                self.game.game.screens['online_screen'].networker.send(msg_to_send)
 
         if targetObject:
             targetObject = targetObject[-1]
