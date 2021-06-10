@@ -509,7 +509,10 @@ class GameScreen(Window):
 		for ent in sorted(entities, key=lambda x:x.rect.top):
 		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
-				ent.updateAnim(self.game.dt)
+				if isinstance(ent,OtherPlayer2):
+					ent.updateAnim(self.game.dt + 50)
+				else:
+					ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
 				if ent==self.selectedPlayer:
 					pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
@@ -723,8 +726,7 @@ class GameScreen(Window):
 		if message != "" :
 			print("MESSAGE: ",message)
 		if message[:3] == "con":
-			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed) + \
-				Message([None,None,None],flag="ini",ID=1 if self.oplayers ==None else len(self.oplayers)+1).create_message(positions=self.getValidLocations())
+			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed,ID=1 if self.oplayers ==None else len(self.oplayers)+1)
 			print("Messages to send: ",msg_to_send)
 			self.game.screens['online_screen'].networker.send(msg_to_send)
 		elif message[:3] == "new":

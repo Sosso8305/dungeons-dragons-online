@@ -459,19 +459,16 @@ class Dungeon:
 			startPos = self.currentFloor.startPos
 		x,y = startPos
 		if self.game.game.screens['online_screen'].online:
-			message = self.game.game.screens['online_screen'].networker.getMessage()
-			print("Message dans la map: ",message, "3: ",message[:3])
-			if message[:3] == "ini":
-				positions = extract(message)
-				positionsFinal = [(int(positions[1]),int(positions[2])),(int(positions[3]),int(positions[4])),(int(positions[5]),int(positions[6]))]
-				print("NEW POSITIONS: ",positions)
+			if not self.game.game.screens['online_screen'].checkFirstPlayer.isChecked():
+				positionsFinal = self.game.getValidLocations()
+				print("Available positions a la reception de wlc:",self.game.getValidLocations(),self.game.playerID)
 				for i, player in enumerate(self.game.players):
 					player.teleport(positionsFinal[i])
 					player.setActionPoint(player.actionPointMax)
 					self.game.players[i].pos = positionsFinal[i]
-					self.game.players[i].idMsg = int(positions[0])
+					self.game.players[i].idMsg = self.game.playerID
 					print("id: ",self.game.players[i].idMsg,"charachter number: ",i,"->", self.game.players[i].pos)
-				msg_to_send = Message(self.game.players,flag = "new",ID=int(positions[0])).create_message()
+				msg_to_send = Message(self.game.players,flag = "new",ID=self.game.players[0].idMsg).create_message()
 				print("Message to send after ini: ",msg_to_send)
 				self.game.game.screens['online_screen'].networker.send(msg_to_send)
 			else:
