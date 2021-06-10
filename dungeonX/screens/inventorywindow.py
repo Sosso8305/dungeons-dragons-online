@@ -99,14 +99,14 @@ class InventoryWindow(Window):
 			self.fill((0,0,0))
 			self.blit(self.bar_background, (176*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 			#print(f'OTHER PLAYER IS {otherRealPlayer} AND{type(otherRealPlayer)}')
-			self.blit(self.bar_foreground, ((176-(1-otherRealPlayer.bag.getCurrentWeight()/otherRealPlayer.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
+			self.blit(self.bar_foreground, ((176-(1-otherRealPlayer.getCurrentWeight()/self.bag.getMaxWeight())*29)*INVENTORY_SCALE+self.rect.left, 105*INVENTORY_SCALE+self.rect.top))
 			self.blit(self.background, self.rect)
-			self.game.textDisplayer.print(str(otherRealPlayer.bag.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
+			self.game.textDisplayer.print(str(otherRealPlayer.getBalance())+' $', (239*INVENTORY_SCALE+self.rect.left,17*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(12*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
 			# print the otherplayer's username
 			self.game.textDisplayer.print(otherRealPlayer.name, (29*INVENTORY_SCALE+self.rect.left,18*INVENTORY_SCALE+self.rect.top), scale=0.2, rectSize=(120*INVENTORY_SCALE, 11*INVENTORY_SCALE), screen=self)
 			
 			
-			otherAllItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, otherRealPlayer.bag.getAllItems()))
+			otherAllItems = list(filter(lambda x:x.getItemType()!=ItemList.Coin, otherRealPlayer.itemsList))
 
 			for i,item in enumerate(otherAllItems):
 				rect = self.itemRects[i+15]

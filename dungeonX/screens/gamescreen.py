@@ -430,7 +430,6 @@ class GameScreen(Window):
 					l2 = list(filter(lambda x:any(x==e.pos for e in self.objects), l))
 					self.zoneCell.drawCells(self.__viewport, l2, self.camera.topleft)
 
-
 			if any(e.pos in p.getLineOfSightCells() for p in self.players for e in self.enemies if not e.finalTarget):
 				self.setState('input')
 				for p in self.players:
@@ -690,7 +689,7 @@ class GameScreen(Window):
 			print("UPDATING LOADING  ")
 			for item in Chest.getItemsFromChest():
 				print("UPDATING LOADING1")
-				self.realPlayers[oPlayerID].getbag().addItem(item)
+				self.realPlayers[oPlayerID].itemsList.append(item)
 				print("UPDATING LOADING 2: DONE ")
 
 			#TODO: content = none 
@@ -752,24 +751,19 @@ class GameScreen(Window):
 			# ChestTounlock=self.FindChestWithID(ListOfChests,ID)
 			# ChestTounlock.unlock(alwaysSuccess=True)
 			# self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)	
-		elif message [65:68] =="che":
-			info = extract(message[65:])
+		elif ("che" in message):
+			info = extract(message[63:])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			IDofOtherPlayer= info[0]
 			PosOfChest=(int(info[1]),int(info[2]))
 			ChestToModify=self.FindChestWithPos(ListOfChests,PosOfChest)
 			print(f'Chest to modify is at{ChestToModify.getPosition()} ')
-			print(f'BEFORE{self.realPlayers[IDofOtherPlayer].getbag().getAllItems()}')
+			print(f'BEFORE{self.realPlayers[IDofOtherPlayer].itemsList}')
 			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer)
-			print(f'AFTER {self.realPlayers[IDofOtherPlayer].getbag().getAllItems()}')
+			print(f'AFTER {self.realPlayers[IDofOtherPlayer].itemsList}')
 			print()
 
 
-			
-
-
-
-	
 	def getValidLocations(self):
 		found = False
 	

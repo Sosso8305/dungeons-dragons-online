@@ -5,6 +5,7 @@ from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
 from dungeonX.network.message import Message, check_size
 from ..objects.object import GameObject
 import random
+from ..constants import ItemAttributes, ItemList
 def check_size(string: str, n: int):
     	modified_str = ""
     	size = len(string)
@@ -134,16 +135,16 @@ class Chest(GameObject):
 		"""
 		retreive items from a chest 
 		"""
-		if(self._state == State.unlocked):
-			self.__animState = 'empty'
-			if self._content is not None:
-				tmp = self._content
-				self._content = None
-				#TODO : create message for each item in content to OPlayers
-				return tmp
-				 
-			else: print('The chest is empty !'); return []
-		else: print('Please unlock chest before retrieving items'); return False
+		#if(self._state == State.unlocked):
+		self.__animState = 'empty'
+		if self._content is not None:
+			tmp = self._content
+			self._content = None
+			#TODO : create message for each item in content to OPlayers
+			return tmp
+				
+		else: print('The chest is empty !'); return []
+		#else: print('Please unlock chest before retrieving items'); return False
 		
 	def getItemByID(self,ID:int):
 		"""
@@ -206,9 +207,3 @@ class Chest(GameObject):
 			messageforChest=Message([None,None,None],flag="che",ID=(player.ID)).create_message(player.getIDMsg(),ChestPos=self.getPosition())
 			player.game.game.screens['online_screen'].networker.send(check_size(messageforChest,76))
 			print(f'MESSAGE SENT :{messageforChest}')
-
-
-
-
-
-
