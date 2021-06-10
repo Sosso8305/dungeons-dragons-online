@@ -1,5 +1,5 @@
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5],"che":[2,1,4]}
-MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3}
+MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3, "pro":2, "ans":1}
 
 def get_character(List, ID):
     for character in List:
@@ -74,7 +74,11 @@ def extract(message):
             info = ""
             j += 1
     elif (flag=="che"):
-        l =  [message[3:5],message[5:9],message[9:13]]  
+        l =  [message[3:5],message[5:9],message[9:13]] 
+    elif (flag == "pro"):
+        l = [message[3:5],message[5:6],message[6:10],message[10:]] 
+    elif(flag == "ans"):
+        l = [message[3:5],message[5:6],message[6:10],message[10:14],message[14:]]
     return l
 
 def read_position(position_str0, position_str1):
@@ -144,7 +148,7 @@ class Message:
         self.list3 = [self.type3,self.pos3[0],self.pos3[1]]
         
 
-    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0)):#
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0), prop = 0):#
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
@@ -192,6 +196,13 @@ class Message:
                 message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(IDItem),MESSAGE_SIZE_MAX[self.flag][2])
             
             elif (self.flag == "che"):
-                    message_str += check_size(str(ChestPos[0]),4) +  check_size(str(ChestPos[1]),4)   
+                message_str += check_size(str(ChestPos[0]),4) +  check_size(str(ChestPos[1]),4)   
+
+            elif (self.flag == "pro"):
+                message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)
+            
+            elif (self.flag == "ans"):
+                message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)+str(prop)
+
         return message_str
         

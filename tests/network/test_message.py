@@ -48,7 +48,9 @@ def testMessageCreation():
     message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)
     message4 = Message(players,flag = "new",ID=1)
     message5 = Message(players,flag="ite",ID=1)
+    message6 = Message([None,None,None],flag="pro")
     message7 = Message([None,None,None],flag="che",ID=1)
+    message8 = Message([None,None,None],flag="ans")
 
     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
     n = str(enemy.ID)
@@ -59,7 +61,9 @@ def testMessageCreation():
     assert message3.create_message() == "con000000121.0.0.708000" 
     assert message4.create_message() == "new0100000Alice"+"R00000000M00010002F00030004"
     assert message5.create_message(ID = int(n1), IDItem= swordItem.id) == "ite01"+n1+"0"+str(swordItem.id)
+    assert message6.create_message(pos=(12,13),ID=2) == "pro00200120013"
     assert message7.create_message(ChestPos=(6,6)) == "che01"+"00060006"
+    assert message8.create_message(pos=(12,13),ID=2,prop=1) == "ans002001200131"
 
 
 def testMessageReadAndExtract():
@@ -69,7 +73,9 @@ def testMessageReadAndExtract():
     message3 = Message([None,None,None],flag="con",IP="121.0.0.7",port=8000)
     message4 = Message(players,flag = "new",ID=1)
     message5 = Message(players,flag="ite",ID=1)
+    message6 = Message([None,None,None],flag="pro")
     message7 = Message([None,None,None],flag="che",ID=1)
+    message8 = Message([None,None,None],flag="ans")
 
     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
     n = str(enemy.ID)
@@ -80,7 +86,9 @@ def testMessageReadAndExtract():
     liste3 = extract(message3.create_message())
     liste4 = extract(message4.create_message())
     liste5 = extract(message5.create_message(ID = int(n1), IDItem= swordItem.id))
+    liste6 = extract(message6.create_message(pos=(12,13), ID=2))
     liste7 = extract(message7.create_message(ChestPos=(6,6)))
+    liste8 = extract(message8.create_message(pos=(12,13),ID=2,prop=1))
 
     assert liste == ["00","00123","00000Alice","01",["R","0000","0000"],["M","0001","0002"],["F","0003","0004"]]
     assert liste1 == ["01",n1,"0000","0000"]
@@ -88,7 +96,9 @@ def testMessageReadAndExtract():
     assert liste3 == ["000000121.0.0.7","08000"]
     assert liste4 == ["01","00000Alice",["R","0000","0000"],["M","0001","0002"],["F","0003","0004"]]
     assert liste5 == ["01",n1,"0"+str(swordItem.id)]
+    assert liste6 == ["00","2","0012","0013"]
     assert liste7 == ["01","0006","0006"]
+    assert liste8 == ["00","2","0012","0013","1"]
 
     assert read_type(liste[4][0]) == PlayerEnum.Rogue
     assert read_position(liste[4][1],liste[4][2]) == (0,0)
