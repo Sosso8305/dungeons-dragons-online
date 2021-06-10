@@ -181,6 +181,7 @@ class PlayerController(Player):
             self.stepsToTarget = None
             self.currentTarget = None
             self.finalTarget   = None
+            self.property = False
 
 
 
@@ -218,11 +219,21 @@ class PlayerController(Player):
         path = None
         k = target in self._move_zone()
 
-        #print("SET TARGET ",self.actionPoint,k)
         if self.game.game.screens['online_screen'].online:
+            #Checking the property before moving
+            
             if(self.actionPoint > 0 and (target in self._move_zone())):
+                if self.game.oplayers == None:
+                    for player in self.game.players:
+                        player.property = True
+                else:
+                    if not self.property:
+                        #self.finalTarget = self.pos
+                        msg_to_send = Message([None,None,None],flag = "pro").create_message(pos=target,ID=self.ID)
+                        self.game.game.screens['online_screen'].networker.send(msg_to_send)
+                        return
                 msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
-                self.game.game.screens['online_screen'].networker.send(check_size(msg_to_send,76))
+                self.game.game.screens['online_screen'].networker.send(msg_to_send)
 
         if targetObject:
             targetObject = targetObject[-1]

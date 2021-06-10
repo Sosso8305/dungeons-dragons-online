@@ -6,11 +6,11 @@ from time import sleep
 networkFPS = 60
 ipC = "127.0.0.1"
 portC = 5133
-sizeMESSAGE = 76
+sizeMESSAGE = 49
 encodage = "ascii"
 
 
-def padding(msg, n, orientation="left"):
+def padding(msg, n, orientation="right"):
     """A padding function used to ensure the length of network messages (shortcut of rjust and ljust). Does the padding with '0's
 
     Args:
@@ -22,9 +22,9 @@ def padding(msg, n, orientation="left"):
         str: the padded message
     """
     if orientation != 'right':
-        return msg.rjust(n, '0')
+        return msg.rjust(n,'0')
     else:
-        return msg.ljust(n, '0')
+        return msg.ljust(n,'0')
 
 
 def ipPadding(ip):
@@ -39,7 +39,7 @@ def ipPadding(ip):
     fragment = ip.split(".")
     res = ""
     for f in fragment:
-        res += padding(f, 3)
+        res += padding(f, 3, 'left')
         res += "."
     return res[
         0:
@@ -67,6 +67,7 @@ class Network(threading.Thread):
     def run(self):
         self.stopped = False
         while (not self.stopped):
+            data=""
             try:
                 data = self.s.recv(sizeMESSAGE,socket.MSG_WAITALL)
                 try :
@@ -94,7 +95,7 @@ class Network(threading.Thread):
             port (int): the external port of the C of the other player
         """
 
-        msg_con= f"conxxx{ipPadding(ip)}{padding(str(port),5)}"
+        msg_con= f"conxxx{ipPadding(ip)}{padding(str(port),5, 'left')}"
         msg_con_with_padding =padding(msg_con,sizeMESSAGE,'right')
         
         self.send(msg_con_with_padding) # message spécial a destination du C et des autres joueurs
@@ -137,7 +138,7 @@ class Network(threading.Thread):
             msg (str): the message to send
         """
         try :
-            self.s.send(msg.encode(encodage))
+            self.s.send(padding(msg,sizeMESSAGE,'right').encode(encodage))
         except Exception as e :
             print(f"Couldn't send message {msg} : {e}")
             return
@@ -152,7 +153,7 @@ class Network(threading.Thread):
             msgList (str[]): the queue of messages
         """
         for msg in msgList:
-            self.s.send(msg.encode(encodage))
+            self.send(msg)
 
     def stop(self):
         """Kills properly the networking thread
@@ -164,15 +165,15 @@ class Network(threading.Thread):
 if __name__ == "__main__":
     #ipC = input("Adresse IP du C ? ")
     portC = int(input("Port du C ? "))
-    Networker = Network("127.0.0.1", portC)
+    Networker = Network("127.0.0.1", portC,True)
     Networker.start()
-    # i = int(input())
-    # if i ==1:
-    #     Networker.connexion("127.0.0.1",7777)
-    #     input()
-    # else:
-    #     input()
-    #     Networker.send("Je suis un message de test !")
+    i = int(input())
+    if i ==1:
+        Networker.connexion("127.0.0.1",5555)
+        input()
+    else:
+        input()
+        Networker.send("Je suis un message de test !")
     sleep(3)
     a = ["waow "," trop ", "dur ", "ca ","valait ","le coup ", "de me deranger"]
     Networker.sendList(a)

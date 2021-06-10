@@ -1,5 +1,5 @@
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5],"che":[2,1,4]}
-MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3, "ini":6,"che":3}
+MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3, "pro":2, "ans":1}
 
 def get_character(List, ID):
     for character in List:
@@ -43,10 +43,10 @@ def extract(message):
     flag = message[0:3]
     n = MESSAGE_EXTRACTION[flag]
     if (flag == "wlc" or flag == "new"):
-        l = [message[3:5]]+[message[5:10]]+[message[10:20]]+[[] for k in range(3)] if flag == "wlc" else [message[3:5]] + [message[5:15]]+[[] for k in range(3)]
+        l = [message[3:5]]+[message[5:10]]+[message[10:20]]+[message[20:22]]+[[] for k in range(3)] if flag == "wlc" else [message[3:5]] + [message[5:15]]+[[] for k in range(3)]
         info = ""
-        i, m = 0, l[3:] if flag=="wlc" else l[2:]
-        message = message[15:] if flag == "new" else message[20:]
+        i, m = 0, l[4:] if flag=="wlc" else l[2:]
+        message = message[15:] if flag == "new" else message[22:]
         
         for liste in m:
             j = 0
@@ -73,10 +73,12 @@ def extract(message):
             l.append(info)
             info = ""
             j += 1
-    elif (flag == "ini"):
-        l = [message[3:5],message[5:9],message[9:13],message[13:17],message[17:21],message[21:25],message[25:29]]
     elif (flag=="che"):
-        l =  [message[3:5],message[5:9],message[9:13]]  
+        l =  [message[3:5],message[5:9],message[9:13]] 
+    elif (flag == "pro"):
+        l = [message[3:5],message[5:6],message[6:10],message[10:]] 
+    elif(flag == "ans"):
+        l = [message[3:5],message[5:6],message[6:10],message[10:14],message[14:]]
     return l
 
 def read_position(position_str0, position_str1):
@@ -146,14 +148,14 @@ class Message:
         self.list3 = [self.type3,self.pos3[0],self.pos3[1]]
         
 
-    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0)):#
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0), prop = 0):#
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
         """
         message_str = self.flag + check_size(str(self.playerID),2) if(self.flag != "con") else self.flag
         if (self.flag == "wlc"): 
-            message_str += check_size(str(seed),5) + check_size(self.Player1Type1.getName(),10) 
+            message_str += check_size(str(seed),5) + check_size(self.Player1Type1.getName(),10) + check_size(str(ID),2)
             liste = [self.list1,self.list2,self.list3]
             for i in range(3):
                 for j in range(len(liste[i])):
@@ -193,10 +195,14 @@ class Message:
             elif (self.flag == "ite"):
                 message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(IDItem),MESSAGE_SIZE_MAX[self.flag][2])
             
-            elif (self.flag == "ini"):
-                for pos in positions:
-                    message_str += check_size(str(pos[0]),4) + check_size(str(pos[1]),4)
             elif (self.flag == "che"):
-                    message_str += check_size(str(ChestPos[0]),4) +  check_size(str(ChestPos[1]),4)   
+                message_str += check_size(str(ChestPos[0]),4) +  check_size(str(ChestPos[1]),4)   
+
+            elif (self.flag == "pro"):
+                message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)
+            
+            elif (self.flag == "ans"):
+                message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)+str(prop)
+
         return message_str
         

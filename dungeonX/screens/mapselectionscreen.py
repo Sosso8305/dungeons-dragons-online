@@ -44,7 +44,6 @@ class MapSelectorScreen(Window):
 
     def createGame(self):
         if self.game.screens['online_screen'].online:
-            print("ONLINE")
             if not self.game.screens['online_screen'].checkFirstPlayer.isChecked():
                 while True:
                     message = self.game.screens['online_screen'].networker.getMessage()
@@ -52,13 +51,14 @@ class MapSelectorScreen(Window):
                         infos = extract(message)
                         self.game.screens['online_screen'].networker.file.append(message[47:])
                         print("First player characters created")
-                        otherPlayers = [OtherPlayer2([infos[3][0],infos[3][1],infos[3][2]],self.game.screens["game"]),OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self.game.screens["game"])\
-                        ,OtherPlayer2([infos[5][0],infos[5][1],infos[5][2]],self.game.screens["game"])]
+                        otherPlayers = [OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self.game.screens["game"]),OtherPlayer2([infos[5][0],infos[5][1],infos[5][2]],self.game.screens["game"])\
+                        ,OtherPlayer2([infos[6][0],infos[6][1],infos[6][2]],self.game.screens["game"])]
                         self.game.screens["game"].realPlayers[infos[0]]=RealPlayer(otherPlayers,read_name(infos[2]))
                         print("Dictionnary of players: ",self.game.screens["game"].realPlayers)
                         self.game.screens["game"].dungeon.oplayers = otherPlayers
                         self.game.screens["game"].oplayers = self.game.screens["game"].dungeon.oplayers
                         self.seed = int(infos[1])
+                        self.game.screens["game"].playerID = int(infos[3])
                         print("seed received for second player",self.seed)
                         random.seed(self.seed)
                         break

@@ -508,7 +508,10 @@ class GameScreen(Window):
 		for ent in sorted(entities, key=lambda x:x.rect.top):
 		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
-				ent.updateAnim(self.game.dt)
+				if isinstance(ent,OtherPlayer2):
+					ent.updateAnim(self.game.dt + 50)
+				else:
+					ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
 				if ent==self.selectedPlayer:
 					pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
@@ -722,12 +725,11 @@ class GameScreen(Window):
 		if message != "" :
 			print("MESSAGE: ",message)
 		if message[:3] == "con":
-			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed) + \
-				Message([None,None,None],flag="ini",ID=1 if self.oplayers ==None else len(self.oplayers)+1).create_message(positions=self.getValidLocations())
+			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed,ID=1 if self.oplayers ==None else len(self.oplayers)+1)
 			print("Messages to send: ",msg_to_send)
 			self.game.screens['online_screen'].networker.send(msg_to_send)
-		elif message[34:37] == "new":
-			infos = extract(message[34:])
+		elif message[:3] == "new":
+			infos = extract(message[:42])
 			print("Second player characters created")
 			otherPlayers = [OtherPlayer2([infos[2][0],infos[2][1],infos[2][2]],self),OtherPlayer2([infos[3][0],infos[3][1],infos[3][2]],self)\
 				    ,OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self)]
@@ -735,8 +737,8 @@ class GameScreen(Window):
 			print("Real Players Dictionnary: ",self.realPlayers)
 			self.dungeon.oplayers= otherPlayers
 			self.oplayers = self.dungeon.oplayers
-		elif message[62:65] == "pos":
-			infos = extract(message[62:])
+		elif message[:3] == "pos":
+			infos = extract(message[:14])
 			playerID, characterID = infos[0], int(infos[1])-1
 			newPos = (int(infos[2]),int(infos[3]))
 			print("Real player Id " + infos[0] +" New position received: ",newPos," Character number "+infos[1])
@@ -751,8 +753,8 @@ class GameScreen(Window):
 			# ChestTounlock=self.FindChestWithID(ListOfChests,ID)
 			# ChestTounlock.unlock(alwaysSuccess=True)
 			# self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)	
-		elif ("che" in message):
-			info = extract(message[63:])
+		elif message [:3] =="che":
+			info = extract(message[:13])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			IDofOtherPlayer= info[0]
 			PosOfChest=(int(info[1]),int(info[2]))
@@ -762,8 +764,28 @@ class GameScreen(Window):
 			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer)
 			print(f'AFTER {self.realPlayers[IDofOtherPlayer].itemsList}')
 			print()
+		elif message[:3] == "pro":
+			infos = extract(message[:14])
+			position = int(infos[2]), int(infos[3])
+			proper = 1
+			for player in self.players:
+				if (position == player.finalTarget or position == player.pos):
+					proper = 0
+					break
+			msg_to_send = Message([None,None,None],flag="ans",ID=int(infos[0])).create_message(prop = proper,pos=position,ID=int(infos[1]))
+			self.game.screens['online_screen'].networker.send(msg_to_send)
+		elif message[:3] == "ans":
+			infos = extract(message[:15])
+			index = int(infos[1]) - 1
+			if int(infos[4]) == 1:
+				target = int(infos[2]), int(infos[3])
+				self.players[index].property = True
+				self.players[index].setTarget(target)
+			else:
+				self.players[index].game.game.addToLog("You can't go to this position, it's owned by someone else")
+				print("You can't go to this position, it's owned by someone else")
 
-
+	
 	def getValidLocations(self):
 		found = False
 	
