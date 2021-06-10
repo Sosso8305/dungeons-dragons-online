@@ -369,7 +369,6 @@ class GameScreen(Window):
 									self.selectedActionName = None
 								elif not self.selectedPlayer.finalTarget:
 									tEnts = [ent for ent in self.objects+self.enemies if ent.rect.collidepoint(absoluteMousePosition)]
-									print("test")
 									self.selectedPlayer.setTarget(Map.vectToPos(absoluteMousePosition), targetObject=tEnts)
 							
 
@@ -778,13 +777,13 @@ class GameScreen(Window):
 			self.game.screens['online_screen'].networker.send(msg_to_send)
 		elif message[:3] == "ans":
 			infos = extract(message[:15])
-			#["00","2","0012","0013","1"]
+			index = int(infos[1]) - 1
 			if int(infos[4]) == 1:
-				index = int(infos[1]) - 1
 				target = int(infos[2]), int(infos[3])
 				self.players[index].property = True
 				self.players[index].setTarget(target)
 			else:
+				self.players[index].game.game.addToLog("You can't go to this position, it's owned by someone else")
 				print("You can't go to this position, it's owned by someone else")
 
 	

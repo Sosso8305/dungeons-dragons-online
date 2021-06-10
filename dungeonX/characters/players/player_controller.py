@@ -219,10 +219,8 @@ class PlayerController(Player):
         path = None
         k = target in self._move_zone()
 
-        print("SET TARGET ",self.actionPoint)
         if self.game.game.screens['online_screen'].online:
             #Checking the property before moving
-            print("Property ",self.property)
             
             if(self.actionPoint > 0 and (target in self._move_zone())):
                 if self.game.oplayers == None:
