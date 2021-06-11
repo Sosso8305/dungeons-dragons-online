@@ -204,6 +204,6 @@ class Chest(GameObject):
 					# player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
 					# print(f'MESSAGE SENT :{messagePerItem}')
 				player.game.game.addToLog(" Item(s) retreived ")
-			messageforChest=Message([None,None,None],flag="che",ID=(player.ID)).create_message(player.getIDMsg(),ChestPos=self.getPosition())
+			messageforChest=Message([None,None,None],flag="che",ID=(player.getIDMsg())).create_message(player.ID,ChestPos=self.getPosition())
 			player.game.game.screens['online_screen'].networker.send(messageforChest)
 			print(f'MESSAGE SENT :{messageforChest}')
