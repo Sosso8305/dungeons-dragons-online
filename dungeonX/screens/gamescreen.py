@@ -694,6 +694,7 @@ class GameScreen(Window):
 				print("UPDATING LOADING1")
 				self.realPlayers[oPlayerID].itemsList.append(item)
 				print("UPDATING LOADING 2: DONE ")
+			Chest.getItemsFromChest()
 
 			#TODO: content = none 
 			return Chest.getPosition()	
@@ -763,10 +764,9 @@ class GameScreen(Window):
 			print(f'BEFORE{self.realPlayers[IDofOtherPlayer].itemsList}')
 			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer)
 			print(f'AFTER {self.realPlayers[IDofOtherPlayer].itemsList}')
-			print()
 		elif message[:3] == "pro":
 			infos = extract(message[:14])
-			position = int(infos[2]), int(infos[3])
+			position = (int(infos[2]), int(infos[3]))
 			proper = 1
 			for player in self.players:
 				if (position == player.finalTarget or position == player.pos):
