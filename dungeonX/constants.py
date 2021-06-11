@@ -133,22 +133,22 @@ MAP_ROOMS_DENSITY=0.25
 MAP_WIDTH        = 100
 MAP_HEIGHT       = 100
 MAP_NB_ROOMS     = math.floor(MAP_HEIGHT*MAP_WIDTH*MAP_ROOMS_DENSITY)
-# CHESTS_CONTENT = [
-#     (ItemList.Sword,	0.09),
-#     (ItemList.Armor,	0.09),
-#     (ItemList.Ring,		0.1),
-#     (ItemList.Necklace,	0.11),
-#     (ItemList.Potion,	0.11),
-#     (ItemList.Coin,		0.5),
-# ]
 CHESTS_CONTENT = [
-    (ItemList.Sword,	1),
-    (ItemList.Armor,	1),
-    (ItemList.Ring,		1),
-    (ItemList.Necklace,	1),
-    (ItemList.Potion,	1),
-    (ItemList.Coin,		1),
+    (ItemList.Sword,	0.09),
+    (ItemList.Armor,	0.09),
+    (ItemList.Ring,		0.1),
+    (ItemList.Necklace,	0.11),
+    (ItemList.Potion,	0.11),
+    (ItemList.Coin,		0.5),
 ]
+# CHESTS_CONTENT = [
+#     (ItemList.Sword,	1),
+#     (ItemList.Armor,	1),
+#     (ItemList.Ring,		1),
+#     (ItemList.Necklace,	1),
+#     (ItemList.Potion,	1),
+#     (ItemList.Coin,		1),
+# ]
 
 
 

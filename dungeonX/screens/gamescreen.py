@@ -1,3 +1,4 @@
+from pygame import color
 from dungeonX.characters.enemies.enemy_controller import distanceBetween
 import dungeonX
 from numpy.lib.function_base import append
@@ -513,6 +514,8 @@ class GameScreen(Window):
 				else:
 					ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
+				if (ent in self.players and self.game.screens['online_screen'].online):
+					pygame.draw.rect(self.__viewport, (255,0,0), ent.rect.move(-self.camera.left, -self.camera.top), 1)
 				if ent==self.selectedPlayer:
 					pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
 				# if ent==self.currentEnemy:

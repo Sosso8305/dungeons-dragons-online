@@ -281,8 +281,8 @@ class Map:
 		self.startPos = deadEnds.pop(random.randrange(len(deadEnds)))
 		self.endPos = deadEnds.pop(random.randrange(len(deadEnds)))
 		for pos in deadEnds:
-			#content = list(numpy.random.choice([item[0] for item in CHESTS_CONTENT], random.randrange(3,5), p=[item[1] for item in CHESTS_CONTENT]))
-			content = list([item[0] for item in CHESTS_CONTENT])
+			content = list(numpy.random.choice([item[0] for item in CHESTS_CONTENT], random.randrange(3,5), p=[item[1] for item in CHESTS_CONTENT]))
+			#content = list([item[0] for item in CHESTS_CONTENT])
 			for i in range(len(content)):
 				content[i] = ItemFactory(content[i])
 			self.objects.append(Chest(pos, content))
