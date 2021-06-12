@@ -21,3 +21,9 @@ class RealPlayer():
 
     def getBalance(self):
         return sum([item.getValue() for item in self.itemsList if item.getItemType() == ItemList.Coin])
+    
+    def itemOfType(self,type):
+        for item in self.itemsList:
+            if (item.getItemType()==type):
+                return item
+        print("Didn't found an object to remove from realPlayer's bag.")

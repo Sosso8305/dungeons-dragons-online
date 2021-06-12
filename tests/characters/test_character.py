@@ -259,7 +259,7 @@ def test_Player_sellItem():
 
     player.equip(ringR2)
     assert all(player.equipment[i]==item for i,item in enumerate([sword,armor,necklace,ringL,ringR2]))
-    assert ringR in player.getBag().getAllItems()
+    assert ringR in player.getBag().getAllItems()"""
 
 def testSpellUsage() :
     mage1 = Mage(game, defaultPosition, defaultSkills, defaultStats, defaultPotions)
@@ -269,7 +269,7 @@ def testSpellUsage() :
     assert q1+1 == q2
 
     mage1.castSpell(mage1.acidStream, (5, 10))
-    assert mage1.acidStream.getQuantity() == q1"""
+    assert mage1.acidStream.getQuantity() == q1
 
 def testFighter() :
     """

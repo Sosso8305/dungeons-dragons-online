@@ -791,10 +791,13 @@ class GameScreen(Window):
 			index = int(info[2])
 			item = self.indexToEquipment(index)
 			player = self.realPlayers[realPlayerId].persos[playerId]
+			# instructions pour enlever du bag l'objet
+			itemToRemove=self.realPlayers[realPlayerId].itemOfType(item.getItemType())
+			self.realPlayers[realPlayerId].itemsList.remove(itemToRemove)
+			# ajout item a l'equipement
 			player.equipment[index]=item
 			player.increaseStats(item.getEffectiveStats())
 			player.maxHP += item.getEffectiveStats()[Attributes.HP]
-			# instruction pour enlever du bag l'objet
 
 	
 	def getValidLocations(self):
