@@ -839,4 +839,4 @@ class GameScreen(Window):
 		elif index==2:
 			return ItemFactory(ItemList.Necklace)
 		elif index in (3,4) :
-			return ItemFactory(ItemList.Potion)
+			return ItemFactory(ItemList.Ring)
