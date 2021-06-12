@@ -224,7 +224,7 @@ def test_Player_sellItem():
 
 
 
-def testPlayerEquip():
+"""def testPlayerEquip():
     sword = ItemFactory(ItemList.Sword)
     armor = ItemFactory(ItemList.Armor)
     ringL = ItemFactory(ItemList.Ring)
@@ -269,7 +269,7 @@ def testSpellUsage() :
     assert q1+1 == q2
 
     mage1.castSpell(mage1.acidStream, (5, 10))
-    assert mage1.acidStream.getQuantity() == q1
+    assert mage1.acidStream.getQuantity() == q1"""
 
 def testFighter() :
     """

@@ -11,6 +11,7 @@ from datetime import datetime
 import time
 from copy import copy 
 import random,math
+from dungeonX.network.message import Message, check_size
 
 BASE_MODIFIER = -5
 DEFAULT_DIFFICULTY_CHECK = 20
@@ -103,6 +104,10 @@ class Player(Character) :
         self.increaseStats(item.getEffectiveStats())
         self.maxHP += item.getEffectiveStats()[Attributes.HP]
         self._bag.removeItem(item)
+        # message equ
+        equipmentMessage=Message([None,None,None],flag="equ",ID=(self.getIDMsg())).create_message(self.ID,index=index)
+        self.game.game.screens['online_screen'].networker.send(equipmentMessage)
+        print(f'MESSAGE SENT :{equipmentMessage}')
 
     #ajouter dans le diagramme
     def unequip(self, item):

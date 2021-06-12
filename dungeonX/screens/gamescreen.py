@@ -4,7 +4,7 @@ import dungeonX
 from numpy.lib.function_base import append
 import pygame, math
 from ..map import Dungeon, Map
-from ..constants import TILE_WIDTH, State, ItemList, SKILLS_INFO, cellsrange
+from ..constants import TILE_WIDTH, State, ItemList, SKILLS_INFO, cellsrange, Attributes
 from ..characters.npc import NPC 
 from ..characters.players.classes import Fighter, Mage, Rogue
 from ..characters.players import PlayerEnum
@@ -18,6 +18,7 @@ from copy import deepcopy,copy
 from ..network.essaiOtherPlayer import OtherPlayer2
 from ..network.realPlayer import RealPlayer
 from ..network.message import check_size, Message, extract, read_name
+
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -749,7 +750,7 @@ class GameScreen(Window):
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			IDofOtherPlayer= info[0]
 			chestContent= str(info[3])
-			print("Chest content string is : "+chestContent)
+			#print("Chest content string is : "+chestContent)
 			PosOfChest=(int(info[1]),int(info[2]))
 			ChestToModify=self.FindChestWithPos(ListOfChests,PosOfChest)
 			#print(f'Chest to modify is at{ChestToModify.getPosition()} ')
@@ -783,6 +784,17 @@ class GameScreen(Window):
 			for oplayer in oplayersToRmv:
 				self.oplayers.remove(oplayer)
 			del self.realPlayers[infos[0]]
+		elif message[:3] == "equ" :
+			info = extract(message[:7])
+			realPlayerId= info[0]
+			playerId = int(info[1])-1
+			index = int(info[2])
+			item = self.indexToEquipment(index)
+			player = self.realPlayers[realPlayerId].persos[playerId]
+			player.equipment[index]=item
+			player.increaseStats(item.getEffectiveStats())
+			player.maxHP += item.getEffectiveStats()[Attributes.HP]
+			# instruction pour enlever du bag l'objet
 
 	
 	def getValidLocations(self):
@@ -816,4 +828,12 @@ class GameScreen(Window):
 			return ItemFactory(ItemList.Potion)
 
 
-
+	def indexToEquipment(self,index):
+		if index==0:
+			return ItemFactory(ItemList.Sword)
+		elif index==1:
+			return ItemFactory(ItemList.Armor)
+		elif index==2:
+			return ItemFactory(ItemList.Necklace)
+		elif index in (3,4) :
+			return ItemFactory(ItemList.Potion)

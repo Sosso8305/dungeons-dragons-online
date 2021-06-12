@@ -1,5 +1,5 @@
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5],"che":[2,1,4]}
-MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3, "pro":2, "ans":1, "exi":1}
+MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3, "pro":2, "ans":1, "exi":1,"equ":2}
 
 def get_character(List, ID):
     for character in List:
@@ -81,6 +81,8 @@ def extract(message):
         l = [message[3:5],message[5:6],message[6:10],message[10:14],message[14:]]
     elif(flag == "exi"):
         l = [message[3:]]
+    elif(flag == "equ"):
+        l = [message[3:5],message[5:6],message[6:]]
     return l
 
 def read_position(position_str0, position_str1):
@@ -150,7 +152,8 @@ class Message:
         self.list3 = [self.type3,self.pos3[0],self.pos3[1]]
         
 
-    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0), prop = 0, chestContent=""):#
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0), prop = 0, chestContent="", index=0):
+
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
@@ -205,6 +208,8 @@ class Message:
             
             elif (self.flag == "ans"):
                 message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)+str(prop)
-            
+
+            elif (self.flag == "equ"):
+                message_str += str(ID) + check_size(str(index),1)            
         return message_str
         
