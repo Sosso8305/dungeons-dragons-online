@@ -686,19 +686,18 @@ class GameScreen(Window):
 			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
 			return Chest.getPosition()	
 
-	def UpdateChestContentV2(self,Chest : Chest,oPlayerID=None):
+	def UpdateChestContentV2(self,Chest : Chest,oPlayerID=None,content=""):
 		"""
 		serves into finding the chest containing item with ID from all Chests in the game and updating it
 		"""
 		print("UPDATING LOADING HERE ")
 		if oPlayerID!=None: # serves Only for testing in file tests 
 			print("UPDATING LOADING  ")
-			for item in Chest.getItemsFromChest():
-				print("UPDATING LOADING1")
-				self.realPlayers[oPlayerID].itemsList.append(item)
-				print("UPDATING LOADING 2: DONE ")
 			Chest.getItemsFromChest()
-
+			for i in range(len(content)):
+				if (content[i]!='0'):
+					item=self.initialToObject(content[i])
+					self.realPlayers[oPlayerID].itemsList.append(item)
 			#TODO: content = none 
 			return Chest.getPosition()	
 				
@@ -758,15 +757,17 @@ class GameScreen(Window):
 			# ChestTounlock.unlock(alwaysSuccess=True)
 			# self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)	
 		elif message [:3] =="che":
-			info = extract(message[:13])
+			info = extract(message[:17])
 			ListOfChests= self.retrieveChestsFromObjects(self.objects)
 			IDofOtherPlayer= info[0]
+			chestContent= str(info[3])
+			print("Chest content string is : "+chestContent)
 			PosOfChest=(int(info[1]),int(info[2]))
 			ChestToModify=self.FindChestWithPos(ListOfChests,PosOfChest)
-			print(f'Chest to modify is at{ChestToModify.getPosition()} ')
-			print(f'BEFORE{self.realPlayers[IDofOtherPlayer].itemsList}')
-			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer)
-			print(f'AFTER {self.realPlayers[IDofOtherPlayer].itemsList}')
+			#print(f'Chest to modify is at{ChestToModify.getPosition()} ')
+			#print(f'BEFORE{self.realPlayers[IDofOtherPlayer].itemsList}')
+			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer,content=chestContent)
+			#print(f'AFTER {self.realPlayers[IDofOtherPlayer].itemsList}')
 		elif message[:3] == "pro":
 			infos = extract(message[:14])
 			position = (int(infos[2]), int(infos[3]))
@@ -804,3 +805,20 @@ class GameScreen(Window):
 					break
 		print("Available positions: ",positions)
 		return positions
+	
+	def initialToObject(self,initial):
+		if initial=='C':
+			return ItemFactory(ItemList.Coin)
+		if initial=='S':
+			return ItemFactory(ItemList.Sword)
+		if initial=='A':
+			return ItemFactory(ItemList.Armor)
+		if initial=='R':
+			return ItemFactory(ItemList.Ring)
+		if initial=='N':
+			return ItemFactory(ItemList.Necklace)
+		if initial=='P':
+			return ItemFactory(ItemList.Potion)
+
+
+

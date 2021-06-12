@@ -186,6 +186,21 @@ class Chest(GameObject):
 	def updateAnim(self, dt):
 		self.__dt = dt
 		self.image = next(self.animsIter)
+	
+	def getInitial(self,item):
+		if item.getItemType()==ItemList.Coin:
+			return 'C'
+		if item.getItemType()==ItemList.Sword:
+			return 'S'
+		if item.getItemType()==ItemList.Armor:
+			return 'A'
+		if item.getItemType()==ItemList.Ring:
+			return 'R'
+		if item.getItemType()==ItemList.Necklace:
+			return 'N'
+		if item.getItemType()==ItemList.Potion:
+			return 'P'
+		
 
 	def interactWithPlayer(self, player):
 		if self.getState()==State.locked:
@@ -198,12 +213,14 @@ class Chest(GameObject):
 			if not self._content:
 				player.game.game.addToLog(" The chest is empty !")
 			else:
+				content_str=""
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
 					# messagePerItem=Message([None,None,None],flag="ite",ID=(player.ID)).create_message(player.getIDMsg(),IDItem=item.id)
 					# player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
 					# print(f'MESSAGE SENT :{messagePerItem}')
+					content_str+=self.getInitial(item)
 				player.game.game.addToLog(" Item(s) retreived ")
-			messageforChest=Message([None,None,None],flag="che",ID=(player.getIDMsg())).create_message(player.ID,ChestPos=self.getPosition())
+			messageforChest=Message([None,None,None],flag="che",ID=(player.getIDMsg())).create_message(player.ID,ChestPos=self.getPosition(),chestContent=content_str)
 			player.game.game.screens['online_screen'].networker.send(messageforChest)
 			print(f'MESSAGE SENT :{messageforChest}')

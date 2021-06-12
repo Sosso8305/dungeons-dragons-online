@@ -74,7 +74,7 @@ def extract(message):
             info = ""
             j += 1
     elif (flag=="che"):
-        l =  [message[3:5],message[5:9],message[9:13]] 
+        l =  [message[3:5],message[5:9],message[9:13],message[13:]] 
     elif (flag == "pro"):
         l = [message[3:5],message[5:6],message[6:10],message[10:]] 
     elif(flag == "ans"):
@@ -148,7 +148,7 @@ class Message:
         self.list3 = [self.type3,self.pos3[0],self.pos3[1]]
         
 
-    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0), prop = 0):#
+    def create_message(self, ID = 0, IDenemy = 0, IDItem = 0, seed="00123", positions=[], pos=(0,0), ChestPos=(0,0), prop = 0, chestContent=""):#
         """
             this function convert the list containing the player's characters' infos and convert them to a string 
             that will be sent to the other connected players.
@@ -196,7 +196,7 @@ class Message:
                 message_str += check_size(ID_str,MESSAGE_SIZE_MAX[self.flag][1]) + check_size(str(IDItem),MESSAGE_SIZE_MAX[self.flag][2])
             
             elif (self.flag == "che"):
-                message_str += check_size(str(ChestPos[0]),4) +  check_size(str(ChestPos[1]),4)   
+                message_str += check_size(str(ChestPos[0]),4) +  check_size(str(ChestPos[1]),4) + check_size(chestContent,4)   
 
             elif (self.flag == "pro"):
                 message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)
