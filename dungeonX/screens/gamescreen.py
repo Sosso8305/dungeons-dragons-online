@@ -686,7 +686,9 @@ class GameScreen(Window):
 			for i in range(len(content)):
 				if (content[i]!='0'):
 					item=self.initialToObject(content[i])
-					self.realPlayers[oPlayerID].itemsList.append(item)
+					maxWeight = 30
+					if (item.getWeight() + (self.realPlayers[oPlayerID].getCurrentWeight())  <= maxWeight):
+						self.realPlayers[oPlayerID].itemsList.append(item)
 			#TODO: content = none 
 			return Chest.getPosition()	
 				
