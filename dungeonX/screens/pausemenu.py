@@ -1,6 +1,7 @@
 import pygame
 from . import Window
 from ..graphics import Button, TextInput
+from dungeonX.network.message import Message
 
 class PauseMenu(Window):
 	def __init__(self, game, parentScreen):
@@ -26,10 +27,16 @@ class PauseMenu(Window):
 		self.mapSaved = False
 
 	def exitConfirm(self):
-		if not self.mapSaved:
-			self.dialogState = "exit_confirm"
-		else:
+		
+		if self.game.screens['online_screen'].online:
+			msgToSend = Message([None,None,None],flag="exi",ID = self.game.screens['game'].players[0].idMsg)
+			self.game.screens['online_screen'].networker.send(msgToSend.create_message())
 			self.game.setScreen('main_menu')
+		else:
+			if not self.mapSaved:
+				self.dialogState = "exit_confirm"
+			else:
+				self.game.setScreen('main_menu')
 
 	def exit(self):
 		self.dialogState = None

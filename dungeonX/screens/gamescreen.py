@@ -491,18 +491,6 @@ class GameScreen(Window):
 	
 		
 		# ---- Entity rendering ---- #
-		#to remove later just for test
-		# try:
-		# 	if ((self.players[0].pos[0] == self.oplayers[0].pos[0]+1 or self.players[0].pos[0] == self.oplayers[0].pos[0]-1 or self.players[0].pos[0]==self.oplayers[0].pos[0])and\
-		# 		(self.players[0].pos[1] == self.oplayers[0].pos[1]+1 or self.players[0].pos[1] == self.oplayers[0].pos[1]-1)or self.players[0].pos[1]==self.oplayers[0].pos[1]):
-		# 		l = self.oplayers[0]._move_zone()
-		# 		l1 = self.oplayers[1]._move_zone()
-		# 		if len(l):
-		# 			self.oplayers[0].playAction(self.game.dt,l[0])
-		# 		if len(l1) > 1:
-		# 			self.oplayers[1].playAction(self.game.dt,l1[1])
-		# except TypeError as e:
-		# 	print(str(e))
 
 		entities = self.players+self.enemies+self.objects+self.oplayers if self.oplayers != None else self.players+self.enemies+self.objects
 
@@ -788,6 +776,13 @@ class GameScreen(Window):
 			else:
 				self.players[index].game.game.addToLog("You can't go to this position, it's owned by someone else")
 				print("You can't go to this position, it's owned by someone else")
+		elif message[:3] == "exi":
+			infos = extract(message[:5])
+			self.players[0].game.game.addToLog("Player "+self.realPlayers[infos[0]].name+" disconnected")
+			oplayersToRmv = [self.realPlayers[infos[0]].persos[0],self.realPlayers[infos[0]].persos[1],self.realPlayers[infos[0]].persos[2]]
+			for oplayer in oplayersToRmv:
+				self.oplayers.remove(oplayer)
+			del self.realPlayers[infos[0]]
 
 	
 	def getValidLocations(self):

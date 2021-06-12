@@ -51,6 +51,7 @@ def testMessageCreation():
     message6 = Message([None,None,None],flag="pro")
     message7 = Message([None,None,None],flag="che",ID=1)
     message8 = Message([None,None,None],flag="ans")
+    message9 = Message([None,None,None],flag="exi",ID=1)
 
     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
     n = str(enemy.ID)
@@ -64,6 +65,7 @@ def testMessageCreation():
     assert message6.create_message(pos=(12,13),ID=2) == "pro00200120013"
     assert message7.create_message(ChestPos=(6,6),chestContent="0CCP") == "che01"+"00060006"+"0CCP"
     assert message8.create_message(pos=(12,13),ID=2,prop=1) == "ans002001200131"
+    assert message9.create_message() == "exi01"
 
 
 def testMessageReadAndExtract():
@@ -76,6 +78,7 @@ def testMessageReadAndExtract():
     message6 = Message([None,None,None],flag="pro")
     message7 = Message([None,None,None],flag="che",ID=1)
     message8 = Message([None,None,None],flag="ans")
+    message9 = Message([None,None,None],flag="exi",ID=1)
 
     n1, n2, n3 = str(player1.ID), str(player2.ID), str(player3.ID)
     n = str(enemy.ID)
@@ -89,6 +92,7 @@ def testMessageReadAndExtract():
     liste6 = extract(message6.create_message(pos=(12,13), ID=2))
     liste7 = extract(message7.create_message(ChestPos=(6,6),chestContent="0CCP"))
     liste8 = extract(message8.create_message(pos=(12,13),ID=2,prop=1))
+    liste9 = extract(message9.create_message())
 
     assert liste == ["00","00123","00000Alice","01",["R","0000","0000"],["M","0001","0002"],["F","0003","0004"]]
     assert liste1 == ["01",n1,"0000","0000"]
@@ -99,6 +103,7 @@ def testMessageReadAndExtract():
     assert liste6 == ["00","2","0012","0013"]
     assert liste7 == ["01","0006","0006","0CCP"]
     assert liste8 == ["00","2","0012","0013","1"]
+    assert liste9 == ["01"]
 
     assert read_type(liste[4][0]) == PlayerEnum.Rogue
     assert read_position(liste[4][1],liste[4][2]) == (0,0)

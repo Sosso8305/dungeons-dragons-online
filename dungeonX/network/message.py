@@ -1,5 +1,5 @@
 MESSAGE_SIZE_MAX = {"wlc" : [2,1,4,4], "pos": [2,1,4,4], "hps": [2,1,3,5,3], "con": [15,5],"new": [2,1,4,4], "ite": [2,1,5],"che":[2,1,4]}
-MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3, "pro":2, "ans":1}
+MESSAGE_EXTRACTION = {"wlc" : 3, "pos" : 4, "con" : 2, "new" : 3, "hps" : 5, "ite" : 3,"che":3, "pro":2, "ans":1, "exi":1}
 
 def get_character(List, ID):
     for character in List:
@@ -79,6 +79,8 @@ def extract(message):
         l = [message[3:5],message[5:6],message[6:10],message[10:]] 
     elif(flag == "ans"):
         l = [message[3:5],message[5:6],message[6:10],message[10:14],message[14:]]
+    elif(flag == "exi"):
+        l = [message[3:]]
     return l
 
 def read_position(position_str0, position_str1):
@@ -121,7 +123,7 @@ class Message:
         self.flag = flag
         self.players = PlayerList
         self.enemies = EnemyList
-        self.playerID = ID #we have to change this when we create the Player Class
+        self.playerID = ID
 
         self.Player1Type1 = PlayerList[0]
         self.Player1Type2 = PlayerList[1] 
@@ -203,6 +205,6 @@ class Message:
             
             elif (self.flag == "ans"):
                 message_str += str(ID) + check_size(str(pos[0]),4) + check_size(str(pos[1]),4)+str(prop)
-
+            
         return message_str
         

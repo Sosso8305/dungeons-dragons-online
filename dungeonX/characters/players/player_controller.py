@@ -223,7 +223,7 @@ class PlayerController(Player):
             #Checking the property before moving
             
             if(self.actionPoint > 0 and (target in self._move_zone())):
-                if self.game.oplayers == None:
+                if (self.game.oplayers == None or self.game.oplayers==[]):
                     for player in self.game.players:
                         player.property = True
                 else:
