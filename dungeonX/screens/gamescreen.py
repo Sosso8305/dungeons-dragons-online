@@ -621,6 +621,7 @@ class GameScreen(Window):
 			if self.oplayers != None:
 				for oplayer in self.oplayers:
 					oplayer.setActionPoint(oplayer.actionPointMax)
+					oplayer._dt = self.game.dt
 					oplayer.playAction(self.game.dt,(oplayer.newPos))	
 		
 	def nextInventory(self,index):
