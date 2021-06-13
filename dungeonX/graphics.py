@@ -155,7 +155,7 @@ class TextInput(pygame.Surface):
 				if event.key==pygame.K_BACKSPACE:
 					self.text = self.text[:-1]
 			if self.selected and event.type==pygame.TEXTINPUT:
-				print(self.text, self.width)
+				#print(self.text, self.width)
 				if len(self.text)<self.width:
 					self.text += event.text
 			

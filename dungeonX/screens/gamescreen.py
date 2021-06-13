@@ -501,12 +501,12 @@ class GameScreen(Window):
 		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
 				if isinstance(ent,OtherPlayer2):
-					ent.updateAnim(self.game.dt + 50)
+					ent.updateAnim(self.game.dt + 30)
 				else:
 					ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
 				if (ent in self.players and self.game.screens['online_screen'].online):
-					pygame.draw.rect(self.__viewport, (255,0,0), ent.rect.move(-self.camera.left, -self.camera.top), 1)
+					pygame.draw.rect(self.__viewport, (0,255,0), ent.rect.move(-self.camera.left, -self.camera.top), 1)
 				if ent==self.selectedPlayer:
 					pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
 				# if ent==self.currentEnemy:
@@ -793,6 +793,8 @@ class GameScreen(Window):
 			for oplayer in oplayersToRmv:
 				self.oplayers.remove(oplayer)
 			del self.realPlayers[infos[0]]
+			# self.game.screens['online_screen'].networker.stop()
+			# self.game.screens['online_screen'].networker.join()
 		elif message[:3] == "equ" :
 			info = extract(message[:7])
 			realPlayerId= info[0]
