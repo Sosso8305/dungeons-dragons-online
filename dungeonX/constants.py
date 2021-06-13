@@ -103,6 +103,7 @@ RANKS_MANAGEMENT = {
 TILE_WIDTH = 16
 NUMBER_ENEMY=10
 PLAYERNAME="jack"
+OTHERPLAYERNAME="john"
 
 
 # Items settings
@@ -140,6 +141,15 @@ CHESTS_CONTENT = [
     (ItemList.Potion,	0.11),
     (ItemList.Coin,		0.5),
 ]
+# CHESTS_CONTENT = [
+#     (ItemList.Sword,	1),
+#     (ItemList.Armor,	1),
+#     (ItemList.Ring,		1),
+#     (ItemList.Necklace,	1),
+#     (ItemList.Potion,	1),
+#     (ItemList.Coin,		1),
+# ]
+
 
 
 # ACTION POINT 

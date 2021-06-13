@@ -1,6 +1,6 @@
 import sys, pygame, math
 from .constants import DEFAULT_KEYMAP, INVENTORY_SCALE, INVENTORY_SLOT_SIZE, ITEMS_IMAGES
-from .screens import MainMenu, PauseMenu, GameScreen, MapEditorScreen,SettingsMenu,CharacterChoice,LogWindow, MapSelectorScreen
+from .screens import MainMenu, PauseMenu, GameScreen, MapEditorScreen,SettingsMenu,CharacterChoice,LogWindow, MapSelectorScreen,OnlineScreen
 from .graphics import TextDisplayer, ParticleSystem
 
 class Game:
@@ -75,7 +75,7 @@ class Game:
 		self.clock = pygame.time.Clock()
 		self.textDisplayer = TextDisplayer(self)
 		self.particleSystem = ParticleSystem(self)
-
+		self.playerName = ""
 		for item in ITEMS_IMAGES:
 			if type(ITEMS_IMAGES[item]) is str:
 				ITEMS_IMAGES[item] = pygame.image.load("dungeonX/assets/ui/icons/items/"+ITEMS_IMAGES[item]+".png").convert()
@@ -85,6 +85,7 @@ class Game:
 		self.currentScreen = "main_menu"
 		self.screens = {
 			"main_menu" : MainMenu(self),
+			"online_screen": OnlineScreen(self),
 			"settings_menu": SettingsMenu(self),
 			"character_choice": CharacterChoice(self),
 			"map_selector": MapSelectorScreen(self),
@@ -165,3 +166,7 @@ this method
 		if(self.log.messagecount<self.log.maxmessage):
 			self.log.messagecount+=1
 		self.log.newmessage=True
+
+	#essai
+
+	

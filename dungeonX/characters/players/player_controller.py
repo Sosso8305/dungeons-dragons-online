@@ -8,6 +8,7 @@ from ..skills import Skill
 from ...screens import LogWindow
 from dungeonX.characters.players.player import Player, PlayerEnum
 from ..enemies import Enemy
+from dungeonX.network.message import Message, check_size
 
 ### Map functions ###
 # they are here to avoid a circular import with the map file,
@@ -99,7 +100,7 @@ class PlayerController(Player):
         self.stepsToTarget = None
         self.timeToMove = 300 # in milliseconds
         self.animationSpeed = {'idle': 120, 'run': 100} # in milliseconds
-        self.game=game
+        self.game = game
         self.rect = pygame.Rect((0,0), (TILE_WIDTH, math.floor(TILE_WIDTH*24/16)))
         self.rect.midbottom = posToVect(pos) + (TILE_WIDTH/2, TILE_WIDTH)
         self.state = 'idle'
@@ -180,6 +181,7 @@ class PlayerController(Player):
             self.stepsToTarget = None
             self.currentTarget = None
             self.finalTarget   = None
+            self.property = False
 
 
 
@@ -215,6 +217,24 @@ class PlayerController(Player):
     def setTarget(self, target:tuple, targetObject=None):
         """ Setter for finalTarget """
         path = None
+        k = target in self._move_zone()
+
+        if self.game.game.screens['online_screen'].online:
+            #Checking the property before moving
+            
+            if(self.actionPoint > 0 and (target in self._move_zone())):
+                if (self.game.oplayers == None or self.game.oplayers==[]):
+                    for player in self.game.players:
+                        player.property = True
+                else:
+                    if not self.property:
+                        #self.finalTarget = self.pos
+                        msg_to_send = Message([None,None,None],flag = "pro").create_message(pos=target,ID=self.ID)
+                        self.game.game.screens['online_screen'].networker.send(msg_to_send)
+                        return
+                msg_to_send = Message([None,None,None],flag = "pos",ID=self.idMsg).create_message(ID=self.ID,pos=target)
+                self.game.game.screens['online_screen'].networker.send(msg_to_send)
+
         if targetObject:
             targetObject = targetObject[-1]
             x, y = targetObject.pos
@@ -237,6 +257,7 @@ class PlayerController(Player):
                 self.nextTarget()
 
 
+
     def updateAnim(self, dt:int):
         """ Updates the frame that may be rendered.
 
@@ -252,7 +273,6 @@ class PlayerController(Player):
         """ Updates the state and current position, and returns the
         current state.
         """
-
         if self.lineOfSightNormalTurn==self.game.turnNumber:
             self.lineOfSightRadius = self.normalLoSRadius
             self.updateLineOfSight()
@@ -274,7 +294,7 @@ class PlayerController(Player):
                 if isinstance(self.targetObject, Enemy):
                     self.attack(self.targetObject)
                 else:
-                    self.targetObject.interactWithPlayer(self)
+                    self.targetObject.interactWithPlayer(self)                        
                 self.targetObject = None
 
         return self.state

@@ -10,10 +10,15 @@ from dungeonX.objects import Chest,Door
 from datetime import datetime
 import time
 from copy import copy 
-import random
+import random,math
+from dungeonX.network.message import Message, check_size
 
 BASE_MODIFIER = -5
 DEFAULT_DIFFICULTY_CHECK = 20
+
+def distanceBetween(xA, yA, xB, yB):
+    """ Returns the distance between A and B """
+    return math.sqrt((xB-xA)*(xB-xA) + (yB-yA)*(yB-yA))
 
 class PlayerEnum(Enum):
     Rogue ='Rogue'
@@ -22,24 +27,45 @@ class PlayerEnum(Enum):
         
 
 class Player(Character) :
-
+    ID=0
+    RealPlayerID=0
+    MyPlayers=[]
     def __init__(self, game, pos: tuple, playerType : PlayerEnum, actionPointMax, lineOfSightRadius, stats:tuple, skills : [Skill] =[]):
-        print("stat", stats)
-        print("lineOfSightRadius",lineOfSightRadius)
+        #print("stat", stats)
+        #print("lineOfSightRadius",lineOfSightRadius)
         super().__init__(game, pos, actionPointMax,*stats) #( HP, armor, strength, dex, con, intell, wis, cha )
         self._skills = skills
         self._skillScore = 0
         self.level = 1
         self.exp = 0
         self._bag = self.game.inventorywindow.bag
-        self.name = PLAYERNAME
+        #self.packetBag=self._bag
+        self.name = game.playerName
         self._playerType = playerType
+        self.PlayerType= self._playerType
+        self.initialType = self.get_initial()
         self.lineOfSightRadius = lineOfSightRadius
         self.normalLoSRadius = lineOfSightRadius
         self.equipment = [None, None, None, None, None] # Weapon, Armor, Necklace, Left Ring, Right Ring
         self.expToLevelUp = 100
         self.lineOfSightNormalTurn = None
-        
+        self.RealPlayerID= Player.RealPlayerID
+        self.MyPlayers=Player.MyPlayers
+        if Player.ID > 2 :
+            Player.RealPlayerID +=1
+            Player.ID=1
+        else :
+           #  self.MyPlayers.append(self)
+            Player.ID+=1
+        self.ID=Player.ID
+        self.idMsg = 0 #this is the common id used in certain messages sent from the player to others
+        self.property = False #property of a position
+    
+    def getIDMsg(self):
+        return self.idMsg
+
+    def getName(self):
+            return self.name
     def getVisibility(self):
         userSkill: Skill = self._searchSkill(SkillEnum.Stealth)
         if userSkill == None:
@@ -78,6 +104,10 @@ class Player(Character) :
         self.increaseStats(item.getEffectiveStats())
         self.maxHP += item.getEffectiveStats()[Attributes.HP]
         self._bag.removeItem(item)
+        # message equ
+        equipmentMessage=Message([None,None,None],flag="equ",ID=(self.getIDMsg())).create_message(self.ID,index=index)
+        self.game.game.screens['online_screen'].networker.send(equipmentMessage)
+        print(f'MESSAGE SENT :{equipmentMessage}')
 
     #ajouter dans le diagramme
     def unequip(self, item):
@@ -85,6 +115,7 @@ class Player(Character) :
         desc  : unequip an item and handle the according modification of stats
         @item : Item
         """
+
         if item not in self.equipment:
             print("Item not equipped")
             return
@@ -356,3 +387,24 @@ class Player(Character) :
         if userSkill == None:
             print(f'This Skill ({skillType}) was not found'); return
         return userSkill.getCurrentRankUpPoints()
+
+    def checkLineOfSight(self,oplayers):
+        """
+        This function checks if the other player is in the line of sight of the player selected
+        """
+        inLineOfSight = []
+        lineOfSight = self.getLineOfSightCells()
+        for oplayer in oplayers:
+            for pos in lineOfSight:
+                if distanceBetween(*pos,*oplayer.pos) <= 1.5:
+                    inLineOfSight.append(oplayer)
+                    break
+        return inLineOfSight
+
+    def get_initial(self):
+        if self.PlayerType == PlayerEnum.Rogue:
+            return 'R'
+        elif self.PlayerType == PlayerEnum.Fighter:
+            return 'F'
+        elif self.PlayerType == PlayerEnum.Mage:
+            return 'M'

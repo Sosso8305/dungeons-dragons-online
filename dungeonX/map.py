@@ -1,3 +1,4 @@
+from dungeonX.network.message import check_size, extract, Message
 import pygame, random, math, os, pickle, numpy
 from collections import defaultdict
 from .constants import TILE_WIDTH, MAP_WIDTH, MAP_HEIGHT, MAP_NB_ROOMS, TILESET, TILESET_H, TILESET_MINI, WALLS, serializeSurf, unserializeSurf, DEFAULT_DRAGON_STAT, DEFAULT_GOBLIN_STAT, DEFAULT_ZOMBIE_STAT, CHESTS_CONTENT
@@ -281,6 +282,7 @@ class Map:
 		self.endPos = deadEnds.pop(random.randrange(len(deadEnds)))
 		for pos in deadEnds:
 			content = list(numpy.random.choice([item[0] for item in CHESTS_CONTENT], random.randrange(3,5), p=[item[1] for item in CHESTS_CONTENT]))
+			#content = list([item[0] for item in CHESTS_CONTENT])
 			for i in range(len(content)):
 				content[i] = ItemFactory(content[i])
 			self.objects.append(Chest(pos, content))
@@ -312,10 +314,12 @@ class Map:
 
 		return (x, y)
 
+	def isValidLocation(self,x,y):
+		return self.canWalkOn(x, y) and (self.startPos==None or self.distanceBetween(x,y, *self.startPos)>3)
 
 	def canWalkOn(self, x, y):
 		""" Return True if the tile is walkable """
-		return 0<=x<self.width and 0<y<=self.height and self.get(x, y)=='.' and not any(entity.pos==(x,y) for entity in self.enemies+self.objects+(self.dungeon.players if self.dungeon.players!=None else []))
+		return 0<=x<self.width and 0<y<=self.height and self.get(x, y)=='.' and not any(entity.pos==(x,y) for entity in self.enemies+self.objects+(self.dungeon.players if self.dungeon.players!=None else [])+(self.dungeon.oplayers if self.dungeon.oplayers!=None else []))
 
 
 	def set(self, x, y, char):
@@ -407,6 +411,7 @@ class Dungeon:
 		self.game = game
 		self.editMode = editMode
 		self.players = None
+		self.oplayers = None
 		if not self.editMode:
 			self.game.blitLoadingScreen()
 		self.currentFloor = Map(self, generate=not editMode)
@@ -454,7 +459,26 @@ class Dungeon:
 		if startPos==None:
 			startPos = self.currentFloor.startPos
 		x,y = startPos
-		for i, player in enumerate(self.game.players):
-			a,b = startingPositions[i]
-			player.teleport((x+a, y+b))
-			player.setActionPoint(player.actionPointMax)
+		if self.game.game.screens['online_screen'].online:
+			if not self.game.game.screens['online_screen'].checkFirstPlayer.isChecked():
+				positionsFinal = self.game.getValidLocations()
+				print("Available positions a la reception de wlc:",self.game.getValidLocations(),self.game.playerID)
+				for i, player in enumerate(self.game.players):
+					player.teleport(positionsFinal[i])
+					player.setActionPoint(player.actionPointMax)
+					self.game.players[i].pos = positionsFinal[i]
+					self.game.players[i].idMsg = self.game.playerID
+					print("id: ",self.game.players[i].idMsg,"charachter number: ",i,"->", self.game.players[i].pos)
+				msg_to_send = Message(self.game.players,flag = "new",ID=self.game.players[0].idMsg).create_message()
+				print("Message to send after ini: ",msg_to_send)
+				self.game.game.screens['online_screen'].networker.send(msg_to_send)
+			else:
+				for i, player in enumerate(self.game.players):
+					a,b = startingPositions[i]
+					player.teleport((x+a, y+b))
+					player.setActionPoint(player.actionPointMax)
+		else:
+			for i, player in enumerate(self.game.players):
+				a,b = startingPositions[i]
+				player.teleport((x+a, y+b))
+				player.setActionPoint(player.actionPointMax)

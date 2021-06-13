@@ -1,0 +1,6 @@
+interface --> lucas  
+server.c --> sofiane ensemble des threads  
+client_dev.c --> client de test pour éviter de toucher au client.py 
+
+pour server.c
+/ argv[1]--> port for IntefacePython argv[2]-> port for SeverP2P           (optionnal) argv[3] --> for socket to other player

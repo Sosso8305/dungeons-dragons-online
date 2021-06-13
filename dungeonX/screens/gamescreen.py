@@ -1,6 +1,10 @@
+from pygame import color
+from dungeonX.characters.enemies.enemy_controller import distanceBetween
+import dungeonX
+from numpy.lib.function_base import append
 import pygame, math
 from ..map import Dungeon, Map
-from ..constants import TILE_WIDTH, State, ItemList, SKILLS_INFO, cellsrange
+from ..constants import TILE_WIDTH, State, ItemList, SKILLS_INFO, cellsrange, Attributes
 from ..characters.npc import NPC 
 from ..characters.players.classes import Fighter, Mage, Rogue
 from ..characters.players import PlayerEnum
@@ -11,6 +15,10 @@ from ..graphics import Button, Cell
 from ..characters.skills import SkillFactory,SkillEnum
 from . import Window, MapWindow, BottomBarWindow, PauseMenu, LogWindow, InventoryWindow, SkillWindow, CharacterWindow, StatusWindow,NpcTradingWindow
 from copy import deepcopy,copy
+from ..network.essaiOtherPlayer import OtherPlayer2
+from ..network.realPlayer import RealPlayer
+from ..network.message import check_size, Message, extract, read_name
+
 
 class GameScreen(Window):
 	""" This is the main screen, where all the game is rendered
@@ -113,7 +121,6 @@ class GameScreen(Window):
 		self.game=game
 
 		self.saveName = saveName
-
 		if dungeon==None:
 			self.dungeon = Dungeon(self)
 		else:
@@ -141,12 +148,16 @@ class GameScreen(Window):
 
 		self.bottombarwindow = BottomBarWindow(self)
 		self.inventorywindow = InventoryWindow(game, self)
+		
+		
 		self.mapwindow = MapWindow(game, self)
 		self.pausemenu = PauseMenu(game, self)
 		self.skillwindow=SkillWindow(game, self)
 		self.characterwindow=CharacterWindow(game, self)
 		self.statuswindow = StatusWindow(game, self)
 		self.displaycharacterwindow=False
+		self.currentCharacterSheet=-1
+		self.currentInventory = -1
 
 		self.camera = pygame.Rect((0,0), (self.__viewport.get_width(), self.__viewport.get_height()))
 		self.setCamera(Map.posToVect(self.dungeon.currentFloor.startPos))
@@ -167,8 +178,21 @@ class GameScreen(Window):
 		self.rangeCell = Cell((103,216,239, 120))
 		self.pauseButton= Button(game,(self.get_width()-66, 16), '', imgPath = "dungeonX/assets/ui/pause_button.png", size=(50,50), action=lambda:self.setState("paused"))
 
+		# next/previous inventory buttons init
+		self.nextButton= Button(game,(self.get_width()-256, 325), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(50,50), action=lambda:self.nextInventory(1))
+		self.prevButton= Button(game,(77, 325), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(50,50), action=lambda:self.nextInventory(-1))
+
+		#next/previous charactersheet buttons
+		self.nextButtonC= Button(game,(self.get_width()-40, 150), '', imgPath = "dungeonX/assets/menu/next_arrow.png", size=(30,30), action=lambda:self.nextSheet(1))
+		self.prevButtonC= Button(game,(self.get_width()-285, 150), '', imgPath = "dungeonX/assets/menu/back_arrow.png", size=(30,30), action=lambda:self.nextSheet(-1))
+
 		self.lifebar_background = pygame.image.load("dungeonX/assets/ui/lifeBar/background.png").convert()
 		self.lifebar_foreground = pygame.image.load("dungeonX/assets/ui/lifeBar/foreground.png").convert()
+		self.oplayers = self.dungeon.oplayers
+		self.realPlayers = {}
+		self.oplayerCreation = False
+
+		self.playerName = ""
 
 	def __getstate__(self):
 		return None
@@ -194,6 +218,7 @@ class GameScreen(Window):
 		defaultSkillfighter2=[SkillFactory(SkillEnum.Stealth),SkillFactory(SkillEnum.DisableDevice),SkillFactory(SkillEnum.Perception)]
 		defaultSkillfighter3=[SkillFactory(SkillEnum.Stealth),SkillFactory(SkillEnum.DisableDevice),SkillFactory(SkillEnum.Perception)]
 		defaultSkillmage=[SkillFactory(SkillEnum.Stealth),SkillFactory(SkillEnum.DisableDevice),SkillFactory(SkillEnum.Perception)]
+		#print(f"Here: {self.playerName}")
 		for playerType in playerTypes:
 			if playerType == PlayerEnum.Rogue:
 				self.dungeon.players.append( Rogue(self, (0,0), defaultSkills=defaultSkillrogue))
@@ -250,6 +275,7 @@ class GameScreen(Window):
 		if self.state in ('input', 'walk', 'enemy'):
 			self.__savedState = self.state
 		self.state = state
+	
 
 	def selectPlayer(self, p):
 		""" Setter for selectedPlayer
@@ -291,7 +317,7 @@ class GameScreen(Window):
 
 		mousePosition = pygame.mouse.get_pos()
 		absoluteMousePosition = (mousePosition[0]*self.__viewport.get_width()/self.get_width()+self.camera.left, mousePosition[1]*self.__viewport.get_height()/self.get_height()+self.camera.top)
-
+		
 		# --- Events Handling --- #
 		for event in events:
 			if self.state in ("map_opened", "inventory_opened", "paused", "skillwindow_opened","npcwindow_opened"):
@@ -309,6 +335,10 @@ class GameScreen(Window):
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					if not any((self.passTurnButton.rect.collidepoint(event.pos),
 								self.pauseButton.rect.collidepoint(event.pos),
+								self.nextButton.rect.collidepoint(event.pos),
+								self.prevButton.rect.collidepoint(event.pos),
+								self.nextButtonC.rect.collidepoint(event.pos),
+								self.prevButtonC.rect.collidepoint(event.pos),
 								self.bottombarwindow.rect.collidepoint(event.pos))):
 						if event.button==3:
 							for player in self.players:
@@ -402,7 +432,6 @@ class GameScreen(Window):
 					l2 = list(filter(lambda x:any(x==e.pos for e in self.objects), l))
 					self.zoneCell.drawCells(self.__viewport, l2, self.camera.topleft)
 
-
 			if any(e.pos in p.getLineOfSightCells() for p in self.players for e in self.enemies if not e.finalTarget):
 				self.setState('input')
 				for p in self.players:
@@ -463,10 +492,21 @@ class GameScreen(Window):
 	
 		
 		# ---- Entity rendering ---- #
-		for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
+
+		# self.enemies = []
+		# self.dungeon.currentFloor.enemies=[]
+		entities = self.players+self.enemies+self.objects+self.oplayers if self.oplayers != None else self.players+self.enemies+self.objects
+
+		for ent in sorted(entities, key=lambda x:x.rect.top):
+		#for ent in sorted(self.players+self.enemies+self.objects, key=lambda x:x.rect.top):
 			if self.camera.colliderect(ent.rect) and (not isinstance(ent,Enemy) or any(ent.pos in p.getLineOfSightCells() for p in self.players)):
-				ent.updateAnim(self.game.dt)
+				if isinstance(ent,OtherPlayer2):
+					ent.updateAnim(self.game.dt + 50)
+				else:
+					ent.updateAnim(self.game.dt)
 				self.__viewport.blit(ent.image, pygame.Vector2(ent.rect.topleft) - self.camera.topleft)
+				if (ent in self.players and self.game.screens['online_screen'].online):
+					pygame.draw.rect(self.__viewport, (255,0,0), ent.rect.move(-self.camera.left, -self.camera.top), 1)
 				if ent==self.selectedPlayer:
 					pygame.draw.rect(self.__viewport, (255,255,255), ent.rect.move(-self.camera.left, -self.camera.top), 1)
 				# if ent==self.currentEnemy:
@@ -491,6 +531,19 @@ class GameScreen(Window):
 		# ---- GUI rendering ---- #
 		self.game.particleSystem.update(self.game.dt)
 		self.blit(pygame.transform.scale(self.__viewport, (self.get_width(), self.get_height())), (0,0))
+		
+		# liste des joueurs visibles pour afficher en fonction 
+		if self.oplayers != None:
+			visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+			self.visiblePlayersList=visiblePlayersList
+
+			visibleRealPlayersList=[]
+			self.visibleRealPlayersList=visibleRealPlayersList
+			
+			for visiblePlayer in (visiblePlayersList) :
+				for _,realPlayer in self.realPlayers.items() :
+					if  (visiblePlayer.parent not in self.visibleRealPlayersList) :
+						self.visibleRealPlayersList.append(realPlayer)
 
 		if self.state == 'paused':
 			self.pausemenu.update(events)
@@ -499,8 +552,20 @@ class GameScreen(Window):
 			if self.state == 'map_opened':
 				self.mapwindow.update(events)
 				self.blit(self.mapwindow, (0,0))
-			elif self.state == 'inventory_opened':
-				self.inventorywindow.update(events)
+			elif self.state == 'inventory_opened': 
+				if self.visiblePlayersList != []:
+					self.nextButton.update(events)
+					self.blit(self.nextButton.image,self.nextButton.rect)
+					self.prevButton.update(events)
+					self.blit(self.prevButton.image,self.prevButton.rect)
+					if not (self.currentInventory == -1):
+						#print(f"HERE HERE: {self.visibleRealPlayersList[self.currentInventory]}")
+						self.inventorywindow.update(events, otherRealPlayer=self.visibleRealPlayersList[self.currentInventory])
+						self.blit(self.inventorywindow, (0,0))
+					else:
+						self.inventorywindow.update(events)
+				else:
+					self.inventorywindow.update(events)
 				self.blit(self.inventorywindow, (0,0))
 			elif self.state=='skillwindow_opened':	
 				self.blit(self.skillwindow,self.skillwindow.rect)
@@ -520,20 +585,267 @@ class GameScreen(Window):
 					self.blit(self.passTurnButton.image, self.passTurnButton.rect)
 				self.statuswindow.handleInput(events)
 				if self.displaycharacterwindow:
-					self.characterwindow.update(events)
+					# je teste de deplacer pcq j'en ai aussi besoin 
+					# self.visiblePlayersList = self.selectedPlayer.checkLineOfSight(self.oplayers)
+					try:
+						if self.visiblePlayersList != []:
+							self.nextButtonC.update(events)
+							self.blit(self.nextButtonC.image,self.nextButtonC.rect)
+							self.prevButtonC.update(events)
+							self.blit(self.prevButtonC.image,self.prevButtonC.rect)
+						if not (self.currentCharacterSheet == -1):
+							self.characterwindow.update(events,plyr=self.visiblePlayersList[self.currentCharacterSheet])
+						else:
+							self.characterwindow.update(events)
+					except IndexError:
+						self.currentCharacterSheet = len(self.visiblePlayersList)-1
+						if not (self.currentCharacterSheet == -1):
+							self.characterwindow.update(events,plyr=self.visiblePlayersList[self.currentCharacterSheet])
+						else:
+							self.characterwindow.update(events)
+
 					self.blit(self.characterwindow, self.characterwindow.rect)
 				else:
 					self.statuswindow.update(events)
 					self.blit(self.statuswindow, self.statuswindow.rect)
 
 
-
 			self.bottombarwindow.update(events)
 			self.blit(self.bottombarwindow, (0,0))
 			self.skillwindow.update(events)
 			self.npcwindow.update(events)
+		#network handling
+		if self.game.screens['online_screen'].online:
+			self.networkUpdate()
+			if (not self.oplayerCreation):
+				self.dungeon.oplayers = self.oplayers
+				self.oplayerCreation = True
+			if self.oplayers != None:
+				for oplayer in self.oplayers:
+					if (oplayer.pos == oplayer.newPos and oplayer.targets != []):
+						oplayer.newPos = oplayer.targets[0]
+						oplayer.targets.remove(oplayer.targets[0])
+					oplayer.setActionPoint(oplayer.actionPointMax)
+					oplayer._dt = self.game.dt
+					oplayer.playAction(self.game.dt,(oplayer.newPos))
+		
+	def nextInventory(self,index):
+		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
+			print("No more players in the line of sight")
+			return
+		self.currentInventory += index
+
+	def nextSheet(self,index):
+		if (self.currentCharacterSheet+index >= len(self.selectedPlayer.checkLineOfSight(self.oplayers)) or self.currentCharacterSheet+index < -1):
+			print("No more players in the line of sight")
+			return
+		self.currentCharacterSheet += index
+	
+	def changePlayerName(self, name):
+		self.playerName = name
+
+	def retrieveChestsFromObjects(self,list):
+		"""
+		retreives only Chest items from the Object List
+		"""
+		listOfChests=[]
+		for el in list:
+			if type(el) == Chest :
+				listOfChests.append(el)
+		return listOfChests
+
+	def returnPositionsOfChestsInGame(self,list):
+		"""
+		retreives only Chest items from the Object List
+		"""
+		listOfChestspos=[]
+		for el in list:
+			if type(el) == Chest :
+				listOfChestspos.append(el.getPosition())
+		return listOfChestspos
+
+	def UpdateChestContent(self,Chest : Chest,ID,oPlayerID=None):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		# for el in list: #for all chests in the game
+		# 	#for ch in el.getContent() :# for each chest 
+		# 		if el.getItemByID(ID)!= None: 
+		# 			itemToSubstract=el.getItemByID(ID)
+		if oPlayerID!=None:
+			# itemToSubstract=Chest.getItemByID(ID)
+			# print(itemToSubstract)
+			self.realPlayers[oPlayerID].bag.addItem(itemToSubstract)
+			#el.UpdateChest(el,itemToSubstract)
+			print(f'For Chest n {Chest} : Item {Chest.getItemByID(ID)} was taken from Chest by Another Player')
+			print(f'POSITION FOUND & RETURNED {Chest.getPosition()}')
+			return Chest.getPosition()	
+
+	def UpdateChestContentV2(self,Chest : Chest,oPlayerID=None,content=""):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		print("UPDATING LOADING HERE ")
+		if oPlayerID!=None: # serves Only for testing in file tests 
+			print("UPDATING LOADING  ")
+			Chest.getItemsFromChest()
+			for i in range(len(content)):
+				if (content[i]!='0'):
+					item=self.initialToObject(content[i])
+					maxWeight = 30
+					if (item.getWeight() + (self.realPlayers[oPlayerID].getCurrentWeight())  <= maxWeight):
+						self.realPlayers[oPlayerID].itemsList.append(item)
+			#TODO: content = none 
+			return Chest.getPosition()	
+				
+	
+	def FindChestWithID(self,list:[Chest],ID):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		for el in list: #for all chests in the game
+			for ch in el.getContent() :# for each chest 
+				if el.getItemByID(ID)!= None: 
+					print(f'For Chest n {el} : Item with ID {ID}')
+					return el
+
+	def FindChestWithPos(self,list:[Chest],Pos:tuple):
+		"""
+		serves into finding the chest containing item with ID from all Chests in the game and updating it
+		"""
+		for el in list: #for all chests in the game
+			if el.getPosition() == Pos:
+				return el
+		
+					
+		
+	def networkUpdate(self):
+		#print(self.players[0].pos)
+		message = self.game.screens['online_screen'].networker.getMessage()
+		if message != "" :
+			print("MESSAGE: ",message)
+		if message[:3] == "con":
+			msg_to_send = Message(self.players,flag="wlc").create_message(seed=self.game.screens['map_selector'].seed,ID=1 if self.oplayers ==None else len(self.oplayers)+1)
+			print("Messages to send: ",msg_to_send)
+			self.game.screens['online_screen'].networker.send(msg_to_send)
+		elif message[:3] == "new":
+			infos = extract(message[:42])
+			print("Second player characters created")
+			otherPlayers = [OtherPlayer2([infos[2][0],infos[2][1],infos[2][2]],self),OtherPlayer2([infos[3][0],infos[3][1],infos[3][2]],self)\
+				    ,OtherPlayer2([infos[4][0],infos[4][1],infos[4][2]],self)]
+			self.realPlayers[infos[0]] = RealPlayer(otherPlayers,read_name(infos[1]))
+			print("Real Players Dictionnary: ",self.realPlayers)
+			self.dungeon.oplayers= otherPlayers
+			self.oplayers = self.dungeon.oplayers
+		elif message[:3] == "pos":
+			infos = extract(message[:14])
+			playerID, characterID = infos[0], int(infos[1])-1
+			newPos = (int(infos[2]),int(infos[3]))
+			self.realPlayers[playerID].persos[characterID].targets.append(newPos)
+			print("Real player Id " + infos[0] +" New position received: ",newPos," Character number "+infos[1])
+			#self.realPlayers[playerID].persos[characterID].newPos = newPos
+		# elif message[65:68]=="ite":
+		# 	info = extract(message[65:])
+		# 	ListOfChests= self.retrieveChestsFromObjects(self.objects)
+		 	# print(f'MY OWN CHESTS {ListOfChests}')
+			# ID = int(info[2])
+			# #IDperso= int(info[1])
+			# IDofOtherPlayer= info[0]
+			# ChestTounlock=self.FindChestWithID(ListOfChests,ID)
+			# ChestTounlock.unlock(alwaysSuccess=True)
+			# self.UpdateChestContent(ChestTounlock,ID,IDofOtherPlayer)	
+		elif message [:3] =="che":
+			info = extract(message[:17])
+			ListOfChests= self.retrieveChestsFromObjects(self.objects)
+			IDofOtherPlayer= info[0]
+			chestContent= str(info[3])
+			#print("Chest content string is : "+chestContent)
+			PosOfChest=(int(info[1]),int(info[2]))
+			ChestToModify=self.FindChestWithPos(ListOfChests,PosOfChest)
+			#print(f'Chest to modify is at{ChestToModify.getPosition()} ')
+			#print(f'BEFORE{self.realPlayers[IDofOtherPlayer].itemsList}')
+			self.UpdateChestContentV2(ChestToModify,oPlayerID=IDofOtherPlayer,content=chestContent)
+			#print(f'AFTER {self.realPlayers[IDofOtherPlayer].itemsList}')
+		elif message[:3] == "pro":
+			infos = extract(message[:14])
+			position = (int(infos[2]), int(infos[3]))
+			proper = 1
+			for player in self.players:
+				if (position == player.finalTarget or position == player.pos):
+					proper = 0
+					break
+			msg_to_send = Message([None,None,None],flag="ans",ID=int(infos[0])).create_message(prop = proper,pos=position,ID=int(infos[1]))
+			self.game.screens['online_screen'].networker.send(msg_to_send)
+		elif message[:3] == "ans":
+			infos = extract(message[:15])
+			index = int(infos[1]) - 1
+			if int(infos[4]) == 1:
+				target = int(infos[2]), int(infos[3])
+				self.players[index].property = True
+				self.players[index].setTarget(target)
+			else:
+				self.players[index].game.game.addToLog("You can't go to this position, it's owned by someone else")
+				print("You can't go to this position, it's owned by someone else")
+		elif message[:3] == "exi":
+			infos = extract(message[:5])
+			self.players[0].game.game.addToLog("Player "+self.realPlayers[infos[0]].name+" disconnected")
+			oplayersToRmv = [self.realPlayers[infos[0]].persos[0],self.realPlayers[infos[0]].persos[1],self.realPlayers[infos[0]].persos[2]]
+			for oplayer in oplayersToRmv:
+				self.oplayers.remove(oplayer)
+			del self.realPlayers[infos[0]]
+		elif message[:3] == "equ" :
+			info = extract(message[:7])
+			realPlayerId= info[0]
+			playerId = int(info[1])-1
+			index = int(info[2])
+			item = self.indexToEquipment(index)
+			player = self.realPlayers[realPlayerId].persos[playerId]
+			# instructions pour enlever du bag l'objet
+			itemToRemove=self.realPlayers[realPlayerId].itemOfType(item.getItemType())
+			self.realPlayers[realPlayerId].itemsList.remove(itemToRemove)
+			# ajout item a l'equipement
+			player.equipment[index]=item
+			player.increaseStats(item.getEffectiveStats())
+			player.maxHP += item.getEffectiveStats()[Attributes.HP]
+
+	
+	def getValidLocations(self):
+		found = False
+	
+		while not found:
+			pos = self.dungeon.currentFloor.getRandomValidLocation()
+			positions = [pos]
+			l = [(pos[0]+1,pos[1]),(pos[0]+1,pos[1]+1),(pos[0]-1,pos[1]),(pos[0],pos[1]-1),(pos[0]+2,pos[1]),(pos[0]-2,pos[1])]
+			for position in l:
+				if self.dungeon.currentFloor.isValidLocation(*position):
+					positions.append(position)
+				if len(positions) == 3:
+					found = True
+					break
+		print("Available positions: ",positions)
+		return positions
+	
+	def initialToObject(self,initial):
+		if initial=='C':
+			return ItemFactory(ItemList.Coin)
+		if initial=='S':
+			return ItemFactory(ItemList.Sword)
+		if initial=='A':
+			return ItemFactory(ItemList.Armor)
+		if initial=='R':
+			return ItemFactory(ItemList.Ring)
+		if initial=='N':
+			return ItemFactory(ItemList.Necklace)
+		if initial=='P':
+			return ItemFactory(ItemList.Potion)
 
 
-		
-		
-		
+	def indexToEquipment(self,index):
+		if index==0:
+			return ItemFactory(ItemList.Sword)
+		elif index==1:
+			return ItemFactory(ItemList.Armor)
+		elif index==2:
+			return ItemFactory(ItemList.Necklace)
+		elif index in (3,4) :
+			return ItemFactory(ItemList.Ring)

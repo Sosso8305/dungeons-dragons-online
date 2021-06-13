@@ -1,8 +1,25 @@
+#from dungeonX.screens import gamescreen
 import pygame
 from ..items import Item
 from ..constants import State, TILE_WIDTH, serializeSurf, unserializeSurf
+from dungeonX.network.message import Message, check_size
 from ..objects.object import GameObject
 import random
+from ..constants import ItemAttributes, ItemList
+def check_size(string: str, n: int):
+    	modified_str = ""
+    	size = len(string)
+
+    	while n - size > 0:
+        	modified_str += '0'
+        	size += 1
+
+    	modified_str += string
+
+    	return modified_str
+
+
+
 
 class Chest(GameObject):
 	"""
@@ -80,6 +97,8 @@ class Chest(GameObject):
 				print('successful : Luck')
 			else: print('Wrong Key'); return False
 		else: print('Chest already unlocked'); return False
+	
+	
 		
 	def SuccessRateToUnlock(self, alwaysSuccess=False):
 		"""
@@ -87,8 +106,14 @@ class Chest(GameObject):
 		"""
 		return random.randint(1,20) < 3 or alwaysSuccess
 		
+	def getContent(self):
+		return self._content
 	
-
+	def UpdateChest(self,item:Item):
+		"""
+		Substract item from chest Only #for now
+		"""
+		self._content-= item
 
 
 	def getState(self):
@@ -110,15 +135,36 @@ class Chest(GameObject):
 		"""
 		retreive items from a chest 
 		"""
+		#if(self._state == State.unlocked):
+		self.__animState = 'empty'
+		if self._content is not None:
+			tmp = self._content
+			self._content = None
+			#TODO : create message for each item in content to OPlayers
+			return tmp
+				
+		else: print('The chest is empty !'); return []
+		#else: print('Please unlock chest before retrieving items'); return False
+		
+	def getItemByID(self,ID:int):
+		"""
+		retreive item with ID number 
+		"""
+		itemToReturn = None
 		if(self._state == State.unlocked):
 			self.__animState = 'empty'
 			if self._content is not None:
-				tmp = self._content
-				self._content = None
-				return tmp 
+				for i in self._content:
+					print(f'ID I HAVE {i.getID()}')
+					print(f'ID LOOKING FOR {ID}') 
+					if i.getID() == ID :
+						itemToReturn = i
+						#self._content.remove(i)
+						return itemToReturn
+				if itemToReturn == None :
+				  	print(f'The item with the specified {ID} is unavailable')
 			else: print('The chest is empty !'); return []
 		else: print('Please unlock chest before retrieving items'); return False
-		
 
 	def animsIterator(self):
 		i = 0
@@ -140,6 +186,21 @@ class Chest(GameObject):
 	def updateAnim(self, dt):
 		self.__dt = dt
 		self.image = next(self.animsIter)
+	
+	def getInitial(self,item):
+		if item.getItemType()==ItemList.Coin:
+			return 'C'
+		if item.getItemType()==ItemList.Sword:
+			return 'S'
+		if item.getItemType()==ItemList.Armor:
+			return 'A'
+		if item.getItemType()==ItemList.Ring:
+			return 'R'
+		if item.getItemType()==ItemList.Necklace:
+			return 'N'
+		if item.getItemType()==ItemList.Potion:
+			return 'P'
+		
 
 	def interactWithPlayer(self, player):
 		if self.getState()==State.locked:
@@ -152,8 +213,14 @@ class Chest(GameObject):
 			if not self._content:
 				player.game.game.addToLog(" The chest is empty !")
 			else:
+				content_str=""
 				for item in self.getItemsFromChest():
 					player.getBag().addItem(item)
+					# messagePerItem=Message([None,None,None],flag="ite",ID=(player.ID)).create_message(player.getIDMsg(),IDItem=item.id)
+					# player.game.game.screens['online_screen'].networker.send(check_size(messagePerItem,76))
+					# print(f'MESSAGE SENT :{messagePerItem}')
+					content_str+=self.getInitial(item)
 				player.game.game.addToLog(" Item(s) retreived ")
-
-
+			messageforChest=Message([None,None,None],flag="che",ID=(player.getIDMsg())).create_message(player.ID,ChestPos=self.getPosition(),chestContent=content_str)
+			player.game.game.screens['online_screen'].networker.send(messageforChest)
+			print(f'MESSAGE SENT :{messageforChest}')

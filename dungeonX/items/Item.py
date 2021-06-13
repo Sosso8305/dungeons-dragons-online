@@ -61,12 +61,17 @@ class Item(TimeFrame):
     isconsumed(self)
     verifies if an item is not usable anymore (consumed).
     """
+    
+    ids = 1000
+
     def __init__(self, name: str, itemType, stats: list, timeLimitInSeconds = 'infinity'):
         super().__init__(timeLimitInSeconds=timeLimitInSeconds)
         self._name = name
         self._stats = stats
         self._used = False 
         self._type = itemType
+        self.id = Item.ids
+        Item.ids += 1
 
     def useItem(self):
         """
@@ -83,6 +88,12 @@ class Item(TimeFrame):
         returns name of the item
         """
         return self._name
+
+    def getID(self):
+        """
+        returns ID of the item
+        """
+        return self.id
 
     def isUsed(self): 
         """

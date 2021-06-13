@@ -13,6 +13,7 @@ class Character :
     ID = 0
 
     def __init__(self, game, pos: tuple, actionPointMax, HP, armor, strength, dex, con, intell, wis, cha):
+#       super().__init__(game)
         self.game = game
         self.actionPoint = actionPointMax
         self.actionPointMax = actionPointMax
@@ -27,9 +28,19 @@ class Character :
             Attributes.Wisdom: wis, 
             Attributes.Cha: cha
         }
+        self.stats=(HP,armor, strength, dex, con, intell, wis, cha)
         self.ID = Character.ID
-        Character.ID += 1
+        #TODO: the ids will go from 1 to 3 (will do and modify the tests for the next commit): DONE
         self.maxHP = HP
+        # if Character.ID > 2 :
+        #     Character.RealPlayerID +=1
+        #     Character.ID=0
+        # else :
+        #    #  self.MyPlayers.append(self)
+        Character.ID += 1
+
+        
+            
 
 
 

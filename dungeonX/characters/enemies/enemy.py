@@ -121,6 +121,11 @@ class Enemy(Character) :
                 else:
                     self.memoriseCharacter(_enemies, "target")  # append to memory as a target
 
+        # if self.game.oplayers != None:
+        #     for _oplayer in self.game.oplayers:
+        #         if _oplayer.getPosition() in area:            
+        #             self.memoriseCharacter(_oplayer, "target")    # append to memory as a target
+
         """
         someone=0
         enemyHP=101

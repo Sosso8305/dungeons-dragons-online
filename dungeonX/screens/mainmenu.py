@@ -14,11 +14,12 @@ class MainMenu(Window):
 
 		self.game.textDisplayer.print("Dungeon(X)", (0,0), rectSize=(self.get_width(),200), center=True, center_y=True, scale=1.2, screen=self.background)
 
-
-		self.newGameButton = Button(game,(self.get_width()//2-100,(self.get_height()-150)/5+100), "New Game",size=(200,100), textScale=0.3)
-		self.loadGameButton = Button(game,(self.get_width()//2-100,2*(self.get_height()-150)/5+100), "Map Editor",size=(200,100), textScale=0.3)
-		self.settingsButton = Button(game,(self.get_width()//2-100,3*(self.get_height()-150)/5+100), "Settings",size=(200,100), textScale=0.3)
-		self.exitButton = Button(game,(self.get_width()//2-100,4*(self.get_height()-150)/5+100), "Exit Game",size=(200,100), textScale=0.3, imgPath="dungeonX/assets/ui/button_red.png")
+		self.newGameButton = Button(game,(self.get_width()//2-100,(self.get_height()-100)/6+100), "New Game",size=(200,100), textScale=0.3)
+		self.onlineButton = Button(game,(self.get_width()//2-100,2*(self.get_height()-100)/6+100), "Online",size=(200,100), textScale=0.3)
+		self.loadGameButton = Button(game,(self.get_width()//2-100,3*(self.get_height()-100)/6+100), "Map Editor",size=(200,100), textScale=0.3)
+		self.settingsButton = Button(game,(self.get_width()//2-100,4*(self.get_height()-100)/6+100), "Settings",size=(200,100), textScale=0.3)
+		self.exitButton = Button(game,(self.get_width()//2-100,5*(self.get_height()-100)/6+100), "Exit Game",size=(200,100), textScale=0.3, imgPath="dungeonX/assets/ui/button_red.png")
+		
 		self.currentscreen='main_menu'
 		
 	def update(self, events):
@@ -27,13 +28,17 @@ class MainMenu(Window):
 		self.blit(self.loadGameButton.image, self.loadGameButton.rect)
 		self.blit(self.settingsButton.image, self.settingsButton.rect)
 		self.blit(self.exitButton.image, self.exitButton.rect)
+		self.blit(self.onlineButton.image, self.onlineButton.rect)
+
 
 
 		self.blit(self.newGameButton.image, self.newGameButton.rect)
 		self.newGameButton.update(events)
 		if self.newGameButton.isPressed():
 			self.game.setScreen('map_selector')
-
+		self.onlineButton.update(events)
+		if self.onlineButton.isPressed():	
+			self.game.setScreen('online_screen')
 		self.loadGameButton.update(events)
 		if self.loadGameButton.isPressed():
 			self.game.setScreen('map_editor')
