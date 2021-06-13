@@ -80,6 +80,7 @@ class OtherPlayer2(Character):
         self.level = 1 #we have to change this later when we define a message type for this
         #self._bag=self.MessageBag
         self.newPos = self.pos
+        self.targets = []
 
     def __getstate__(self):
         d = dict(serializeSurf(self.__dict__))
@@ -159,6 +160,7 @@ class OtherPlayer2(Character):
     def playAction(self,dt:int,tup):
         self.setTarget(tup)
         self.setActionPoint(self.actionPointMax)
+        #print(self.currentTarget)
         if self.currentTarget:
             self.state = 'run'
 

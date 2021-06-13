@@ -493,6 +493,8 @@ class GameScreen(Window):
 		
 		# ---- Entity rendering ---- #
 
+		# self.enemies = []
+		# self.dungeon.currentFloor.enemies=[]
 		entities = self.players+self.enemies+self.objects+self.oplayers if self.oplayers != None else self.players+self.enemies+self.objects
 
 		for ent in sorted(entities, key=lambda x:x.rect.top):
@@ -620,9 +622,12 @@ class GameScreen(Window):
 				self.oplayerCreation = True
 			if self.oplayers != None:
 				for oplayer in self.oplayers:
+					if (oplayer.pos == oplayer.newPos and oplayer.targets != []):
+						oplayer.newPos = oplayer.targets[0]
+						oplayer.targets.remove(oplayer.targets[0])
 					oplayer.setActionPoint(oplayer.actionPointMax)
 					oplayer._dt = self.game.dt
-					oplayer.playAction(self.game.dt,(oplayer.newPos))	
+					oplayer.playAction(self.game.dt,(oplayer.newPos))
 		
 	def nextInventory(self,index):
 		if (self.currentInventory+index >= len(self.visibleRealPlayersList) or self.currentInventory+index < -1):
@@ -736,8 +741,9 @@ class GameScreen(Window):
 			infos = extract(message[:14])
 			playerID, characterID = infos[0], int(infos[1])-1
 			newPos = (int(infos[2]),int(infos[3]))
+			self.realPlayers[playerID].persos[characterID].targets.append(newPos)
 			print("Real player Id " + infos[0] +" New position received: ",newPos," Character number "+infos[1])
-			self.realPlayers[playerID].persos[characterID].newPos = newPos
+			#self.realPlayers[playerID].persos[characterID].newPos = newPos
 		# elif message[65:68]=="ite":
 		# 	info = extract(message[65:])
 		# 	ListOfChests= self.retrieveChestsFromObjects(self.objects)
