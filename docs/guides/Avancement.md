@@ -18,6 +18,11 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 *Agathe* 
 - imagination du concept et implémentation rudimentaire d'une classe OtherPlayer (21-2-2020)
 - avec Lucas imagination d'un nouveau système de message, traitement en fonction du type du message (switch) et envoit des messages uniquement quand il y a un changement (aucune implémentation)
+- ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
+- accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
+- synchronisation du contenu des coffres quand ils sont ouverts par un joueur
+- mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
+- mise à jour des équipements des autres joueurs
 
 *Sofiane* 
 - Gestion de la partie C en réseau 
