@@ -39,6 +39,7 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Modification de la structure du packet avec une délimitation par taille pour le parsing
 - Définition de nouveaux types nécessaires au jeu.
 - ......
+
 *Zineb*
 - Création de la branche Avancement 
 - Réalisation des slides suivi du mois 
@@ -78,6 +79,7 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 *Agathe*
 - Merge de l'inventaire de la feature realPlayer vers develop
 - Adaptation du codage de l'inventaire aux modifications qui ont été apportées entre temps sur develop (dictionnaire de realPlayers)
+- correction du bug de réception du premier message "wlc" 
 
 
 ### Juin :
@@ -87,7 +89,7 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 *Agathe* 
 - Modification majeure de l'inventaire des autres joueurs : leur Bag est remplacé par une simple liste d'items
-- Modification du message chest "che" pour communiquer les objets trouvés par un joueur à tous les autres joueurs
+- Modification du message chest "che" y ajouter les objets trouvés par un joueur à tous les autres joueurs
 - Mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
 - Ajout du message "equ" quand un joueur équipe un item (armure, épée...) : mise à jour des équipements pour tous les joueurs 
 
