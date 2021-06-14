@@ -86,5 +86,12 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse
 
 
+### Lucas (non daté mais en ordre chronologique) :
 
-
+- 100% de la partie réseau/socket en python : envoie réception thread etc
+- Idée du python → C → C → Python a travers le réseau
+- Définition des premiers messages
+- Définition de notre alternative 3-way handshake pour l'ajout d'un joueur
+- Support technique pour la partie jeu
+- Documentation poussée avec les DocString de python
+- Longues séances de travail en groupe avec Sofiane et Valentin pour ficeler la partie réseau et tout assembler (séances faites tout au long du projet)
