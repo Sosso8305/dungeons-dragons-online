@@ -16,13 +16,8 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 
 *Agathe* 
-- imagination du concept et implémentation rudimentaire d'une classe OtherPlayer (21-2-2020)
+- imagination du concept et implémentation rudimentaire d'une classe OtherPlayer 
 - avec Lucas imagination d'un nouveau système de message, traitement en fonction du type du message (switch) et envoit des messages uniquement quand il y a un changement (aucune implémentation)
-- ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
-- accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
-- synchronisation du contenu des coffres quand ils sont ouverts par un joueur
-- mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
-- mise à jour des équipements des autres joueurs
 
 *Sofiane* 
 - Gestion de la partie C en réseau 
@@ -61,9 +56,12 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Modification des IDS des personnages  pour respecter le format des messages 
 - Préparation des slides du mois pour les séances de suivi.
 
-
-
-
+*Agathe* 
+- Branche feature realPlayer pour tester l'idée d'un objet realPlayer
+- Ajout d'un objet Bag aux realPlayers
+- Liste des "joueurs visibles" en fonctions des personnages visibles par notre personnage sélectionné
+- Affichage des inventaires des autres joueurs quand ils sont dans le champ de vision 
+- Corrections d'erreurs d'affichage (flèches de navigation)
 
 
 ### Mai :
@@ -75,9 +73,9 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Ajout du message « ite » pour la gestion des items récupérés par les joueurs comme indiqué sur l’exel des messages
 - Correction du bug pour l’inventaire 
 
-
-
-
+*Agathe*
+- Merge de l'inventaire de la feature realPlayer vers develop
+- Adaptation du codage de l'inventaire aux modifications qui ont été apportées entre temps sur develop
 
 
 ### Juin :
@@ -85,6 +83,10 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 - Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse
 
-
+*Agathe* 
+- Modification majeure de l'inventaire des autres joueurs : leur Bag est remplacé par une simple liste d'items
+- Modification du message chest "che" pour communiquer les objets trouvés par un joueur à tous les autres joueurs
+- Mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
+- Ajout du message "equ" quand un joueur équipe un item (armure, épée...) : mise à jour des équipements pour tous les joueurs 
 
 
