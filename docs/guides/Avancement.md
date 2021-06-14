@@ -3,7 +3,7 @@
 Le document montre l'état de l'avancement de chaque membre/groupes de membres aux dates précisées:
 
 ### Jeudi 3 Mars:
-*Christine et Zineb* 
+*Christine*
 
 - première version du packet(message) avec les méthodes repectives :
 
@@ -11,18 +11,15 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
   - lecture et extraction du packet
   - méthodes intermédiaires (pour le padding , vérification de taille,...)
   - Reprise de la classe Otherplayer et Premier affichage des personnages(OtherPlayer) sur la map 
-- Rajout du bouton Online au front pour le lancement du multijoueur en réseau 
-- Création du file test_message.py dans le folder test avec vérification des méthodes pour la classe message et OtherPlayer
 
+*Zineb*
+- Rajout du bouton Online au front pour le lancement du multijoueur en réseau 
+- Création du file test_message.py dans le folder test 
 
 *Agathe* 
 - imagination du concept et implémentation rudimentaire d'une classe OtherPlayer (21-2-2020)
 - avec Lucas imagination d'un nouveau système de message, traitement en fonction du type du message (switch) et envoit des messages uniquement quand il y a un changement (aucune implémentation)
-- ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
-- accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
-- synchronisation du contenu des coffres quand ils sont ouverts par un joueur
-- mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
-- mise à jour des équipements des autres joueurs
+
 
 *Sofiane* 
 - Gestion de la partie C en réseau 
@@ -37,15 +34,17 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 ### Jeudi 18 Mars :
 
-*Christine et Zineb* 
+*Christine* 
 - Modifications à la classe packet devenue message :
 - ajout de flags pour une gestion de plusieurs types de paquets 
 - Modification de la structure du packet avec une délimitation par taille pour le parsing
-
-*Christine*
-
 - Définition de nouveaux types nécessaires au jeu.
 - ......
+*Zineb*
+- Création de la branche Avancement 
+- Réalisation des slides suivi du mois 
+- Participation aux modifications de l’excel contenant les types de messages retenus pour leur réalisation.
+
 
 *Sofiane* 
 - set la seed et ajout du thread qui accueille le jeu 
@@ -75,7 +74,9 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Ajout du message « ite » pour la gestion des items récupérés par les joueurs comme indiqué sur l’exel des messages
 - Correction du bug pour l’inventaire 
 
-
+*Agathe*
+- ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
+- accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
 
 
 
@@ -83,8 +84,12 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 ### Juin :
 *Zineb*
 
-- Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse
+- Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse + méthodes intérmédiares + tests 
 
-
+*Agathe*
+#TODO: explain how it was proper to inventory/modfications
+- synchronisation du contenu des coffres quand ils sont ouverts par un joueur
+- mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
+- mise à jour des équipements des autres joueurs
 
 
