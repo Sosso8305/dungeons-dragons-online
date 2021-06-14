@@ -15,12 +15,12 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Création du file test_message.py dans le folder test 
 
 *Agathe* 
-- imagination du concept et implémentation rudimentaire d'une classe OtherPlayer (21-2-2020)
+- imagination du concept et implémentation rudimentaire d'une classe OtherPlayer 
 - avec Lucas imagination d'un nouveau système de message, traitement en fonction du type du message (switch) et envoit des messages uniquement quand il y a un changement (aucune implémentation)
-
 
 *Sofiane* 
 - Gestion de la partie C en réseau 
+- La majorité des thread creer et gérer pour le réseaux
 - Ajout folder doc
 
 *Lucas* 
@@ -66,9 +66,11 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Modification des IDS des personnages  pour respecter le format des messages 
 - Préparation des slides du mois pour les séances de suivi.
 
-
-
-
+*Agathe* 
+- Branche feature realPlayer pour tester l'idée d'un objet realPlayer et ajout d'un objet Bag aux realPlayers
+- Liste des "joueurs visibles" en fonctions des personnages visibles par notre personnage sélectionné
+- Accès aux Bag des autres joueurs quand ils sont dans le champ de vision
+- Corrections d'erreurs d'affichage (flèches de navigation)
 
 
 ### Mai :
@@ -91,10 +93,16 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Correction du bug pour l’inventaire 
 
 *Agathe*
-- ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
-- accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
+- Merge de l'inventaire de la feature realPlayer vers develop
+- Adaptation du codage de l'inventaire aux modifications qui ont été apportées entre temps sur develop (dictionnaire de realPlayers)
+- correction du bug de réception du premier message "wlc" 
 
-
+*Sofiane*
+-fix des erreeur de typo qui reférencé pas la bonne varibles
+-change notation "host" par first Player"
+-Use REUSADDR pour  faciliter les teste avec les datagrammes
+-désactiver la fonctionnaliter de se connecter grace au shell en C
+-faire en sorte que le Processus C s'esxecute grace au python 
 
 
 ### Juin :
@@ -102,19 +110,31 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 - Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse + méthodes intérmédiares + tests 
 
-*Agathe*
-#TODO: explain how it was proper to inventory/modfications
-- synchronisation du contenu des coffres quand ils sont ouverts par un joueur
-- mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
-- mise à jour des équipements des autres joueurs
 
+*Sofiane*
+- ajout du flag MSG_WAITALL pour les recev dans le python et le C
+- rajout d'une function pour simuler l'arriver de message, facilitant les tests
+- corriger la maniere de padder les messages (avec christine)
+
+*Agathe* 
+- Modification majeure de l'inventaire des autres joueurs : leur Bag est remplacé par une simple liste d'items
+- Modification du message chest "che" y ajouter les objets trouvés par un joueur à tous les autres joueurs
+- Mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
+- Ajout du message "equ" quand un joueur équipe un item (armure, épée...) : mise à jour des équipements pour tous les joueurs 
 
 ### Lucas (non daté mais en ordre chronologique) :
 
 - 100% de la partie réseau/socket en python : envoie réception thread etc
 - Idée du python → C → C → Python a travers le réseau
-- Définition des premiers messages
-- Définition de notre alternative 3-way handshake pour l'ajout d'un joueur
+- Définition théorique des premiers messages (longueur, sens des paddings, contenu etc...)
+- Définition théorique de notre alternative 3-way handshake pour l'ajout d'un joueur
 - Support technique pour la partie jeu
 - Documentation poussée avec les DocString de python
 - Longues séances de travail en groupe avec Sofiane et Valentin pour ficeler la partie réseau et tout assembler (séances faites tout au long du projet)
+
+### Valentin (non daté mais en ordre chronologique) :
+
+- participation à la partie réseau/socket en python : envoie réception thread etc
+- Idée de solution pour fixer l'aléatoire du jeu et la création de map (seed)
+- Définition théorique des premiers messages (longueur, sens des paddings, contenu etc...)
+- Longues séances de travail en groupe avec Sofiane et Lucas pour ficeler la partie réseau et tout assembler (séances faites tout au long du projet)
