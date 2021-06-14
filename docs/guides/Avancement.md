@@ -3,7 +3,7 @@
 Le document montre l'état de l'avancement de chaque membre/groupes de membres aux dates précisées:
 
 ### Jeudi 3 Mars:
-*Christine et Zineb* 
+*Christine*
 
 - première version du packet(message) avec les méthodes repectives :
 
@@ -11,9 +11,10 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
   - lecture et extraction du packet
   - méthodes intermédiaires (pour le padding , vérification de taille,...)
   - Reprise de la classe Otherplayer et Premier affichage des personnages(OtherPlayer) sur la map 
-- Rajout du bouton Online au front pour le lancement du multijoueur en réseau 
-- Création du file test_message.py dans le folder test avec vérification des méthodes pour la classe message et OtherPlayer
 
+*Zineb*
+- Rajout du bouton Online au front pour le lancement du multijoueur en réseau 
+- Création du file test_message.py dans le folder test 
 
 *Agathe* 
 - imagination du concept et implémentation rudimentaire d'une classe OtherPlayer 
@@ -32,15 +33,17 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 ### Jeudi 18 Mars :
 
-*Christine et Zineb* 
+*Christine* 
 - Modifications à la classe packet devenue message :
 - ajout de flags pour une gestion de plusieurs types de paquets 
 - Modification de la structure du packet avec une délimitation par taille pour le parsing
-
-*Christine*
-
 - Définition de nouveaux types nécessaires au jeu.
 - ......
+*Zineb*
+- Création de la branche Avancement 
+- Réalisation des slides suivi du mois 
+- Participation aux modifications de l’excel contenant les types de messages retenus pour leur réalisation.
+
 
 *Sofiane* 
 - set la seed et ajout du thread qui accueille le jeu 
@@ -52,7 +55,6 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 *Zineb* 
 - Proposition de quelques modifications de structure de messages suite au travail pré-existant de Christine.
-- Création d’une classe RealPlayer pour gérer un seul vrai joueur disposant de 3 personnages pour créer uniformité et respecter les normes de POO puis revert car non nécéssaire.
 - Modification des IDS des personnages  pour respecter le format des messages 
 - Préparation des slides du mois pour les séances de suivi.
 
@@ -75,13 +77,13 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 *Agathe*
 - Merge de l'inventaire de la feature realPlayer vers develop
-- Adaptation du codage de l'inventaire aux modifications qui ont été apportées entre temps sur develop
+- Adaptation du codage de l'inventaire aux modifications qui ont été apportées entre temps sur develop (dictionnaire de realPlayers)
 
 
 ### Juin :
 *Zineb*
 
-- Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse
+- Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse + méthodes intérmédiares + tests 
 
 *Agathe* 
 - Modification majeure de l'inventaire des autres joueurs : leur Bag est remplacé par une simple liste d'items
@@ -89,4 +91,12 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
 - Ajout du message "equ" quand un joueur équipe un item (armure, épée...) : mise à jour des équipements pour tous les joueurs 
 
+### Lucas (non daté mais en ordre chronologique) :
 
+- 100% de la partie réseau/socket en python : envoie réception thread etc
+- Idée du python → C → C → Python a travers le réseau
+- Définition des premiers messages
+- Définition de notre alternative 3-way handshake pour l'ajout d'un joueur
+- Support technique pour la partie jeu
+- Documentation poussée avec les DocString de python
+- Longues séances de travail en groupe avec Sofiane et Valentin pour ficeler la partie réseau et tout assembler (séances faites tout au long du projet)
