@@ -100,3 +100,10 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Support technique pour la partie jeu
 - Documentation poussée avec les DocString de python
 - Longues séances de travail en groupe avec Sofiane et Valentin pour ficeler la partie réseau et tout assembler (séances faites tout au long du projet)
+
+### Valentin (non daté mais en ordre chronologique) :
+
+- participation à la partie réseau/socket en python : envoie réception thread etc
+- Idée de solution pour fixer l'aléatoire du jeu et la création de map (seed)
+- Définition théorique des premiers messages (longueur, sens des paddings, contenu etc...)
+- Longues séances de travail en groupe avec Sofiane et Lucas pour ficeler la partie réseau et tout assembler (séances faites tout au long du projet)
