@@ -61,10 +61,9 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Préparation des slides du mois pour les séances de suivi.
 
 *Agathe* 
-- Branche feature realPlayer pour tester l'idée d'un objet realPlayer
-- Ajout d'un objet Bag aux realPlayers
+- Branche feature realPlayer pour tester l'idée d'un objet realPlayer et ajout d'un objet Bag aux realPlayers
 - Liste des "joueurs visibles" en fonctions des personnages visibles par notre personnage sélectionné
-- Affichage des inventaires des autres joueurs quand ils sont dans le champ de vision 
+- Accès aux Bag des autres joueurs quand ils sont dans le champ de vision
 - Corrections d'erreurs d'affichage (flèches de navigation)
 
 
@@ -78,8 +77,6 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Correction du bug pour l’inventaire 
 
 *Agathe*
-- ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
-- accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
 - Merge de l'inventaire de la feature realPlayer vers develop
 - Adaptation du codage de l'inventaire aux modifications qui ont été apportées entre temps sur develop (dictionnaire de realPlayers)
 - correction du bug de réception du premier message "wlc" 
