@@ -106,6 +106,18 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 
 ### Juin :
+
+*Christine*
+
+- Envoi et réception réels des messages wlc et new et création de nouveaux types avec leurs tests :"ini","pro","ans","exi".
+- Implémentation du déplacement pour les personnages de la classe OtherPlayer avec toutes les animations nécessaires.
+- Suppression du message "ini" pour l'incorporer à "wlc"
+- Création et gestion de la notion de propriété pour les cases de la map.
+- Ajout des couleurs pour les personnages du joueur local pour les distinguer.
+- Supprimer les personnages d’un joueur qui s’est déconnecté des maps des autres joueurs.
+- Donner la possibilité aux autres joueurs de continuer à jouer même si un des joueurs s’est déconnecté. 
+-  A noter qu’à chaque modification ou ajout d’un type de message je modifiais le tableau excel qui contient tous les types de message.
+
 *Zineb*
 
 - Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse + méthodes intérmédiares + tests 
