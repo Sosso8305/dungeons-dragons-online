@@ -37,10 +37,49 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - ajout de flags pour une gestion de plusieurs types de paquets 
 - Modification de la structure du packet avec une délimitation par taille pour le parsing
 
-*Valentin*
+*Christine*
+
+- Définition de nouveaux types nécessaires au jeu.
+- ......
+
+*Sofiane* 
 - set la seed et ajout du thread qui accueille le jeu 
 
 *Lucas Sofiane et Valentin*
 - Excel pour proposition de modification de la structure "message"
+
+### Avril :
+
+*Zineb* 
+- Proposition de quelques modifications de structure de messages suite au travail pré-existant de Christine.
+- Création d’une classe RealPlayer pour gérer un seul vrai joueur disposant de 3 personnages pour créer uniformité et respecter les normes de POO puis revert car non nécéssaire.
+- Modification des IDS des personnages  pour respecter le format des messages 
+- Préparation des slides du mois pour les séances de suivi.
+
+
+
+
+
+
+### Mai :
+*Zineb*
+- Ajout et gestion entière de la page OnlineScreen 
+- Stockage des variables rentrées pur établir la connexion « en ligne » et valeurs par défauts.
+- Resolution de bugs suite à certains rajouts 
+- Réalisation des slides du mois 
+- Ajout du message « ite » pour la gestion des items récupérés par les joueurs comme indiqué sur l’exel des messages
+- Correction du bug pour l’inventaire 
+
+
+
+
+
+
+### Juin :
+*Zineb*
+
+- Ajout du message « che » pour la gestion du coffre : solution plus intéressante et moins couteuse
+
+
 
 
