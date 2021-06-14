@@ -23,6 +23,7 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 *Sofiane* 
 - Gestion de la partie C en réseau 
+- La majorité des thread creer et gérer pour le réseaux
 - Ajout folder doc
 
 *Lucas* 
@@ -77,6 +78,13 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - ajout d'une classe "realPlayer" (pour les "copies" des autres joueurs sur chaque jeu)
 - accès à l'inventaire des autres joueurs (mais impossible de modofier les inventaires des autres joueurs)
 
+*Sofiane*
+-fix des erreeur de typo qui reférencé pas la bonne varibles
+-change notation "host" par first Player"
+-Use REUSADDR pour  faciliter les teste avec les datagrammes
+-désactiver la fonctionnaliter de se connecter grace au shell en C
+-faire en sorte que le Processus C s'esxecute grace au python  
+
 
 
 
@@ -91,6 +99,10 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - mise à jour des inventaires pour tous les joueurs quand un joueur récupère des items dans un coffre
 - mise à jour des équipements des autres joueurs
 
+*Sofiane*
+- ajout du flag MSG_WAITALL pour les recev dans le python et le C
+- rajout d'une function pour simuler l'arriver de message, facilitant les tests
+- corriger la maniere de padder les messages (avec christine)
 
 ### Lucas (non daté mais en ordre chronologique) :
 
