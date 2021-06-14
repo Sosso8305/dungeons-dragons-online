@@ -56,7 +56,6 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 
 *Zineb* 
 - Proposition de quelques modifications de structure de messages suite au travail pré-existant de Christine.
-- Création d’une classe RealPlayer pour gérer un seul vrai joueur disposant de 3 personnages pour créer uniformité et respecter les normes de POO puis revert car non nécéssaire.
 - Modification des IDS des personnages  pour respecter le format des messages 
 - Préparation des slides du mois pour les séances de suivi.
 
