@@ -65,6 +65,7 @@ Le document montre l'état de l'avancement de chaque membre/groupes de membres a
 - Proposition de quelques modifications de structure de messages suite au travail pré-existant de Christine.
 - Modification des IDS des personnages  pour respecter le format des messages 
 - Préparation des slides du mois pour les séances de suivi.
+- Proposition d'un UUID pour gérer les ID des personnages sans passage par message 
 
 *Agathe* 
 - Branche feature realPlayer pour tester l'idée d'un objet realPlayer et ajout d'un objet Bag aux realPlayers
